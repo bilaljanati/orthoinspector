@@ -32,3 +32,15 @@ class Warehouse():
             elif dbtype == 2:
                 self.databases[n] = OrthoDb2(n, conninfo=self.conninfo, has_transverse=has_t)
         return self.databases[n]
+
+    def get_stats(self):
+        stats = {}
+        for version, e in self.dblist.items():
+            tmp = {}
+            if version != '2023':
+                continue
+            for name in e['list']:
+                s = self.get_db(name, version).get_stats()
+                tmp[name] = s
+            stats[version] = tmp
+        return stats

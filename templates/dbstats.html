@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %} - Databases{% endblock %}
+
+{% macro format_integer(int) %}
+    {{ '{:,}'.format(int).replace(',', '\u2009') }}
+{% endmacro %}
+
+{% block content %}
+<h1>Online databases</h1>
+{% for version, dbs in stats.items() %}
+	<h2>{{ version }}</h2>
+	<table>
+	<table>
+		<thead>
+			<th>Database name</th>
+			<th>Number of species</th>
+			<th>Number of sequences</th>
+			<th></th>
+		</thead>
+		<tbody>
+		{% for name, d in dbs.items() %}
+			<tr>
+				<td>{{ name }}</td>
+				<td>{{ format_integer(d.species) }}</td>
+				<td>{{ format_integer(d.sequences) }}</td>
+				<td><a href="{{ prefix }}/{{ name }}/{{ version }}">More info</a></td>
+			</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+{% endfor %}
+{% endblock %}

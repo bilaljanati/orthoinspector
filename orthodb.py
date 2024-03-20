@@ -52,3 +52,7 @@ class OrthoDb(metaclass=ABCMeta):
     @abstractmethod
     def check_for_fulltextsearch(self):
         pass
+
+    @abstractmethod
+    def get_stats():
+        pass

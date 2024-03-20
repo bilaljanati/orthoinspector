@@ -86,11 +86,16 @@ def interpro_annotations(access):
     annots = interpro.get_domains(access)
     return jsonify(annots)
 
-# Test rotue for taxonomy
+# Test route for taxonomy
 @bp.route("/taxo/<taxid>")
 def taxo_test(taxid):
     if not taxid.isdigit():
         return jsonify([]), 404
     return jsonify(taxo.get_lineage(taxid))
+
+@bp.route("/stats")
+def do_stats():
+    return render_template('dbstats.html', stats=wh.get_stats())
+    return jsonify(wh.get_stats())
 
 app.register_blueprint(bp, url_prefix=config['prefix'])

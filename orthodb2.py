@@ -35,11 +35,26 @@ class OrthoDb2(OrthoDb):
 
     def check_for_fulltextsearch(self):
         return False
+
+    @cache
+    def get_stats(self):
+        nb_species = len(self.get_species_list())
+        nb_sequences = self.get_nb_proteins()
+        return {
+            'species': nb_species,
+            'sequences': nb_sequences,
+        }
     
     def get_species_list(self):
         sql = """SELECT *
                  FROM species"""
         return self.query(sql)
+
+    def get_nb_proteins(self):
+        sql = """SELECT COUNT(pk_protein) AS count
+                 FROM protein"""
+        res = self.query(sql)
+        return res[0]['count']
 
     def get_protein(self, access):
         sql = self.get_sql("protein")
