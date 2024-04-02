@@ -80,8 +80,11 @@ def protein(database, version, access):
 @bp.route("/<database>/<version>/download/fasta", methods=['POST'])
 def download_fasta(database, version):
     db = wh.get_db(database, version)
-    fasta = db.get_fasta(request.form['access_list'])
-    return Response(fasta, mimetype='text/plain')
+    access_list = request.form['access_list'].split(',')
+    fasta = db.get_fasta(access_list)
+    res = Response(fasta, mimetype='text/plain')
+    res.headers['Content-Disposition'] = f'attachment; filename="{access_list[0]}.fa"'
+    return res
 
 @bp.route("/annotations/go/<access>")
 def go_annotations(access):

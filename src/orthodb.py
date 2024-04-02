@@ -65,6 +65,7 @@ class OrthoDb():
         res = self.query(sql)
         return len(res) > 0
 
+    # TODO
     def check_for_fulltextsearch(self):
         pass
 
@@ -76,6 +77,8 @@ class OrthoDb():
             'species': nb_species,
             'sequences': nb_sequences,
         }
+
+    # DB queries
 
     def get_species_list(self):
         sql = """SELECT *
@@ -127,7 +130,6 @@ class OrthoDb():
         return self.query(sql, [tuple(access_list)])
 
     def get_fasta(self, access_list):
-        access_list = access_list.split(',')
         fasta = []
         width = 60
         for row in self.get_sequences(access_list):
