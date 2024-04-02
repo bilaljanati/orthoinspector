@@ -99,25 +99,37 @@ class OrthoDb():
     def get_orthologs(self, access):
         sql = self.get_sql("orthologs")
         res = self.query(sql, {'access': access})
-        return self.__format_orthologs(res)
+        return self._format_orthologs(res)
 
-    def __format_orthologs(self, data):
-        return [self.__format_ortholog_row(row) for row in data]
+    def _format_orthologs(self, data):
+        return [self._format_ortholog_row(row) for row in data]
 
-    def __format_ortholog_row(self, row):
+    def _format_ortholog_row(self, row):
         res = {}
         res['type'] = row['type']
-        res['inparalogs'] = self.__format_seq_array(row['inparalogs'])
-        res['orthologs'] = self.__format_seq_array(row['orthologs'])
+        res['inparalogs'] = self._format_seq_array(row['inparalogs'])
+        res['orthologs'] = self._format_seq_array(row['orthologs'])
         res['species'] = {'taxid': row['taxid'], 'name': row['species']}
         res['size'] = row['length']
-        res['fullTaxonomy'] = []
-        res['reducedTaxonomy'] = []
+        lineage = self._format_lineage(row['lineage'])
+        res['fullTaxonomy'] = lineage
+        res['reducedTaxonomy'] = self._reduce_lineage(lineage)
         res['taxoDist'] = 1
         return res
 
-    def __format_seq_array(self, group):
+    def _format_seq_array(self, group):
         return [{"access": pair.split(',')[0], "name": pair.split(',')[1]} for pair in group.split()]
+
+    def _format_lineage(self, lineage):
+        l = lineage.split(';')
+        if len(l) > 6:
+            l = l[6:]
+        names = [l[i] for i in range(len(l)) if i%2]
+        return names
+
+    # TODO
+    def _reduce_lineage(self, lineage):
+        return lineage[-6:]
 
     def search_protein(self, txt):
         pass

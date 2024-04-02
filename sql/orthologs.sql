@@ -11,14 +11,15 @@ WITH mtmlist1 AS (
     INNER JOIN protein AS s ON s.pk_protein = l.pk_protein
     WHERE s.access = %(access)s
 )
-SELECT type, inparalogs, orthologs, length, taxid, species FROM
+SELECT type, inparalogs, orthologs, length, taxid, species, lineage FROM
 (
     SELECT 'One-to-One' AS type,
 			sq.access || ',' || sq.name AS inparalogs,
 			sr.access || ',' || sr.name AS orthologs,
 			LENGTH(sr.sequence)::text AS length,
 			o.taxid,
-			o.name AS species
+			o.name AS species,
+			o.lineage
     FROM oto
     INNER JOIN protein AS sq ON oto.pk_proteina = sq.pk_protein
     INNER JOIN protein AS sr ON sr.pk_protein = oto.pk_proteinb
@@ -32,7 +33,8 @@ SELECT type, inparalogs, orthologs, length, taxid, species FROM
 			sr.access || ',' || sr.name AS orthologs,
 			LENGTH(sr.sequence)::text AS length,
 			o.taxid,
-			o.name AS species
+			o.name AS species,
+			o.lineage
     FROM oto
     INNER JOIN protein AS sq ON oto.pk_proteinb = sq.pk_protein
     INNER JOIN protein AS sr ON sr.pk_protein = oto.pk_proteina
@@ -46,14 +48,15 @@ SELECT type, inparalogs, orthologs, length, taxid, species FROM
 			string_agg(DISTINCT sr.access || ',' || sr.name, ' ') AS orthologs,
 			string_agg(LENGTH(sr.sequence)::text, ' ') AS length,
 			o.taxid,
-			o.name AS species
+			o.name AS species,
+			o.lineage
     FROM otm
     INNER JOIN protein AS sq ON otm.pk_proteina = sq.pk_protein
     INNER JOIN ln_inparalog_protein AS ln ON ln.pk_inparalog = otm.pk_inparalogb
     INNER JOIN protein AS sr ON sr.pk_protein = ln.pk_protein
     INNER JOIN species AS o ON o.pk_species = sr.pk_species
     WHERE sq.access = %(access)s
-    GROUP BY otm.pk_otm, o.taxid, o.name, sq.access, sq.name
+    GROUP BY otm.pk_otm, o.taxid, o.name, o.lineage, sq.access, sq.name
 
     UNION
 
@@ -62,7 +65,8 @@ SELECT type, inparalogs, orthologs, length, taxid, species FROM
 			sr.access || ',' || sr.name AS orthologs,
 			LENGTH(sr.sequence)::text AS length,
 			o.taxid,
-			o.name AS species
+			o.name AS species,
+			o.lineage
     FROM otm
     INNER JOIN ln_inparalog_protein AS ln ON otm.pk_inparalogb = ln.pk_inparalog
     INNER JOIN protein AS sq ON ln.pk_protein = sq.pk_protein
@@ -74,7 +78,7 @@ SELECT type, inparalogs, orthologs, length, taxid, species FROM
         INNER JOIN protein AS s ON s.pk_protein = l.pk_protein
         WHERE s.access = %(access)s
     )
-    GROUP BY sr.access, o.taxid, o.name, sr.sequence, sr.name
+    GROUP BY sr.access, o.taxid, o.name, o.lineage, sr.sequence, sr.name
 
     UNION
 
@@ -83,7 +87,8 @@ SELECT type, inparalogs, orthologs, length, taxid, species FROM
 			suba.seqs AS orthologs,
 			suba.lengths AS length,
 			suba.taxid,
-			s.name AS species
+			s.name AS species,
+			s.lineage
     FROM
     (
         SELECT mtm.pk_mtm, string_agg(pa.access || ',' || pa.name, ' ') AS seqs
@@ -109,7 +114,8 @@ SELECT type, inparalogs, orthologs, length, taxid, species FROM
 			subb.seqs AS orthologs,
 			subb.lengths AS length,
 			subb.taxid,
-			s.name AS species
+			s.name AS species,
+			s.lineage
     FROM
     (
         SELECT mtm.pk_mtm, STRING_AGG(pa.access || ',' || pa.name, ' ') AS seqs, string_agg(LENGTH(pa.sequence)::text, ' ') AS lengths, sp.taxid
