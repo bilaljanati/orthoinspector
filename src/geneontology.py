@@ -1,4 +1,5 @@
 from dbservice import DbService
+from functools import lru_cache
 
 
 class GeneOntology(DbService):
@@ -7,7 +8,12 @@ class GeneOntology(DbService):
     def __init__(self, params):
         self.conn = self.connect(params['connection'])
 
+    @lru_cache(maxsize=512)
     def get_annotations(self, access):
+        data = self._fetch_annotations(access)
+        return self._format_data(data)
+
+    def _fetch_annotations(self, access):
         sql = self.get_sql("go_annotations")
         return self.query(sql, {'access': access})
 

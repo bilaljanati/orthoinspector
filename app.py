@@ -1,9 +1,15 @@
+import os
+import sys
 from flask import Flask, request, render_template, Blueprint, abort, redirect, jsonify, Response
-from warehouse import Warehouse
-from geneontology import GeneOntology
-from taxonomy import Taxonomy
-from interpro import Interpro
 import yaml
+
+curdir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(f'{curdir}/src')
+
+from src.warehouse import Warehouse
+from src.geneontology import GeneOntology
+from src.taxonomy import Taxonomy
+from src.interpro import Interpro
 
 
 with open('config.yml', 'r') as config_file:
@@ -55,7 +61,7 @@ def protein(database, version, access):
     full = request.path.endswith('/full')
     db = wh.get_db(database, version)
     if not db.has_models and not full:
-        return redirect(f'{config["prefix"]}/protein/{database}/{version}/{access}/full', code=301)
+        return redirect(f'{config["prefix"]}/{database}/{version}/protein/{access}/full', code=301)
 
     prot = db.get_protein(access)
     if not prot:
