@@ -1,6 +1,4 @@
 from orthodb import OrthoDb
-from orthodb1 import OrthoDb1
-from orthodb2 import OrthoDb2
 
 
 class Warehouse():
@@ -26,11 +24,7 @@ class Warehouse():
         n = self.format_name(name, version)
         if n not in self.databases:
             has_t = 'Transverse' in self.dblist[version]['list']
-            dbtype = self.dblist[version]['type']
-            if dbtype == 1:
-                self.databases[n] = OrthoDb1(n, conninfo=self.conninfo, has_transverse=has_t)
-            elif dbtype == 2:
-                self.databases[n] = OrthoDb2(n, conninfo=self.conninfo, has_transverse=has_t)
+            self.databases[n] = OrthoDb(n, conninfo=self.conninfo, has_transverse=has_t)
         return self.databases[n]
 
     def get_stats(self):

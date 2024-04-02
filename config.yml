@@ -4,13 +4,10 @@ warehouse:
   databases:
     "2016":
         list: ['Archaea', 'Bacteria', 'Eukaryota', 'Transverse']
-        type: 1
     "2019":
         list: ['Archaea', 'Bacteria', 'Eukaryota', 'Transverse']
-        type: 1
     "2023":
         list: ['Archaea', 'Bacteria', 'Eukaryota']
-        type: 2
   connection:
     pattern: 'OrthoInspector_:name:_:version:'
     host: derrick
