@@ -42,7 +42,7 @@
 		<div class="wrapper">
 			<nav class="navbar navbar-default">
 				<div class="container-fluid">
-					<a href="{{prefix}}" class="navbar-left"><img class="navbar-logo" src="{{prefix}}/static/images/oi_logo.png"></a>
+					<a href="{{prefix}}" class="navbar-left"><img class="navbar-logo" src="{{prefix}}/static/images/oi_logo.png" title="OrthoInspector"></a>
 					<div class="navbar-header col-xs-2">
 						<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
 							<span class="sr-only">Toggle navigation</span>
@@ -50,27 +50,10 @@
 							<span class="icon-bar"></span>
 							<span class="icon-bar"></span>
 						</button>
-							
-						<a class="navbar-brand" href="{{ prefix }}">{{ site_title }}</a>
+						{% block navbar_title %}{% endblock %}
 					</div>
 					<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-						<div class="col-xs-6">
-							<form class="navbar-form navbar-left protein-srch">
-								<div class="form-group">
-									<select id="sel-db-top" class="form-control sel-db">
-									{% for iter_domain in databases %}
-										<option value='{{ iter_domain }}'{% if (domain is defined and iter_domain == domain) or (domain is not defined and iter_domain == 'Eukaryota') %} selected{% endif %}>{{ iter_domain }}</option>
-									{% endfor %}
-									</select>
-									<select id="sel-version-top" class="form-control sel-version">
-									{% for iter_version in versions|sort|reverse %}
-										<option value='{{ iter_version }}'{% if (version is not defined and loop.first) or (version is defined and iter_version == version) %} selected{% endif %}>{{ iter_version }}</option>
-									{% endfor %}
-									</select>
-									<input type="text" id="srch-protein-top" class="form-control searchbar" placeholder="Search your favorite protein">
-								</div>
-							</form>
-						</div>
+						{% block navbar_middle %}{% endblock %}
 						<div class="navbar-right">
 							<ul class="nav navbar-nav">
 							{#

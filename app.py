@@ -22,12 +22,6 @@ interpro = Interpro()
 app = Flask(__name__, static_url_path=f"/{config['prefix']}/static")
 bp = Blueprint('bp', __name__)
 
-# Jinja custom filter
-#def regex_replace(s, pattern_match, pattern_out):
-#    import re
-#    return re.sub(pattern_match, pattern_out, s)
-#
-#app.jinja_env.filters['regex_replace'] = regex_replace
 
 @bp.context_processor
 def inject_globals():
@@ -39,47 +33,55 @@ def page_not_found(e):
 
 @bp.route("/")
 def home():
-    return render_template('index.html')
+    return render_template('index.html', dblist=wh.get_dblist())
 
-def db():
-    db = wh.get_db('2023', 'Archaea')
-    db.get_fasta(['A4YCN4', 'A4YCQ3'])
-    return f"<p>DB has model organism: {db.has_models}, profiles: {db.has_profiles}, distances: {db.has_distances}</p>"
-
-@bp.route("/<dbname>/<version>/orthologs/<access>")
-@bp.route("/<dbname>/<version>/orthologs/<access>/full")
-def orthologs(dbname, version, access):
-    db = wh.get_db(dbname, version)
-    orthos = db.get_orthologs(access)
-    if not orthos:
+@bp.route("/<database>")
+def db_home(database):
+    db = wh.get_db(database)
+    if not db:
         abort(404)
-    return jsonify(orthos)
+    status = db.get_status()
+    stats = db.get_stats()
+    species = db.get_species_list()
+    return render_template('dbindex.html', db=wh.get_dbinfo(database), status=status, stats=stats, species=species)
 
-@bp.route("/<database>/<version>/protein/<access>")
-@bp.route("/<database>/<version>/protein/<access>/full")
-def protein(database, version, access):
-    full = request.path.endswith('/full')
-    db = wh.get_db(database, version)
-    if not db.has_models and not full:
-        return redirect(f'{config["prefix"]}/{database}/{version}/protein/{access}/full', code=301)
+@bp.route("/<database>/protein/random")
+def random_protein(database):
+    db = wh.get_db(database)
+    if not db:
+        abort(404)
+    access = db.get_random_access()
+    return redirect(f'{config["prefix"]}/{database}/protein/{access}', code=302)
 
+@bp.route("/<database>/protein/<access>")
+def protein(database, access):
+    db = wh.get_db(database)
+    if not db:
+        abort(404)
     prot = db.get_protein(access)
     if not prot:
         abort(404)
     dbinfo = {
         'name': database,
-        'version': version,
-        'full':  full,
-        'has_transverse': db.has_transverse,
         'has_models': db.has_models,
         'has_profiles': db.has_profiles,
         'has_distances': db.has_distances
     }
     return render_template('protein.html', db=dbinfo, protein=prot)
 
-@bp.route("/<database>/<version>/download/fasta", methods=['POST'])
-def download_fasta(database, version):
-    db = wh.get_db(database, version)
+@bp.route("/<dbname>/orthologs/<access>")
+def orthologs(dbname, access):
+    db = wh.get_db(dbname)
+    if not db:
+        abort(404)
+    orthos = db.get_orthologs(access)
+    if not orthos:
+        abort(404)
+    return jsonify(orthos)
+
+@bp.route("/<database>/download/fasta", methods=['POST'])
+def download_fasta(database):
+    db = wh.get_db(database)
     access_list = request.form['access_list'].split(',')
     fasta = db.get_fasta(access_list)
     res = Response(fasta, mimetype='text/plain')
@@ -93,6 +95,8 @@ def go_annotations(access):
 @bp.route("/annotations/interpro/<access>")
 def interpro_annotations(access):
     annots = interpro.get_domains(access)
+    if not annots:
+        abort(404)
     return jsonify(annots)
 
 # Test route for taxonomy

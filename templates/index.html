@@ -4,13 +4,45 @@
 
 {% block head %}
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+<style>
+.db-badge {
+	background-color: white;
+	border-radius: 10px;
+	border: 1px solid #ccc;
+	height: 120px;
+}
+.db-badge::before {
+	content: '\0026C1'; /* The background character */
+	position: absolute;
+	top: -5px; /* Adjust top position as needed */
+	right: 6px; /* Adjust right position as needed */
+	font-size: 50px; /* Adjust font size as needed */
+	color: #ccc; /* Adjust color as needed */
+}
+</style>
 {% endblock %}
 
 {% block content %}
-<div class='row'>
-	<div style='text-align: left' class='tile col-xs-12'>
-		<h2 style='text-align: center'>Welcome to the OrthoInspector website</h2>
+<div class="row">
+	<div style="text-align: left" class="tile col-xs-12">
+		<h2 style="text-align: center">Welcome to the OrthoInspector website</h2>
+		This is the portal for tailor-made OrthoInspector databases.
 	</div>
 </div>
-<h1 style='text-align: center'><b>SEARCH ORTHOINSPECTOR DATABASES</b></h1>
+<div id="db-list">
+{% for db in dblist %}
+	{% if loop.index is divisibleby(3) %}
+	<div class="row">
+	{% endif %}
+		<a href="{{ prefix }}/{{ db.name }}">
+			<div class="db-badge col-xs-4">
+				<h3>{{ db.name }}</h3>
+				<p>{{ db.description }}</p>
+			</div>
+		</a>
+	{% if loop.index is divisibleby(3) %}
+	</div>
+	{% endif %}
+{% endfor %}
+</div>
 {% endblock %}

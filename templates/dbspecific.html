@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block navbar_title %}
+<a class="navbar-brand" href="{{ prefix }}/{{ db.name }}">{{ db.name }}</a>
+{% endblock %}
+
+{% block navbar_middle %}
+<div class="col-xs-6">
+	<form class="navbar-form navbar-left protein-srch">
+		<div class="form-group">
+			<input type="text" id="srch-protein-top" class="form-control searchbar" placeholder="Search your favorite protein">
+			<a class="btn btn-default" href="{{ prefix }}/{{ db.name }}/protein/random">Random</a>
+		</div>
+	</form>
+</div>
+{% endblock %}

@@ -1,20 +1,20 @@
 import psycopg2
 import psycopg2.extras
+import random
 from functools import cache
 
 
 class OrthoDb():
-    def __init__(self, dbname, conninfo, has_transverse):
+    def __init__(self, dbname, conninfo):
         self.dbname = dbname
-        self.conn = self.connect(conninfo)
+        self.conn = self._connect(conninfo)
 
-        self.has_transverse = has_transverse
         self.has_models = False
         self.has_profiles = False
         self.has_distances = False
-        self.analyze_db()
+        self._analyze_db()
 
-    def connect(self, ci):
+    def _connect(self, ci):
         return psycopg2.connect(
             dbname=self.dbname,
             host=ci['host'],
@@ -24,81 +24,120 @@ class OrthoDb():
         )
 
     @cache
-    def get_sql(self, query):
-        with open(f"sql/{query}.sql") as f:
+    def _get_sql(self, _query):
+        with open(f"sql/{_query}.sql") as f:
             sql = f.read()
         return sql
 
-    def query(self, sql, parameters=None):
-        cursor = self.conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        cursor.execute(sql, parameters)
-        res = cursor.fetchall()
-        cursor.close()
+    def _query(self, sql, parameters=None):
+        with self.conn:
+            with self.conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cursor:
+                cursor.execute(sql, parameters)
+                res = cursor.fetchall()
         return res
 
     # Determine what the db can do
-    def analyze_db(self):
-        self.has_models = self.check_for_models()
-        self.has_profiles = self.check_for_profiles()
-        self.has_distances = self.check_for_distances()
-        self.has_fulltextsearch = self.check_for_fulltextsearch()
+    def _analyze_db(self):
+        self.has_names = self._check_for_names()
+        self.has_models = self._check_for_models()
+        self.has_profiles = self._check_for_profiles()
+        self.has_distances = self._check_for_distances()
+        self.has_fulltextsearch = self._check_for_fulltextsearch()
 
-    def check_for_models(self):
-        sql = """SELECT COUNT(pk_species) AS count
+    def _check_for_names(self):
+        sql = """SELECT name
+                 FROM protein
+                 LIMIT 1"""
+        try:
+            res = self._query(sql)
+            has_names = True
+        except Exception:
+            has_names = False
+        return has_names
+
+    def _check_for_models(self):
+        sql = """SELECT model
                  FROM species
-                 WHERE model IS NULL"""
-        res = self.query(sql)
-        return res[0]['count'] == 0
+                 LIMIT 1"""
+        try:
+            res = self._query(sql)
+            has_models = True
+        except Exception:
+            has_models = False
+        return has_models
 
-    def check_for_profiles(self):
-        sql = """SELECT column_name 
-                    FROM information_schema.columns 
-                    WHERE table_name = 'protein' 
-                    AND column_name = 'profile'"""
-        res = self.query(sql)
-        return len(res) > 0
+    def _check_for_profiles(self):
+        sql = """SELECT profile
+                 FROM protein
+                 LIMIT 1"""
+        try:
+            res = self._query(sql)
+            has_prof = True
+        except Exception:
+            has_prof = False
+        return has_prof
 
-    def check_for_distances(self):
-        sql = """SELECT 1
-                 FROM information_schema.tables
-                 WHERE table_name = 'distance'"""
-        res = self.query(sql)
-        return len(res) > 0
+    def _check_for_distances(self):
+        sql = """SELECT pk_distance
+                 FROM distance"""
+        try:
+            res = self._query(sql)
+            has_dist = True
+        except Exception:
+            has_dist = False
+        return has_dist
 
     # TODO
-    def check_for_fulltextsearch(self):
-        pass
+    def _check_for_fulltextsearch(self):
+        return False
+
+    def get_status(self):
+        return {
+            'names': self.has_names,
+            'fulltext': self.has_fulltextsearch
+        }
 
     @cache
-    def get_stats():
+    def get_stats(self):
         nb_species = len(self.get_species_list())
-        nb_sequences = self.get_nb_proteins()
+        nb_proteins = self.get_nb_proteins()
         return {
             'species': nb_species,
-            'sequences': nb_sequences,
+            'proteins': nb_proteins
         }
 
     # DB queries
 
+    def get_random_access(self):
+        stats = self.get_stats()
+        protid = random.randrange(0, stats['species'])
+        sql = """SELECT access
+                 FROM protein
+                 WHERE pk_protein = %(protid)s;"""
+        res = self._query(sql, {'protid': protid})
+        return res[0]['access']
+
     def get_species_list(self):
         sql = """SELECT *
-                 FROM species"""
-        return self.query(sql)
+                 FROM species
+                 ORDER BY name ASC"""
+        return self._query(sql)
 
     def get_nb_proteins(self):
         sql = """SELECT COUNT(pk_protein) AS count
                  FROM protein"""
-        res = self.query(sql)
+        res = self._query(sql)
         return res[0]['count']
 
     def get_protein(self, access):
-        sql = self.get_sql("protein")
-        res = self.query(sql, {'access': access})
+        sql = self._get_sql("protein")
+        sql = '\n'.join(line for line in sql.splitlines() if 'model' not in line)
+        res = self._query(sql, {'access': access})
         return res[0] if res else res
 
     def get_orthologs(self, access):
-        sql = self.get_sql("orthologs")
-        res = self.query(sql, {'access': access})
+        sql = self._get_sql("orthologs")
+        res = self._query(sql, {'access': access})
         return self._format_orthologs(res)
 
     def _format_orthologs(self, data):
@@ -139,7 +178,7 @@ class OrthoDb():
                 FROM protein
                 WHERE access IN %s
               """
-        return self.query(sql, [tuple(access_list)])
+        return self._query(sql, [tuple(access_list)])
 
     def get_fasta(self, access_list):
         fasta = []

@@ -2,18 +2,23 @@ title: OrthoInspector
 prefix: /oi
 warehouse:
   databases:
-    "2016":
-        list: ['Archaea', 'Bacteria', 'Eukaryota', 'Transverse']
-    "2019":
-        list: ['Archaea', 'Bacteria', 'Eukaryota', 'Transverse']
-    "2023":
-        list: ['Archaea', 'Bacteria', 'Eukaryota']
-  connection:
-    pattern: 'OrthoInspector_:name:_:version:'
-    host: derrick
-    port: 5432
-    user: orthoinspector
-    password: W34oyYFZ6dbOIivkTwyLvuzIWLoiWsi1kumALaMJ
+    Mycobacterium89:
+      dbname: OrthoInspector_Mycobacterium_89
+      host: derrick
+      description: "Dedicated DB of 89 Mycobacteria species"
+    Yeast:
+      dbname: oi_yeast
+      host: derrick
+      description: "Test DB with various yeast proteomes"
+    Decapoda2024:
+      dbname: OrthoInspector_Decapoda2024
+      host: derrick
+      description: "Christelle's DB including Eukaryota2023 and 15 additional Decapoda species"
+  hosts:
+    derrick:
+      port: 5432
+      user: orthoinspector
+      password: W34oyYFZ6dbOIivkTwyLvuzIWLoiWsi1kumALaMJ
 geneontology:
   connection:
     dbname: 'go'

@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "dbspecific.html" %}
 
 {% block title %} | {{ protein.gene_name }}{% endblock %}
 
@@ -13,7 +13,6 @@
 	const version="{{db.version}}";
 	const access="{{protein.access}}";
 	const protid="{{protein.uniprot_id}}";
-	const full=Boolean("{{db.full}}");
 	const dbSize="{{protein.taxon|length}}";
 	const seqLength={{protein.length}};
 </script>
@@ -23,6 +22,9 @@
 <h1>{{ protein.uniprot_id }} <span class="badge" title="Database version {{ db.version }}">{{ db.version }}</span></h1>
 <p>
 	<b>Gene name</b> {{ protein.gene_name }}
+</p>
+<p>
+	<b>Accession number</b> {{ protein.access }}
 </p>
 <p>
 	<b>Description</b> {{ protein.short_desc }}
@@ -37,18 +39,6 @@
 	<b>Length</b> {{ protein.length }}
 </p>
 <div class="panel-group">
-	<div class="panel panel-default">
-		<div class="panel-heading">
-			<h4 class="panel-title">
-				<a id="show-annot" data-toggle="collapse" href="#collapseGO">Gene Ontology</a> <a data-toggle='modal' data-target='#GoHelpWindow'> <span class='glyphicon glyphicon-info-sign'></span></a>
-			</h4>
-		</div>
-		<div id="collapseGO" class="panel-collapse collapse">
-			<div class='panel-body'>
-				Loading...
-			</div>
-		</div>
-	</div>
 	<div class="panel panel-default">
 		<div class="panel-heading">
 			<h4 class="panel-title">
@@ -67,11 +57,24 @@
 	<div class="panel panel-default">
 		<div class="panel-heading">
 			<h4 class="panel-title">
+				<a id="show-annot" data-toggle="collapse" href="#collapseGO">Gene Ontology</a> <a data-toggle='modal' data-target='#GoHelpWindow'> <span class='glyphicon glyphicon-info-sign'></span></a>
+			</h4>
+		</div>
+		<div id="collapseGO" class="panel-collapse collapse">
+			<div class='panel-body'>
+				Loading...
+			</div>
+		</div>
+	</div>
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h4 class="panel-title">
 				<a id="show-dom" data-toggle="collapse" href="#collapseDoms">Domains</a> <a data-toggle='modal' data-target='#InterproHelpWindow'><span class='glyphicon glyphicon-info-sign'></span></a>
 			</h4>
 		</div>
 		<div id="collapseDoms" class="panel-collapse collapse">
-			<div class="panel-body"> <div style="font-family: monospace; display:inline-block; width:60ch; word-wrap: break-word; vertical-align: top; margin-left: 1em">Loading...</div>
+			<div class="panel-body">
+				<div id="interpro" style="font-family: monospace; display:inline-block; width:60ch; word-wrap: break-word; vertical-align: top; margin-left: 1em">Loading...</div>
 			</div>
 		</div>
 	</div>
@@ -155,6 +158,7 @@
 			</div>
 			<div id="collapseOrthologs" class="panel-collapse collapse in">
 				<div class="panel-body"> 
+					{#
 					<ul class="nav nav-tabs">
 						{% if db.has_models %}
 						<li {% if db.name != "Transverse" and not db.full %}class="active" {% endif %}> <a href="{{prefix}}/{{db.name}}/{{db.version}}/protein/{{protein.access}}">{{db.name}}: Model Organisms</a></li>
@@ -164,9 +168,10 @@
 						<li{% if database == 'Transverse' %} class="active" {% endif %}><a href="{{prefix}}/Transverse/{{db.version}}/protein/{{protein.access}}">Three domains</a></li>
 						{% endif %}
 					</ul>        
+					#}
 					<div class="tax_summary" id='band'>
 					</div>
-					<table id="orthotable" class="table" data-toolbar="#toolbar" data-toggle ="table" data-url="{{prefix}}/{{db.name}}/{{db.version}}/orthologs/{{protein.access}}{% if db.full %}/full{% endif %}" data-sort-name="taxoDist" data-sort-order="asc" data-show-toggle="true" data-show-export="true" data-show-columns="true" data-search="true" data-search-placeholder="Search protein or taxon" data-click-to-select="true" data-select-item-name="input" data-id-field="id">
+					<table id="orthotable" class="table" data-toolbar="#toolbar" data-toggle ="table" data-url="{{prefix}}/{{db.name}}/orthologs/{{protein.access}}{% if db.full %}/full{% endif %}" data-sort-name="taxoDist" data-sort-order="asc" data-show-toggle="true" data-show-export="true" data-show-columns="true" data-search="true" data-search-placeholder="Search protein or taxon" data-click-to-select="true" data-select-item-name="input" data-id-field="id">
 						<div id="toolbar">
 							<button id="align-button" class='btn btn-primary' onclick="launchAlignment('#orthotable')">Align with PipeAlign</button>
 							<button id="fasta" class='btn btn-primary'>Get FASTA</button>

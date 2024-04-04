@@ -8,7 +8,9 @@ class Interpro(WebService):
     @lru_cache(maxsize=512)
     def get_domains(self, access):
         data = self._fetch(Interpro.url % access)
-        return self._format(data)
+        if data:
+            data = self._format(data)
+        return data
 
     def _format(self, data, filter=['domain']):
         domains = []

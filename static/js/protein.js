@@ -182,10 +182,20 @@ $(function() {
 		if (panel.attr('data-loaded') !== undefined) return
 
 		panel.attr('data-loading', false);
-		$.get(prefix+"/annotations/interpro/"+access, function(data) {
-			var doms = data.domains;
-			drawDomains(doms, '#collapseDoms div.panel-body');
-			panel.attr('data-loaded', true);
+		$.ajax({
+			url: prefix+"/annotations/interpro/"+access,
+			type: 'GET',
+			statusCode: {
+				200: function(data) {
+					panel.attr('data-loaded', true);
+					var doms = data.domains;
+					drawDomains(doms, '#collapseDoms div.panel-body');
+				},
+				404: function() {
+					panel.attr('data-loaded', true);
+					$('#interpro').html("No data found");
+				}
+			}
 		});
 	});
 
@@ -271,7 +281,7 @@ $(function() {
 	function loadAbsentSummary() {
 		$.ajax({
 			type:"GET",
-			url: prefix+'/'+database+'/'+version+'/absent/'+access+(full? '/full': ''),
+			url: prefix+'/'+database+'/'+version+'/absent/'+access,
 			success: function(res, st) {
 				writeAbsentSummary(res);
 				$('#btn-notfoundin').removeAttr('disabled');

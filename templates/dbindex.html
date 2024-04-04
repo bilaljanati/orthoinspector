@@ -1,0 +1,52 @@
+{% extends "dbspecific.html" %}
+
+{% block title %} - {{ db.name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+	<div style="text-align: left" class="tile col-xs-12">
+		<h2 style="text-align: center">{{ db.name }} database</h2>
+		<p>{{ db.description }}</p>
+	</div>
+</div>
+{% set ns = namespace(missing=false) %}
+{% for value in status.values() %}
+	{% if value == false %}
+		{% set ns.missing = true %}
+	{% endif %}
+{% endfor %}
+{% if ns.missing %}
+<div class="alert alert-warning" role="alert">
+	<b>Warning</b>, this database is missing the following features :
+	<ul>
+	{% set missing_desc = ({"names":"Pre-formatted protein names","fulltext": "Full-text search index"}) %}
+	{% for key, value in status.items() %}
+		{% if not value %}
+		<li>{{ missing_desc[key] }}</li>
+		{% endif %}
+	{% endfor %}
+	</ul>
+</div>
+{% endif %}
+<div id="stats">
+	<h1>{{ stats.species }} species</h1>
+	<h1>{{ stats.proteins }} proteins</h1>
+</div>
+<div id="species">
+	<h3>Species list</h3>
+	<table>
+		<th>Taxid</th>
+		<th>Name</th>
+		<th></th>
+	{% for s in species %}
+		<tr>
+			<td>{{ s.taxid }}</td>
+			<td>{{ s.name }}</td>
+			<td>
+				<a href="https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?mode=Info&id={{ s.taxid }}" target="_blank">More info</a>
+			</td>
+		</tr>
+	{% endfor %}
+	</table>
+</div>
+{% endblock %}

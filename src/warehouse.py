@@ -4,37 +4,32 @@ from orthodb import OrthoDb
 class Warehouse():
     def __init__(self, config):
         self.dblist = config['databases']
-        self.conninfo = config['connection']
+        self.conninfo = config['hosts']
         self.databases = {}
 
-    def format_name(self, name, version):
-        pat = self.conninfo['pattern']
-        return pat.replace(':name:', name).replace(':version:', version)
+    def _get_conn_info(self, hostname):
+        info = self.conninfo[hostname]
+        info['host'] = hostname
+        return info
 
     def get_versions():
         return self.databases.keys()
 
-    def get_dblist(self, version=None):
-        res = {version:d['list'] for version, d in self.dblist.items()}
-        if version:
-            res = res[version]
+    def get_dbinfo(self, name):
+        return {
+            'name': name,
+            'description': self.dblist[name]['description']
+        }
+
+    def get_dblist(self):
+        res = []
+        for name in self.dblist.keys():
+            res.append(self.get_dbinfo(name))
         return res
 
-    def get_db(self, name, version):
-        n = self.format_name(name, version)
-        if n not in self.databases:
-            has_t = 'Transverse' in self.dblist[version]['list']
-            self.databases[n] = OrthoDb(n, conninfo=self.conninfo, has_transverse=has_t)
-        return self.databases[n]
-
-    def get_stats(self):
-        stats = {}
-        for version, e in self.dblist.items():
-            tmp = {}
-            if version != '2023':
-                continue
-            for name in e['list']:
-                s = self.get_db(name, version).get_stats()
-                tmp[name] = s
-            stats[version] = tmp
-        return stats
+    def get_db(self, name):
+        dbname = self.dblist[name]['dbname']
+        if dbname not in self.databases:
+            hostname = self.dblist[name]['host']
+            self.databases[dbname] = OrthoDb(dbname, conninfo=self._get_conn_info(hostname))
+        return self.databases[dbname]
