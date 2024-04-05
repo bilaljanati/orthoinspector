@@ -5,6 +5,7 @@
 {% block title %} - {{ db.name }}{% endblock %}
 
 {% block header %}
+{{ super() }}
 <script src="{{ prefix }}/static/js/plotly-2.30.0.min.js"></script>
 <script src="{{ prefix }}/static/js/sun.js"></script>
 <style>
@@ -31,7 +32,7 @@
 <div class="alert alert-warning" role="alert">
 	<b>Warning</b>, this database is missing the following features :
 	<ul>
-	{% set missing_desc = ({"names":"Pre-formatted protein names","fulltext": "Full-text search index"}) %}
+	{% set missing_desc = ({"names":"Pre-formatted protein names"}) %}
 	{% for key, value in status.items() %}
 		{% if not value %}
 		<li>{{ missing_desc[key] }}</li>

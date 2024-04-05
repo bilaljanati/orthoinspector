@@ -28,7 +28,7 @@ $(function() {
 	function downloadSequences(format) {
 		var form = document.createElement("form");
 		form.setAttribute("method", "POST");
-		form.setAttribute("action", prefix+'/'+database+'/'+version+'/download/'+format);
+		form.setAttribute("action", prefix+'/'+database+'/download/'+format);
 		form.setAttribute("target", "_blank");
 
 		var access_list = [access];
@@ -204,7 +204,6 @@ $(function() {
 		if (panel.attr('data-loaded') !== undefined) return
 
 		panel.attr('data-loading', false);
-		//$.get(prefix+"/annotations/"+version+"/go/"+access, function(data) {
 		$.get(prefix+"/annotations/go/"+access, function(data) {
 			var annots = data;
 			writeAnnotations(annots, '#collapseGO div.panel-body');
@@ -279,6 +278,7 @@ $(function() {
 	}
 
 	function loadAbsentSummary() {
+		/*
 		$.ajax({
 			type:"GET",
 			url: prefix+'/'+database+'/'+version+'/absent/'+access,
@@ -287,6 +287,7 @@ $(function() {
 				$('#btn-notfoundin').removeAttr('disabled');
 			}
 		});
+		*/
 	}
 
 	function writeAbsentSummary(dict) {
@@ -348,7 +349,7 @@ function launchAlignment(table) {
 
     $.ajax({
 		type:"POST",
-		url: prefix+'/'+database+'/'+version+'/download/fasta',
+		url: prefix+'/'+database+'/download/fasta',
 		data: data,
 		success: function(html, statut) {
 			var fasta = html;

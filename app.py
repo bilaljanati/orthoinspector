@@ -53,6 +53,14 @@ def species_tree(database):
     tree = db.get_species_tree()
     return jsonify(tree)
 
+@bp.route("/<database>/search/protein")
+def search_protein(database):
+    db = wh.get_db(database)
+    if not db:
+        abort(404)
+    pattern = request.args.get("term")
+    return jsonify(db.search_protein(pattern))
+
 @bp.route("/<database>/protein/random")
 def random_protein(database):
     db = wh.get_db(database)

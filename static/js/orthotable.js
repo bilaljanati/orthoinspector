@@ -7,7 +7,7 @@ function sequence_formatter(value, row) {
 		let qAccess = seq.access;
 
 		if  (qIdentifier != protid) {
-			let OIlink = "<a title='OrthoInspector entry' class='id' data-access='"+qAccess+"' href='"+prefix+"/"+database+"/"+version+"/protein/"+qAccess+"'>"+qIdentifier+"</a> ";
+			let OIlink = "<a title='OrthoInspector entry' class='id' data-access='"+qAccess+"' href='"+prefix+"/"+database+"/protein/"+qAccess+"'>"+qIdentifier+"</a> ";
 			let Unilink = "<a title='Uniprot entry' href='http://uniprot.org/uniprot/"+qAccess+"' target='_blank'><span class='glyphicon glyphicon-new-window'></span></a>";
 			outputArray.push(OIlink+Unilink);
 		} else {

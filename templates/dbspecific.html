@@ -1,5 +1,11 @@
 {% extends "base.html" %}
 
+{% block header %}
+<script>
+	const database="{{db.name}}";
+</script>
+{% endblock %}
+
 {% block navbar_title %}
 <a class="navbar-brand" href="{{ prefix }}/{{ db.name }}">{{ db.name }}</a>
 {% endblock %}

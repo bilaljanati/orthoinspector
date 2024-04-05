@@ -43,7 +43,6 @@ class OrthoDb():
         self.has_models = self._check_for_models()
         self.has_profiles = self._check_for_profiles()
         self.has_distances = self._check_for_distances()
-        self.has_fulltextsearch = self._check_for_fulltextsearch()
 
     def _check_for_names(self):
         sql = """SELECT name
@@ -88,14 +87,9 @@ class OrthoDb():
             has_dist = False
         return has_dist
 
-    # TODO
-    def _check_for_fulltextsearch(self):
-        return False
-
     def get_status(self):
         return {
-            'names': self.has_names,
-            'fulltext': self.has_fulltextsearch
+            'names': self.has_names
         }
 
     @cache
@@ -198,8 +192,10 @@ class OrthoDb():
                 parent = taxid
         return [{'id': key, **taxons[key]} for key in taxons]
 
-    def search_protein(self, txt):
-        pass
+    def search_protein(self, pattern, limit=10):
+        sql = self._get_sql("search_protein")
+        pattern = pattern.strip().upper()
+        return self._query(sql, {'pattern': pattern+'%', 'limit': limit})
 
     def get_sequences(self, access_list):
         sql = """SELECT description, sequence

@@ -3,16 +3,18 @@
 {% block title %} | {{ protein.gene_name }}{% endblock %}
 
 {% block header %}
+{{ super() }}
 <link href="{{ prefix }}/static/css/bootstrap-table.min.css" rel="stylesheet">
 <link href="{{ prefix }}/static/css/bootstrap-table-export.min.css" rel="stylesheet">
 <script src="{{ prefix }}/static/js/protein.js"></script>
 <script src="{{ prefix }}/static/js/bootstrap-table.min.js"></script>
 <script src="{{ prefix }}/static/js/orthotable.js"></script>
 <script>
+{#
 	const database="{{db.name}}";
-	const version="{{db.version}}";
+#}
 	const access="{{protein.access}}";
-	const protid="{{protein.uniprot_id}}";
+	const protid="{{protein.name}}";
 	const dbSize="{{protein.taxon|length}}";
 	const seqLength={{protein.length}};
 </script>
