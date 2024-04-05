@@ -9,7 +9,7 @@ warehouse:
     Yeast:
       dbname: oi_yeast
       host: derrick
-      description: "Test DB with various yeast proteomes"
+      description: "Small test DB of various yeast proteomes"
     Decapoda2024:
       dbname: OrthoInspector_Decapoda2024
       host: derrick

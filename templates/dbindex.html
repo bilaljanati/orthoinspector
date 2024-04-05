@@ -1,6 +1,18 @@
 {% extends "dbspecific.html" %}
 
+{% from "macros.html" import format_integer %}
+
 {% block title %} - {{ db.name }}{% endblock %}
+
+{% block header %}
+<script src="{{ prefix }}/static/js/plotly-2.30.0.min.js"></script>
+<script src="{{ prefix }}/static/js/sun.js"></script>
+<style>
+#species-plot {
+	width: 50%;
+}
+</style>
+{% endblock %}
 
 {% block content %}
 <div class="row">
@@ -29,24 +41,27 @@
 </div>
 {% endif %}
 <div id="stats">
-	<h1>{{ stats.species }} species</h1>
-	<h1>{{ stats.proteins }} proteins</h1>
+	<h1>{{ format_integer(stats.species) }} species</h1>
+	<h1>{{ format_integer(stats.proteins) }} proteins</h1>
 </div>
-<div id="species">
-	<h3>Species list</h3>
-	<table>
-		<th>Taxid</th>
-		<th>Name</th>
-		<th></th>
-	{% for s in species %}
-		<tr>
-			<td>{{ s.taxid }}</td>
-			<td>{{ s.name }}</td>
-			<td>
-				<a href="https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?mode=Info&id={{ s.taxid }}" target="_blank">More info</a>
-			</td>
-		</tr>
-	{% endfor %}
-	</table>
+<div id="species" class="row">
+	<div id="species-plot" class="center-block"></div>
+	<div id="species-table">
+		<h3>Species list</h3>
+		<table class="table">
+			<th>Taxid</th>
+			<th>Name</th>
+			<th></th>
+		{% for s in species %}
+			<tr>
+				<td>{{ s.taxid }}</td>
+				<td>{{ s.name }}</td>
+				<td>
+					<a href="https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?mode=Info&id={{ s.taxid }}" target="_blank">More info</a>
+				</td>
+			</tr>
+		{% endfor %}
+		</table>
+	</div>
 </div>
 {% endblock %}

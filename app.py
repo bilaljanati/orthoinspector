@@ -45,6 +45,14 @@ def db_home(database):
     species = db.get_species_list()
     return render_template('dbindex.html', db=wh.get_dbinfo(database), status=status, stats=stats, species=species)
 
+@bp.route("/<database>/tree.json")
+def species_tree(database):
+    db = wh.get_db(database)
+    if not db:
+        abort(404)
+    tree = db.get_species_tree()
+    return jsonify(tree)
+
 @bp.route("/<database>/protein/random")
 def random_protein(database):
     db = wh.get_db(database)
@@ -75,8 +83,6 @@ def orthologs(dbname, access):
     if not db:
         abort(404)
     orthos = db.get_orthologs(access)
-    if not orthos:
-        abort(404)
     return jsonify(orthos)
 
 @bp.route("/<database>/download/fasta", methods=['POST'])

@@ -2,9 +2,7 @@
 
 {% block title %} - Databases{% endblock %}
 
-{% macro format_integer(int) %}
-    {{ '{:,}'.format(int).replace(',', '\u2009') }}
-{% endmacro %}
+{% from "macros.html" import format_integer %}
 
 {% block content %}
 <h1>Online databases</h1>

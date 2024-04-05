@@ -1,6 +1,7 @@
 import psycopg2
 import psycopg2.extras
 import random
+import math
 from functools import cache
 
 
@@ -110,7 +111,7 @@ class OrthoDb():
 
     def get_random_access(self):
         stats = self.get_stats()
-        protid = random.randrange(0, stats['species'])
+        protid = random.randrange(0, stats['proteins'])
         sql = """SELECT access
                  FROM protein
                  WHERE pk_protein = %(protid)s;"""
@@ -169,6 +170,33 @@ class OrthoDb():
     # TODO
     def _reduce_lineage(self, lineage):
         return lineage[-6:]
+
+    def _fetch_lineages(self):
+        sql = """SELECT lineage
+                 FROM species"""
+        return self._query(sql)
+
+    @cache
+    def get_species_tree(self, max_depth=math.inf):
+        exclude = set(['root', 'cellular organisms'])
+        lineages = self._fetch_lineages()
+        taxons = {}
+        for r in lineages:
+            l = r['lineage'].split(';')
+            l = [(int(l[i]), l[i+1]) for i in range(0, len(l), 2) if l[i] not in exclude]
+            parent = ""
+            for i, sp in enumerate(l):
+                taxid, name = sp
+                if name in exclude:
+                    continue
+                if i > max_depth:
+                    break
+                if taxid not in taxons:
+                    taxons[taxid] = {'name': name, 'parent': parent, 'value': 1}
+                else:
+                    taxons[taxid]['value'] += 1
+                parent = taxid
+        return [{'id': key, **taxons[key]} for key in taxons]
 
     def search_protein(self, txt):
         pass
