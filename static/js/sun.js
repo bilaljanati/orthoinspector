@@ -3,7 +3,7 @@
 $(function() {
 
 	function load_species() {
-		const url = prefix+'/Yeast/tree.json';
+		const url = prefix+'/'+database+'/tree.json';
 
 		$.get(url, function(res) {
 			draw_sun(res);

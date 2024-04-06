@@ -149,7 +149,6 @@ $(function() {
 		const evidence_url = 'http://wiki.geneontology.org/index.php/'
 		$(id).html('')
 
-		console.log(data)
 		for (const type of ['molecular function', 'biological process', 'cellular component']) {
 			let l = data.annotations[type]
 			let title = formatTitle(type)

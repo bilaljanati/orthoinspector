@@ -2,22 +2,19 @@
 
 {% block title %} - Home{% endblock %}
 
-{% block head %}
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+{% block header %}
 <style>
 .db-badge {
 	background-color: white;
 	border-radius: 10px;
 	border: 1px solid #ccc;
 	height: 120px;
-}
-.db-badge::before {
-	content: '\0026C1'; /* The background character */
-	position: absolute;
-	top: -5px; /* Adjust top position as needed */
-	right: 6px; /* Adjust right position as needed */
-	font-size: 50px; /* Adjust font size as needed */
-	color: #ccc; /* Adjust color as needed */
+	background-image: url("data:image/svg+xml,%0A%3Csvg class='svg-icon' style='width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;' viewBox='0 0 1024 1024' version='1.1' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M512 42.666667C272.746667 42.666667 85.333333 126.997333 85.333333 234.666667v554.666666c0 107.669333 187.413333 192 426.666667 192s426.666667-84.330667 426.666667-192V234.666667c0-107.669333-187.413333-192-426.666667-192z m384 554.666666c0 88-202.368 149.333333-384 149.333334S128 685.333333 128 597.333333v-107.434666C196.394667 553.984 340.693333 597.333333 512 597.333333s315.605333-43.349333 384-107.434666V597.333333z m0-192c0 88-202.368 149.333333-384 149.333334S128 493.333333 128 405.333333v-86.101333C196.394667 383.317333 340.693333 426.666667 512 426.666667s315.605333-43.349333 384-107.434667V405.333333zM512 85.333333c181.632 0 384 61.333333 384 149.333334s-202.368 149.333333-384 149.333333-384-61.333333-384-149.333333 202.389333-149.333333 384-149.333334z m0 853.333334c-181.632 0-384-61.333333-384-149.333334v-107.434666C196.394667 745.984 340.693333 789.333333 512 789.333333s315.605333-43.349333 384-107.434666V789.333333c0 88-202.368 149.333333-384 149.333334z' fill='%23CCCCCC' /%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-size: 60px;
+	background-position: top 10% right 1%;
+	padding-left: 10px;
+	padding-right: 10px;
 }
 </style>
 {% endblock %}
@@ -35,9 +32,11 @@
 	<div class="row">
 	{% endif %}
 		<a href="{{ prefix }}/{{ db.name }}">
-			<div class="db-badge col-xs-4">
-				<h3>{{ db.name }}</h3>
-				<p>{{ db.description }}</p>
+			<div class="col-xs-4">
+				<div class="db-badge">
+					<h3>{{ db.name }}</h3>
+					<p>{{ db.description }}</p>
+				</div>
 			</div>
 		</a>
 	{% if loop.index is divisibleby(3) %}

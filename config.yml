@@ -2,8 +2,8 @@ title: OrthoInspector
 prefix: /oi
 warehouse:
   databases:
-    Mycobacterium89:
-      dbname: OrthoInspector_Mycobacterium_89
+    Myco89:
+      dbname: oi_myco
       host: derrick
       description: "Dedicated DB of 89 Mycobacteria species"
     Yeast:
