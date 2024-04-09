@@ -1,0 +1,29 @@
+#tree {
+	user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -ms-user-select: none;
+}
+.panel-body li {
+	list-style: none;
+}
+.panel-body span.fancytree-icon {
+	display: none;
+}
+.panel-body span.fancytree-title {
+	margin-left: 5px;
+	border-radius: 2px;
+}
+span.fancytree-title {
+	padding: 2px 2px 2px 2px;
+}
+span.fancytree-match mark {
+	padding-right: 0;
+}
+span.fancytree-selected-present span.fancytree-title {
+	background-color: #89E894;
+}
+span.fancytree-selected-absent span.fancytree-title {
+	background-color: #FF6961;
+}

@@ -1,0 +1,60 @@
+{% extends "dbspecific.html" %}
+
+{% block title %} - Profile search{% endblock %}
+
+{% block header %}
+{{ super() }}
+<script src="{{ prefix }}/static/js/jquery.fancytree-all-mod.js"></script>
+<script src="{{ prefix }}/static/js/phylotree.js"></script>
+<link rel="stylesheet" href="{{ prefix }}/static/css/phylotree.css"></link>
+{% endblock %}
+
+{% block content %}
+<h1>Phylogenetic profile search</h1>
+<p>Find all proteins from a given species following a selected phylogenetic profile.</p>
+<h3>How to use</h3>
+<ol>
+		<li><h4>Select a database. <small>You can query a domain specific database (Eukaryota, Bacteria, Archaea) or cross-domain database.</small></h4></li>
+		<li><h4>Select your query species.<small> You will obtain proteins of this species as results.</small></h4></li>
+		<li><h4>Define a phylogenetic profile.<small> Select clades or species in the taxonomic tree.</small></h4></li>
+	</ol>
+<p>Clicking on a clade/species once will select it as present, clicking twice will select it as absent. Clicking a third time will reset it.</p>
+<p>
+	<b>Legend:</b>
+	<br/>
+	<span class="fancytree-checkbox glyphicon glyphicon-unchecked" role="checkbox"></span> Unselected<br />
+	<span class="fancytree-checkbox glyphicon glyphicon-check" role="checkbox"></span> Present (at least one member of the clade is present in the phylogenetic profile) <br />
+	<span class="fancytree-checkbox glyphicon glyphicon-remove" role="checkbox"></span> Absent (all members of the clade are absent in the phylogenetic profile)
+</p>
+<hr />
+<div class="row">
+	<div class="col-xs-5">
+		<form class="form" role="search">
+			<div class="input-group" id="menu-srch-input">
+				<input type="text" class="form-control  ui-autocomplete-input" placeholder="Select your query species" name="srch-organism" id="srch-organism" autocomplete="off">
+				<input type="hidden" id="taxid-orga" name="taxid-orga" value="">
+				<input type="hidden" id="name-orga" name="name-orga" value="">
+			</div>
+		</form>
+	</div>
+</div>
+<div class="panel panel-default" style="width: 1400px;overflow:auto">
+	<div class="panel-heading">
+		<b>Taxonomy</b>
+	</div>
+	<div id="tree" class="panel-body fancytree-colorize-hover fancytree-fade-expander"></div>
+	<div class="panel-footer"></div>
+</div>
+<div id="selection" style="display: none;">
+	<h3>Selected phylogenetic profile:</h3>
+	<p>
+		<b>Present in:</b>
+	</p>
+	<ul id="present"></ul>
+	<p>
+		<b>Absent in:</b>
+	</p>
+	<ul id="absent"></ul>
+</div>
+<button type="button" id="submit" class="btn btn-primary" disabled="disabled">Search</button>
+{% endblock %}

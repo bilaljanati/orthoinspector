@@ -43,14 +43,46 @@ def db_home(database):
     status = db.get_status()
     stats = db.get_stats()
     species = db.get_species_list()
-    return render_template('dbindex.html', db=wh.get_dbinfo(database), status=status, stats=stats, species=species)
+    return render_template('dbindex.html', db=db.get_info(), status=status, stats=stats, species=species)
 
-@bp.route("/<database>/tree.json")
-def species_tree(database):
+@bp.route("/<database>/tree/sun")
+def species_tree_sun(database):
     db = wh.get_db(database)
     if not db:
         abort(404)
-    tree = db.get_species_tree()
+    tree = db.get_sun_tree()
+    return jsonify(tree)
+
+@bp.route("/<database>/tree/profile")
+def species_tree_profile(database):
+    db = wh.get_db(database)
+    if not db:
+        abort(404)
+    tree = {
+        "title": "root",
+        "taxid": 1,
+        "folder": True,
+        "children": [
+            {
+                "title": "Bacteria",
+                "taxid": 2,
+                "folder": True,
+                "children": [
+                    {
+                        "title": "Mycobacteria",
+                        "taxid": 123,
+                        "folder": False
+                    },
+                    {
+                        "title": "Archaea",
+                        "taxid": 3,
+                        "folder": False
+                    }
+                ]
+            },
+        ]
+    }
+    tree = db.get_profile_tree()
     return jsonify(tree)
 
 @bp.route("/<database>/search/protein")
@@ -77,13 +109,7 @@ def protein(database, access):
     prot = db.get_protein(access)
     if not prot:
         abort(404)
-    dbinfo = {
-        'name': database,
-        'has_models': db.has_models,
-        'has_profiles': db.has_profiles,
-        'has_distances': db.has_distances
-    }
-    return render_template('protein.html', db=dbinfo, protein=prot)
+    return render_template('protein.html', db=db.get_info(), protein=prot)
 
 @bp.route("/<dbname>/orthologs/<access>")
 def orthologs(dbname, access):
@@ -124,5 +150,12 @@ def taxo_test(taxid):
 def do_stats():
     return render_template('dbstats.html', stats=wh.get_stats())
     return jsonify(wh.get_stats())
+
+@bp.route("/<database>/profilesearch")
+def profile_search(database):
+    db = wh.get_db(database)
+    if not db:
+        abort(404)
+    return render_template('profilesearch.html', db=db.get_info())
 
 app.register_blueprint(bp, url_prefix=config['prefix'])

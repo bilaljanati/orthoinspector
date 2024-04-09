@@ -6,9 +6,11 @@ from functools import cache
 
 
 class OrthoDb():
-    def __init__(self, dbname, conninfo):
+    def __init__(self, display_name, dbname, conninfo, description):
+        self.display_name = display_name
         self.dbname = dbname
         self.conn = self._connect(conninfo)
+        self.description = description
 
         self.has_models = False
         self.has_profiles = False
@@ -86,6 +88,15 @@ class OrthoDb():
         except Exception:
             has_dist = False
         return has_dist
+
+    def get_info(self):
+        return {
+            'name': self.display_name,
+            'description': self.description,
+            'has_models': self.has_models,
+            'has_profiles': self.has_profiles,
+            'has_distances': self.has_distances
+        }
 
     def get_status(self):
         return {
@@ -170,27 +181,62 @@ class OrthoDb():
                  FROM species"""
         return self._query(sql)
 
-    @cache
-    def get_species_tree(self, max_depth=math.inf):
-        exclude = set(['root', 'cellular organisms'])
+    def _get_lineages(self):
+        exclude = []
         lineages = self._fetch_lineages()
-        taxons = {}
+        res = []
         for r in lineages:
             l = r['lineage'].split(';')
-            l = [(int(l[i]), l[i+1]) for i in range(0, len(l), 2) if l[i] not in exclude]
+            l = [(int(l[i]), l[i+1]) for i in range(0, len(l), 2)]
+            res.append(l)
+        return res
+
+    @cache
+    def _get_species_tree(self, exclude=[]):
+        taxons = {}
+        for l in self._get_lineages():
             parent = ""
+
             for i, sp in enumerate(l):
                 taxid, name = sp
                 if name in exclude:
                     continue
-                if i > max_depth:
-                    break
                 if taxid not in taxons:
                     taxons[taxid] = {'name': name, 'parent': parent, 'value': 1}
                 else:
                     taxons[taxid]['value'] += 1
                 parent = taxid
+        return taxons
+
+    def get_sun_tree(self):
+        taxons = self._get_species_tree(exclude=('root', 'cellular organisms'))
         return [{'id': key, **taxons[key]} for key in taxons]
+
+    def get_profile_tree(self):
+        taxons = self._get_species_tree()
+        root = {key: value for key, value in taxons.items() if value.get('parent', '') == ''}
+
+        childindex = {}
+        for taxid, sp in taxons.items():
+            parent = sp['parent']
+            if not parent:
+                root = taxid
+                continue
+            if parent not in childindex:
+                childindex[parent] = []
+            childindex[parent].append(taxid)
+
+        def _get_node_rec(taxid, taxons, index):
+            sp = taxons[taxid]
+            children = index[taxid] if taxid in index else []
+
+            return {
+                'taxid': taxid,
+                'title': sp['name'],
+                'folder': len(children)>0,
+                'children': [_get_node_rec(childid, taxons, index) for childid in children]
+            }
+        return _get_node_rec(root, taxons, childindex)
 
     def search_protein(self, pattern, limit=10):
         sql = self._get_sql("search_protein")
