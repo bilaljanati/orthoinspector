@@ -114,6 +114,24 @@ $(document).ready(function() {
 	load_tree();
 	$('#submit').click(function() {
 		const data = selection;
-		// TODO: submit
+
+		var formData = new FormData();
+        formData.append('taxid', 559292);
+        formData.append('present', data['present']);
+        formData.append('absent', data['absent']);
+
+        $.ajax({
+            type: 'POST',
+            url: prefix+'/'+database+'/profilesearch/submit',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response){
+                console.log('Success:', response);
+            },
+            error: function(xhr, status, error){
+                console.error('Error:', error);
+            }
+        });
 	});
 });

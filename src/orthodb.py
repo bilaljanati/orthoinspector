@@ -260,3 +260,33 @@ class OrthoDb():
 
     def _format_fasta_seq(self, seq, width=60):
         return '\n'.join([seq[i:i+width] for i in range(0, len(seq), width)])
+
+    @cache
+    def _fetch_profile_species(self):
+        sql = """SELECT taxid
+                FROM species
+                ORDER BY pk_species ASC"""
+        return self._query(sql)
+
+    def _list_to_profile(self, taxid_list, exclude=-1):
+        species = [int(r['taxid']) for r in self._fetch_profile_species()]
+        taxid_list = set([int(t) for t in taxid_list])
+        taxid_list.discard(int(exclude))
+        p = []
+        for taxid in species:
+            p.append('1' if taxid in taxid_list else '0')
+        return ''.join(p)
+
+    def search_by_profile(self, taxid, present, absent):
+        sql = """SELECT p.access, p.name, p.sequence, p.profile
+                FROM protein AS p
+                INNER JOIN species AS s ON s.pk_species = p.pk_species
+                WHERE s.taxid = %(taxid)s"""
+        zeroes = '0' * self.get_stats()['species']
+        if len(present) > 0:
+            pp = self._list_to_profile(present, taxid)
+            sql += f"\nAND p.profile & B'{pp}' = B'{pp}'"
+        if len(absent) > 0:
+            pa = self._list_to_profile(absent, taxid)
+            sql += f"\nAND p.profile & B'{pa}' = B'{'0'*len(pa)}'"
+        return self._query(sql, {'taxid': taxid})

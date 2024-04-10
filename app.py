@@ -58,30 +58,6 @@ def species_tree_profile(database):
     db = wh.get_db(database)
     if not db:
         abort(404)
-    tree = {
-        "title": "root",
-        "taxid": 1,
-        "folder": True,
-        "children": [
-            {
-                "title": "Bacteria",
-                "taxid": 2,
-                "folder": True,
-                "children": [
-                    {
-                        "title": "Mycobacteria",
-                        "taxid": 123,
-                        "folder": False
-                    },
-                    {
-                        "title": "Archaea",
-                        "taxid": 3,
-                        "folder": False
-                    }
-                ]
-            },
-        ]
-    }
     tree = db.get_profile_tree()
     return jsonify(tree)
 
@@ -157,5 +133,16 @@ def profile_search(database):
     if not db:
         abort(404)
     return render_template('profilesearch.html', db=db.get_info())
+
+@bp.route("/<database>/profilesearch/submit", methods=['POST'])
+def profile_search_run(database):
+    db = wh.get_db(database)
+    if not db:
+        abort(404)
+    taxid = request.form['taxid']
+    present = [v for v in request.form['present'].split(',') if v != '']
+    absent = [v for v in request.form['absent'].split(',') if v !='']
+    matches = db.search_by_profile(taxid, present, absent)
+    return jsonify(matches)
 
 app.register_blueprint(bp, url_prefix=config['prefix'])
