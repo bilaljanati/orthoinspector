@@ -80,6 +80,7 @@
 			</div>
 		</div>
 	</div>
+	<hr />
 	<div>
 		{% if protein.has_transverse and db.name != 'Transverse' %}
 		<form action="{{prefix}}/Transverse/protein/{{protein.access}}">
@@ -175,10 +176,9 @@
 					</div>
 					<table id="orthotable" class="table" data-toolbar="#toolbar" data-toggle ="table" data-url="{{prefix}}/{{db.name}}/orthologs/{{protein.access}}{% if db.full %}/full{% endif %}" data-sort-name="taxoDist" data-sort-order="asc" data-show-toggle="true" data-show-export="true" data-show-columns="true" data-search="true" data-search-placeholder="Search protein or taxon" data-click-to-select="true" data-select-item-name="input" data-id-field="id">
 						<div id="toolbar">
-							<button id="align-button" class='btn btn-primary' onclick="launchAlignment('#orthotable')">Align with PipeAlign</button>
+							{#<button id="align-button" class='btn btn-primary' onclick="launchAlignment('#orthotable')">Align with PipeAlign</button>#}
 							<button id="fasta" class='btn btn-primary'>Get FASTA</button>
-
-							<button id="orthoxml" class='btn btn-primary'>Get OrthoXML</button>
+							{#<button id="orthoxml" class='btn btn-primary'>Get OrthoXML</button>#}
 						</div>
 						<thead>
 							<tr>
