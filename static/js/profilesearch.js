@@ -3,8 +3,51 @@
 
 $(document).ready(function() {
 
+	/* Species search */
+	var taxid = '';
+
+	function init_species_search() {
+		const maxResults = 10;
+
+		var taxons = [];
+		var tree = $("#tree").fancytree("getTree");
+
+		for (const node of tree.findAll(n => !n.children)) {
+			taxons.push({
+				'value': node.data['taxid'],
+				'label': node.title
+			});
+		}
+
+		$('#srch-species').autocomplete({
+			minLength: 2,
+			source: function( request, response ) {
+				var results = $.ui.autocomplete.filter(taxons, request.term);
+				response(results.slice(0, maxResults));
+			},
+			select: function(e, ui) {
+				e.preventDefault();
+				$(e.target).val(ui.item.label);
+				taxid = ui.item.value;
+				updateButton();
+			}
+		});
+	}
+
+	$('#srch-species').change(function() {
+		if ($(this).val() == '') {
+			taxid = '';
+			updateButton();
+		}
+	});
+
+	/* Tree */
+
 	var names = {};
-	var selection;
+	var selection = {
+		'present': [],
+		'absent': []
+	};
 
 	function expand_while_one_child(node) {
 		if (node.children && node.children.length == 1) {
@@ -36,7 +79,7 @@ $(document).ready(function() {
 
 		var empty = (selection['present'].length+selection['absent'].length > 0);
 		$('#selection').toggle(empty);
-		$('#submit').prop('disabled', !empty);
+		updateButton();
 	}
 
 	function update_selection() {
@@ -106,9 +149,17 @@ $(document).ready(function() {
 			},
 			select: function(event, data) {
 				update_selection();
+			},
+			loadChildren: function(event, data) { // done loading
+				init_species_search();
 			}
 		});
 		$.ui.fancytree.debugLevel = 0;
+	}
+
+	function updateButton() {
+		var isok = (selection['present'].length+selection['absent'].length > 0) && !!taxid;
+		$('#submit').prop('disabled', !isok);
 	}
 
 	load_tree();

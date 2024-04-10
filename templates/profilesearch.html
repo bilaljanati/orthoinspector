@@ -5,7 +5,7 @@
 {% block header %}
 {{ super() }}
 <script src="{{ prefix }}/static/js/jquery.fancytree-all-mod.js"></script>
-<script src="{{ prefix }}/static/js/phylotree.js"></script>
+<script src="{{ prefix }}/static/js/profilesearch.js"></script>
 <link rel="stylesheet" href="{{ prefix }}/static/css/phylotree.css"></link>
 {% endblock %}
 
@@ -31,7 +31,7 @@
 	<div class="col-xs-5">
 		<form class="form" role="search">
 			<div class="input-group" id="menu-srch-input">
-				<input type="text" class="form-control  ui-autocomplete-input" placeholder="Select your query species" name="srch-organism" id="srch-organism" autocomplete="off">
+				<input type="text" class="form-control" placeholder="Select your query species" name="srch-species" id="srch-species">
 				<input type="hidden" id="taxid-orga" name="taxid-orga" value="">
 				<input type="hidden" id="name-orga" name="name-orga" value="">
 			</div>
