@@ -10,6 +10,7 @@ class OrthoDb():
         self.display_name = display_name
         self.dbname = dbname
         self.conn = self._connect(conninfo)
+        self.conn.autocommit = True
         self.description = description
 
         self.has_models = False
@@ -33,10 +34,9 @@ class OrthoDb():
         return sql
 
     def _query(self, sql, parameters=None):
-        with self.conn:
-            with self.conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cursor:
-                cursor.execute(sql, parameters)
-                res = cursor.fetchall()
+        with self.conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cursor:
+            cursor.execute(sql, parameters)
+            res = cursor.fetchall()
         return res
 
     # Determine what the db can do
