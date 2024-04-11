@@ -2,7 +2,7 @@ import psycopg2
 import psycopg2.extras
 import random
 import math
-from functools import cache
+from functools import cache, lru_cache
 
 
 class OrthoDb():
@@ -238,6 +238,7 @@ class OrthoDb():
             }
         return _get_node_rec(root, taxons, childindex)
 
+    @lru_cache(maxsize=64)
     def search_protein(self, pattern, limit=10):
         sql = self._get_sql("search_protein")
         pattern = pattern.strip().upper()
@@ -252,7 +253,6 @@ class OrthoDb():
 
     def get_fasta(self, access_list):
         fasta = []
-        width = 60
         for row in self.get_sequences(access_list):
             seq = self._format_fasta_seq(row['sequence'])
             fasta.append(f">{row['description']}\n{seq}")
