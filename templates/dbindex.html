@@ -6,13 +6,11 @@
 
 {% block header %}
 {{ super() }}
+<link href="{{ prefix }}/static/css/bootstrap-table.min.css" rel="stylesheet">
+<link href="{{ prefix }}/static/css/dbindex.css" rel="stylesheet">
+<script src="{{ prefix }}/static/js/bootstrap-table.min.js"></script>
 <script src="{{ prefix }}/static/js/plotly-2.30.0.min.js"></script>
 <script src="{{ prefix }}/static/js/sun.js"></script>
-<style>
-#species-plot {
-	width: 50%;
-}
-</style>
 {% endblock %}
 
 {% block content %}
@@ -46,21 +44,34 @@
 </div>
 <div id="species" class="row">
 	<div id="species-plot" class="center-block"></div>
-	<div id="species-table">
+	<div id="species-list">
 		<h3>Species list</h3>
-		<table class="table">
-			<th>Taxid</th>
-			<th>Name</th>
-			<th></th>
+		<table class="table table-striped table-hover"
+			data-search="true"
+			data-pagination="true"
+			data-page-size="25"
+			data-toggle="table"
+			data-show-columns="true">
+			<thead>
+				<tr>
+					<th data-field="id">Taxid</th>
+					<th>Name</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
 		{% for s in species %}
 			<tr>
 				<td>{{ s.taxid }}</td>
-				<td>{{ s.name }}</td>
+				<td>
+					<span class="species-name">{{ s.name }}</span>
+				</td>
 				<td>
 					<a href="https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?mode=Info&id={{ s.taxid }}" target="_blank">More info</a>
 				</td>
 			</tr>
 		{% endfor %}
+			</tbody>
 		</table>
 	</div>
 </div>

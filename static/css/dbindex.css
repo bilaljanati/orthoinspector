@@ -1,0 +1,17 @@
+#species-plot {
+	width: 50%;
+}
+.fixed-table-body {
+	background-color: white;
+}
+.species-name {
+	display: block;
+	width: 800px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.pagination-detail {
+	margin-left: 10px;
+	margin-right: 10px;
+}
