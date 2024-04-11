@@ -18,7 +18,8 @@ class Warehouse():
     def get_dbinfo(self, name):
          return {
              'name': name,
-             'description': self.dblist[name]['description']
+             'description': self.dblist[name].get('description', ""),
+             'active': self.dblist[name].get('active', True)
          }
 
     def get_dblist(self):
