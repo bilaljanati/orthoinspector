@@ -2,6 +2,13 @@
 
 $(function() {
 
+	function truncate(str, maxlen) {
+		if (str.length > maxlen) {
+			return str.substring(0, maxlen-1) + '…';
+		}
+		return str;
+	}
+
 	function load_species() {
 		const url = prefix+'/'+database+'/tree/sun';
 
@@ -11,6 +18,8 @@ $(function() {
 	}
 
 	function draw_sun(species) {
+		const max_label_length = 40;
+
 		var ids = [];
 		var labels = [];
 		var parents = [];
@@ -18,7 +27,7 @@ $(function() {
 
 		for (let s of species) {
 			ids.push(s['id']);
-			labels.push(s['name']);
+			labels.push(truncate(s['name'], max_label_length));
 			parents.push(s['parent']);
 			values.push(s['value']);
 		}
@@ -31,27 +40,28 @@ $(function() {
 		}
 
 		var data = [{
-		  type: "sunburst",
-		  ids: ids,
-		  labels: labels,
-		  parents: parents,
-		  values: values,
-		  outsidetextfont: {size: 20},
-		  leaf: {opacity: 0.4},
-		  marker: {
-			  line: {width: 3},
-			  colors: colors
-		  },
-		  hovertemplate: "%{label}<br />%{value} species<extra></extra>",
-		  branchvalues: "total",
-		  maxdepth: 4
+			type: "sunburst",
+			ids: ids,
+			labels: labels,
+			parents: parents,
+			values: values,
+			outsidetextfont: {size: 20},
+			leaf: {opacity: 0.5},
+			marker: {
+				line: {
+					width: 2,
+					color: 'rgba(255,255,255,255)'
+				},
+				colors: colors
+			},
+			hovertemplate: "%{label}<br />%{value} species<extra></extra>",
+			branchvalues: "total",
+			maxdepth: 4
 		}];
 		var layout = {
-		  margin: {l: 0, r: 0, b: 0, t: 0},
-		  width: 500,
-		  height: 500,
-		  paper_bgcolor: 'rgba(0,0,0,0)',
-		  plot_bgcolor: 'rgba(0,0,0,0)',
+			margin: {l: 0, r: 0, b: 0, t: 0},
+			paper_bgcolor: 'rgba(0,0,0,0)',
+			plot_bgcolor: 'rgba(0,0,0,0)',
 		};
 		Plotly.newPlot('species-plot', data, layout);
 	}
