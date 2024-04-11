@@ -124,10 +124,17 @@ class OrthoDb():
         return res[0]['access']
 
     def get_species_list(self):
-        sql = """SELECT *
+        sql = """SELECT taxid, name, lineage
                  FROM species
                  ORDER BY name ASC"""
-        return self._query(sql)
+        species = []
+        for row in self._query(sql):
+            species.append({
+                'taxid': row['taxid'],
+                'name': row['name'],
+                'lineage': self._format_lineage(row['lineage'])
+            })
+        return species
 
     def get_nb_proteins(self):
         sql = """SELECT COUNT(pk_protein) AS count
