@@ -123,6 +123,7 @@ class OrthoDb():
         res = self._query(sql, {'protid': protid})
         return res[0]['access']
 
+    @cache
     def get_species_list(self):
         sql = """SELECT taxid, name, lineage
                  FROM species

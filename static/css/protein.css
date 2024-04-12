@@ -1,0 +1,8 @@
+span.seq-link {
+	white-space: nowrap;
+}
+ul.seq-list {
+	list-style: none;
+    margin-bottom: 0;
+    padding: 0;
+}
