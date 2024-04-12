@@ -6,15 +6,12 @@
 {{ super() }}
 <link href="{{ prefix }}/static/css/bootstrap-table.min.css" rel="stylesheet">
 <link href="{{ prefix }}/static/css/bootstrap-table-export.min.css" rel="stylesheet">
+<link href="{{ prefix }}/static/css/protein.css" rel="stylesheet">
 <script src="{{ prefix }}/static/js/protein.js"></script>
 <script src="{{ prefix }}/static/js/bootstrap-table.min.js"></script>
 <script src="{{ prefix }}/static/js/orthotable.js"></script>
 <script>
-{#
-	const database="{{db.name}}";
-#}
 	const access="{{protein.access}}";
-	const protid="{{protein.name}}";
 	const dbSize="{{protein.taxon|length}}";
 	const seqLength={{protein.length}};
 </script>
@@ -183,7 +180,7 @@
 						<thead>
 							<tr>
 								<th data-field="Selected" data-checkbox="true"></th>
-								<th data-field="type" data-sortable="true">Relationship type</th>
+								<th data-field="type" data-sortable="true">Relationship</th>
 								<th data-field="inparalogs" data-switchable="false" data-formatter="sequence_formatter">Query &amp; inparalogs</th>
 								<th data-field="orthologs" data-switchable="false" data-formatter="sequence_formatter">Orthologs</th>
 								<th data-visible="false" data-formatter="size_formatter" data-field="size">Orthologs length</th>

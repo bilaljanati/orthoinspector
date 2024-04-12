@@ -1,21 +1,21 @@
 function sequence_formatter(value, row) {
-	var output = "";
-	var outputArray = [];
+	var output = [];
 
 	for (const seq of value) {
 		let qIdentifier = seq.name;
 		let qAccess = seq.access;
+		let content;
 
-		if  (qIdentifier != protid) {
-			let OIlink = "<a title='OrthoInspector entry' class='id' data-access='"+qAccess+"' href='"+prefix+"/"+database+"/protein/"+qAccess+"'>"+qIdentifier+"</a> ";
+		if  (qAccess != access) {
+			let OIlink = "<a title='OrthoInspector entry' class='id' data-access='"+qAccess+"' href='"+prefix+"/"+database+"/protein/"+qAccess+"'>"+qIdentifier+"</a>&nbsp;";
 			let Unilink = "<a title='Uniprot entry' href='http://uniprot.org/uniprot/"+qAccess+"' target='_blank'><span class='glyphicon glyphicon-new-window'></span></a>";
-			outputArray.push(OIlink+Unilink);
+			content = OIlink+Unilink;
 		} else {
-			outputArray.push("<b class='id'>"+qIdentifier+"</b>");
+			content = "<b class='id'>"+qIdentifier+"</b>";
 		}
+		output.push('<li><span class="seq-link">'+content+'</span></li>');
 	}
-	output = outputArray.join('<br>');
-	return output;
+	return '<ul class="seq-list">'+output.join('')+'</ul>';
 }
 
 function taxonomy_formatter(value, row) {

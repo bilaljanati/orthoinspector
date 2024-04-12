@@ -4,6 +4,7 @@
 .badge-container.inactive a {
 	color: initial;
 	text-decoration: none;
+	cursor: default;
 }
 .badge-container.inactive a:active {
 	pointer-events: none;
