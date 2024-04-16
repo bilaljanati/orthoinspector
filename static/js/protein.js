@@ -334,8 +334,10 @@ function PipeError() {
     $('#align-button').html("Service not available");
 }
 
-function launchAlignment(table) {
+function launchAlignment() {
+	var table = $('#orthotable');
     var access_list = extractAccess(table);
+	access_list.push(access);
     if (access_list.length <= 1) {
         alert('Please select sequences');
         return;
@@ -343,8 +345,7 @@ function launchAlignment(table) {
     $('#align-button').prop('disabled', true);
 
 	var data = {};
-	data.access_list = access_list;
-	data.query = access;
+	data.access_list = access_list.join(',');
 
     $.ajax({
 		type:"POST",
@@ -360,19 +361,19 @@ function launchAlignment(table) {
 
 function callPipeAlign(fasta) {
 
+	var blob = new Blob([fasta], { type: 'text/plain' });
     var formData = new FormData();
-    
-    formData.append('infile', fasta);
+    formData.append('infile', blob);
 
     $.ajax({
 		type:"POST",
-		url: '/pipealign/session',
+		url: '/pipealign/create',
 		data: formData,
 		contentType : false,
 		processData : false,
 		success: function(html, statut) {
-			var session = html['session'];
-			var url = '/pipealign?session='+session;
+			var session = html['session_id'];
+			var url = '/pipealign/session/'+session;
 			window.open(url);
 			$('#align-button').prop('disabled', false);
 		},
