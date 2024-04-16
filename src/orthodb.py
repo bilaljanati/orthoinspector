@@ -149,8 +149,9 @@ class OrthoDb():
         res = self._query(sql, {'access': access})
         return res[0] if res else res
 
-    def get_orthologs(self, access):
-        sql = self._get_sql("orthologs")
+    def get_orthologs(self, access, model=False):
+        query = "orthologs" + ("_model" if model else "")
+        sql = self._get_sql(query)
         res = self._query(sql, {'access': access})
         return self._format_orthologs(res)
 

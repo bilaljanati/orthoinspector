@@ -78,21 +78,25 @@ def random_protein(database):
     return redirect(f'{config["prefix"]}/{database}/protein/{access}', code=302)
 
 @bp.route("/<database>/protein/<access>")
+@bp.route("/<database>/protein/<access>/full")
 def protein(database, access):
     db = wh.get_db(database)
     if not db:
         abort(404)
+    model_only = not request.base_url.endswith('full')
     prot = db.get_protein(access)
     if not prot:
         abort(404)
-    return render_template('protein.html', db=db.get_info(), protein=prot)
+    return render_template('protein.html', db=db.get_info(), protein=prot, model=model_only)
 
 @bp.route("/<dbname>/orthologs/<access>")
+@bp.route("/<dbname>/orthologs/<access>/full")
 def orthologs(dbname, access):
     db = wh.get_db(dbname)
     if not db:
         abort(404)
-    orthos = db.get_orthologs(access)
+    model_only = not request.base_url.endswith('full')
+    orthos = db.get_orthologs(access, model=model_only)
     return jsonify(orthos)
 
 @bp.route("/<database>/download/fasta", methods=['POST'])
