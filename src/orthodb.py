@@ -201,12 +201,16 @@ class OrthoDb():
         return res
 
     @cache
-    def _get_species_tree(self, exclude=[]):
+    def _get_species_tree(self, exclude=[], maxdepth=math.inf):
         taxons = {}
         for l in self._get_lineages():
             parent = ""
 
-            for i, sp in enumerate(l):
+            depth = 0
+            for sp in l:
+                depth += 1
+                if depth > maxdepth:
+                    break
                 taxid, name = sp
                 if name in exclude:
                     continue

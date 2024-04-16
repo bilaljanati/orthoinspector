@@ -50,7 +50,7 @@ def species_tree_sun(database):
     db = wh.get_db(database)
     if not db:
         abort(404)
-    tree = db.get_sun_tree()
+    tree = db.get_sun_tree(maxdepth=12)
     return jsonify(tree)
 
 @bp.route("/<database>/tree/profile")
