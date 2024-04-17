@@ -15,7 +15,7 @@ function sequence_formatter(value, row) {
 		}
 		output.push('<li><span class="seq-link">'+content+'</span></li>');
 	}
-	return '<ul class="seq-list">'+output.join('')+'</ul>';
+	return '<ul class="res-list">'+output.join('')+'</ul>';
 }
 
 function taxonomy_formatter(value, row) {
@@ -23,12 +23,12 @@ function taxonomy_formatter(value, row) {
 	return value.join(sep) + sep;
 }
 
-function size_formatter(value, row) {
+function length_formatter(value, row) {
 	var output = [];
-	for (let s of value.split(',')) {
-		output.push(s+' aa');
+	for (let s of value) {
+		output.push('<li>'+s+' aa</li>');
 	}
-	return output.join('<br />');
+	return '<ul class="res-list">'+output.join('')+'</ul>';
 }
 
 function species_formatter(value, row) {
@@ -44,9 +44,38 @@ function taxid_search_formatter(value) {
 }
 
 $(document).ready(function() {
+	const FIELD_OPT_NAME = 'oi-displayed-fields';
+
+	function save_displayed_fields() {
+		let fields = [];
+		for (const c of $('#orthotable').bootstrapTable('getVisibleColumns')) {
+			fields.push(c.field);
+		}
+		localStorage.setItem(FIELD_OPT_NAME, fields.join(','));
+	}
+
+	function restore_displayed_fields() {
+		let fields = localStorage.getItem(FIELD_OPT_NAME);
+		if (!fields) {
+			return;
+		}
+		let toshow = new Set(fields.split(','));
+		for (const f of [...$('#orthotable').bootstrapTable('getVisibleColumns'), ...$('#orthotable').bootstrapTable('getHiddenColumns')]) {
+			let col = f.field;
+			let action = toshow.has(col) ? 'showColumn' : 'hideColumn';
+			console.log(col, toshow.has(col));
+			$('#orthotable').bootstrapTable(action, col)
+		}
+	}
+
     $("table[data-search-placeholder]").each(function () {
         $(this).parents("div.bootstrap-table")
             .find("input[placeholder='Search']")
             .attr("placeholder", $(this).data("search-placeholder"));
     });
+
+	$('#orthotable').on('column-switch.bs.table', function(e, field, checked) {
+		save_displayed_fields();
+	});
+	restore_displayed_fields();
 });

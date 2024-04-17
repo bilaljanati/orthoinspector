@@ -163,8 +163,8 @@ class OrthoDb():
         res['type'] = row['type']
         res['inparalogs'] = self._format_seq_array(row['inparalogs'])
         res['orthologs'] = self._format_seq_array(row['orthologs'])
+        res['length'] = list(map(int, row['length'].split(' ')))
         res['species'] = {'taxid': row['taxid'], 'name': row['species']}
-        res['size'] = row['length']
         lineage = self._format_lineage(row['lineage'])
         res['fullTaxonomy'] = lineage
         res['reducedTaxonomy'] = self._reduce_lineage(lineage)

@@ -161,8 +161,8 @@
 				<div class="panel-body"> 
                     {% if db.has_models %}
 					<ul class="nav nav-tabs">
-						<li {% if model %}class="active" {% endif %}> <a href="{{prefix}}/{{db.name}}/protein/{{db.version}}/{{protein.access}}">Model Organisms</a></li>
-						<li {% if not model %}class="active" {% endif %}><a href="{{prefix}}/{{db.name}}/protein/{{db.version}}/{{protein.access}}/full">Whole domain</a></li>
+						<li {% if model %}class="active" {% endif %}> <a href="{{prefix}}/{{db.name}}/protein/{{protein.access}}">Model Organisms</a></li>
+						<li {% if not model %}class="active" {% endif %}><a href="{{prefix}}/{{db.name}}/protein/{{protein.access}}/full">Whole domain</a></li>
 					</ul>        
                     {% endif %}
 					<div class="tax_summary" id='band'>
@@ -179,7 +179,7 @@
 								<th data-field="type" data-sortable="true">Relationship</th>
 								<th data-field="inparalogs" data-switchable="false" data-formatter="sequence_formatter">Query &amp; inparalogs</th>
 								<th data-field="orthologs" data-switchable="false" data-formatter="sequence_formatter">Orthologs</th>
-								<th data-visible="false" data-formatter="size_formatter" data-field="size">Orthologs length</th>
+								<th data-field="length" data-visible="false" data-formatter="length_formatter">Orthologs length</th>
 								<th data-field="species" data-sortable="true" data-formatter="species_formatter">Species</th>
 								<th data-visible="false" data-switchable="false" data-field="species" search-formatter="taxid_search_formatter">Taxid</th>
 								<th data-visible="false" data-switchable="false" data-field="taxoDist" data-sortable="true"/>

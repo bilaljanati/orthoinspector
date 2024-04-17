@@ -1,7 +1,5 @@
 $(function() {
 
-	const FIELD_OPT_NAME = 'oi-displayed-fields';
-
     // Submit the table form
     function tableform(){
             var form = $('#sastableform');
@@ -301,30 +299,11 @@ $(function() {
 		$('#notFoundIn div.modal-body').html(content);
 	}
 
-	function save_displayed_fields() {
-		let fields = localStorage.getItem('oi-checked-fields') || [];
-		for (let c of $('#orthotable').bootstrapTable('getVisibleColumns'))
-			fields.push(c.field);
-		localStorage.setItem(FIELD_OPT_NAME, fields);
-	}
-
-	function restore_displayed_fields() {
-		let fields = localStorage.getItem(FIELD_OPT_NAME);
-		if (fields) {
-			for (let f of fields.split(','))
-				$('#orthotable').bootstrapTable('showColumn', f);
-		}
-	}
-
 	$('#orthotable').on('load-success.bs.table', function(e,data) {
 		$('btn-inparalogs').removeAttr('disabled');
 		//checkInparalogs();
 	});
-	$('#orthotable').on('column-switch.bs.table', function(e, field, checked) {
-		save_displayed_fields();
-	});
 
-	restore_displayed_fields();
 	loadAbsentSummary();
 });
 
