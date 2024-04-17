@@ -7,6 +7,7 @@
 <link href="{{ prefix }}/static/css/profilesearchresult.css" rel="stylesheet">
 <script src="{{ prefix }}/static/js/profilesearchresult.js"></script>
 <script>
+const query_taxid = '{{ params.query.taxid }}';
 const taskid = '{{ taskid }}';
 </script>
 {% endblock %}
@@ -44,13 +45,13 @@ const taskid = '{{ taskid }}';
 		</ul>
 	</div>
 </div>
-{#
 <div id="toolbar" style="display: none;">
 	<button id="download-fasta" class="btn btn-primary" title="Download all sequences as FASTA">Get FASTA</button>
+	{#
 	<button id="download-orthoxml" class="btn btn-primary" title="Download all sequences as OrthoXML">Get OrthoXML</button>
-	<button id="download-idlist" class="btn btn-primary" title="Download ID list">Get ID list</button>
+	#}
+	<button id="download-list" class="btn btn-primary" title="Download ID list">Get ID list</button>
 </div>
-#}
 <div class="loader"></div>
 <div id="result"></div>
 {% endblock %}

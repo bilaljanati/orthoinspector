@@ -8,6 +8,8 @@ $(document).ready(function() {
 	const FAILED  = 2;
 	const UNKNOWN = 3;
 
+	var results = [];
+
 	function check_result() {
 		$.ajax({
 			url: prefix+"/"+database+"/profilesearch/result/"+taskid,
@@ -15,7 +17,7 @@ $(document).ready(function() {
 			success: function(response) {
 				switch (response.status) {
 					case DONE:
-						display_results(response.result);
+						handle_results(response.result);
 						break;
 					case FAILED:
 						display_error();
@@ -32,6 +34,11 @@ $(document).ready(function() {
 	function display_error() {
 		$('.loader').hide();
 		$('#result').html('Error ! Please retry later.').show();
+	}
+
+	function handle_results(res) {
+		results = res;
+		display_results(results);
 	}
 
 	function display_results(res) {
@@ -103,6 +110,61 @@ $(document).ready(function() {
 	function draw_profile(prof) {
 	}
 
+	function add_form_field(form, key, val) {
+		var f = document.createElement("input");
+		f.setAttribute("type", "hidden");
+		f.setAttribute("name", key);
+		f.setAttribute("value", val);
+		form.appendChild(f);
+	}
+
+	function get_access_list() {
+		var access_list = [];
+		for (const seq of results) {
+			access_list.push(seq.access);
+		}
+		return access_list;
+	}
+
+	function download_fasta() {
+		var access_list = get_access_list();
+		if (access_list.length == 0) {
+			return;
+		}
+
+		var form = document.createElement("form");
+		form.setAttribute("method", "POST");
+		form.setAttribute("action", prefix+'/'+database+'/download/fasta');
+		form.setAttribute("target", "_blank");
+		add_form_field(form, "access_list", access_list.join(','));
+		add_form_field(form, "filename", "profile_"+query_taxid+".fasta");
+		document.body.appendChild(form);
+		form.submit();
+		form.remove();
+	}
+
+	function download_list() {
+		var access_list = get_access_list();
+		if (access_list.length == 0) {
+			return;
+		}
+
+		var data = access_list.join('\n');
+		var blob = new Blob([data], { type: "text/plain" });
+		var url = URL.createObjectURL(blob);
+
+		var downloadLink = $("<a />", {
+			href: url,
+			download: "profile_"+query_taxid+".list",
+			style: "display: none;"
+		});
+		document.body.append(downloadLink);
+		downloadLink[0].click();
+
+		downloadLink.remove();
+		URL.revokeObjectURL(url);
+	}
+
 	var delay = ( function() {
 		var timer = 0;
 		return function(callback, ms) {
@@ -113,4 +175,7 @@ $(document).ready(function() {
 	delay(function(){
 		check_result();
 	}, 200 );
+
+	$('#download-fasta').click(download_fasta);
+	$('#download-list').click(download_list);
 });

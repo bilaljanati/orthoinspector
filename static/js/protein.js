@@ -34,6 +34,7 @@ $(function() {
 			access_list.push(a);
 		}
 		add_form_input(form, "access_list", access_list.join(','));
+		add_form_input(form, "filename", access+'.fasta');
 
 		document.body.appendChild(form);
 		form.submit();

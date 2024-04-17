@@ -106,10 +106,13 @@ def orthologs(dbname, access):
 @bp.route("/<database>/download/fasta", methods=['POST'])
 def download_fasta(database):
     db = wh.get_db(database)
+    if not db:
+        abort(404)
     access_list = request.form['access_list'].split(',')
+    filename = request.form['filename']
     fasta = db.get_fasta(access_list)
     res = Response(fasta, mimetype='text/plain')
-    res.headers['Content-Disposition'] = f'attachment; filename="{access_list[0]}.fa"'
+    res.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
     return res
 
 @bp.route("/annotations/go/<access>")
