@@ -6,8 +6,8 @@ $(document).ready(function() {
 			minLength: 2,
 	  
 			select: function(event, ui) {
-				let access = ui.item.access;
-				if (access) {
+				if (!ui.item.noresults) {
+					let access = ui.item.access;
 					location.href = prefix+'/'+database+'/protein/'+access;
 				}
 			},
@@ -16,7 +16,7 @@ $(document).ready(function() {
 			},
 			response: function(event, ui) {
 				if (!ui.content.length) {
-					let noResult = { name: "No results found", access: "Unknown protein" };
+					let noResult = { name: "No results found", access: "Unknown protein", noresults: true};
 					ui.content.push(noResult);
 				} else {
 					$(form).find("#message").empty();
@@ -28,8 +28,8 @@ $(document).ready(function() {
 			}
 		}).data("ui-autocomplete")._renderItem = function(ul, item) {
 			return $("<li>")
-			.append("<div><b>" + item.name + "</b><br><p>" + item.access + "</p></div>")
-			.appendTo(ul);
+				.append("<div><b>" + item.name + "</b><br><p>" + item.access + "</p></div>")
+				.appendTo(ul);
 		};
 	}
 

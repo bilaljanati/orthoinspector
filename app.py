@@ -86,6 +86,8 @@ def protein(database, access):
     if not db:
         abort(404)
     model_only = not request.base_url.endswith('full')
+    if not db.has_models and model_only:
+        return redirect(url_for('bp.protein', database=database, access=access), code=302)
     prot = db.get_protein(access)
     if not prot:
         abort(404)
