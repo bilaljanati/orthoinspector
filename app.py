@@ -1,7 +1,8 @@
 import os
 import sys
-from flask import Flask, request, render_template, Blueprint, abort, redirect, jsonify, Response
+from flask import Flask, request, render_template, Blueprint, abort, redirect, jsonify, Response, url_for
 import yaml
+import json
 
 curdir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(f'{curdir}/src')
@@ -10,6 +11,7 @@ from src.warehouse import Warehouse
 from src.geneontology import GeneOntology
 from src.taxonomy import Taxonomy
 from src.interpro import Interpro
+from src.tasks import submit_task, check_task
 
 
 with open('config.yml', 'r') as config_file:
@@ -75,7 +77,7 @@ def random_protein(database):
     if not db:
         abort(404)
     access = db.get_random_access()
-    return redirect(f'{config["prefix"]}/{database}/protein/{access}', code=302)
+    return redirect(url_for('bp.protein', database=database, access=access), code=302)
 
 @bp.route("/<database>/protein/<access>")
 @bp.route("/<database>/protein/<access>/full")
@@ -129,7 +131,6 @@ def taxo_test(taxid):
 @bp.route("/stats")
 def do_stats():
     return render_template('dbstats.html', stats=wh.get_stats())
-    return jsonify(wh.get_stats())
 
 @bp.route("/<database>/profilesearch")
 def profile_search(database):
@@ -138,15 +139,24 @@ def profile_search(database):
         abort(404)
     return render_template('profilesearch.html', db=db.get_info())
 
-@bp.route("/<database>/profilesearch/submit", methods=['POST'])
+@bp.route("/<database>/profilesearch/result", methods=['POST'])
 def profile_search_run(database):
     db = wh.get_db(database)
     if not db:
         abort(404)
-    taxid = request.form['taxid']
-    present = [v for v in request.form['present'].split(',') if v != '']
-    absent = [v for v in request.form['absent'].split(',') if v !='']
-    matches = db.search_by_profile(taxid, present, absent)
-    return jsonify(matches)
+    params = {'database': database}
+    for key in ['query', 'present', 'absent']:
+        params[key] = request.form[key]
+    res = submit_task(config['workers']['port'], 'profile_search', params)
+    parsed_params = {k: json.loads(v) for k, v in params.items() if k in ['query', 'present', 'absent']}
+    return render_template('profilesearchresult.html', db=db.get_info(), params=parsed_params, taskid=res['id'])
+
+@bp.route("/<database>/profilesearch/result/<taskid>")
+def profile_search_res(database, taskid):
+    db = wh.get_db(database)
+    if not db:
+        abort(404)
+    res = check_task(config['workers']['port'], taskid)
+    return jsonify(res)
 
 app.register_blueprint(bp, url_prefix=config['prefix'])

@@ -4,7 +4,7 @@
 $(document).ready(function() {
 
 	/* Species search */
-	var taxid = '';
+	var query = '';
 
 	function init_species_search() {
 		const maxResults = 10;
@@ -28,7 +28,7 @@ $(document).ready(function() {
 			select: function(e, ui) {
 				e.preventDefault();
 				$(e.target).val(ui.item.label);
-				taxid = ui.item.value;
+				query = {'taxid': ui.item.value, 'name': ui.item.label};
 				updateButton();
 			}
 		});
@@ -36,14 +36,13 @@ $(document).ready(function() {
 
 	$('#srch-species').change(function() {
 		if ($(this).val() == '') {
-			taxid = '';
+			taxid = {};
 			updateButton();
 		}
 	});
 
 	/* Tree */
 
-	var names = {};
 	var selection = {
 		'present': [],
 		'absent': []
@@ -61,21 +60,18 @@ $(document).ready(function() {
 		}
 	}
 
-	function get_name(taxid) {
-		return names[taxid];
-	}
-
-	function put_taxons(ulselector, list) {
+	function put_taxons(ulselector, list, present=true) {
+		const liclass = present ? 'present' : 'absent';
 		var ul = $(ulselector);
 		ul.html('');
-		for (const taxid of list) {
-			ul.append('<li>'+get_name(taxid)+'</li>');
+		for (const name of list) {
+			ul.append('<li class="'+liclass+'">'+name+'</li>');
 		}
 	}
 
 	function display_selection(selection) {
-		put_taxons('#present', selection['present']);
-		put_taxons('#absent', selection['absent']);
+		put_taxons('#present', selection['present'], true);
+		put_taxons('#absent', selection['absent'], false);
 
 		var empty = (selection['present'].length+selection['absent'].length > 0);
 		$('#selection').toggle(empty);
@@ -83,11 +79,28 @@ $(document).ready(function() {
 	}
 
 	function update_selection() {
-		selection = get_tree_selection();
-		display_selection(selection);
+		selection = get_effective_tree_selection();
+		display_selection(get_visible_tree_selection());
 	}
 
-	function get_tree_selection() {
+	function get_visible_tree_selection() {
+		var tree = $("#tree").fancytree("getTree");
+		var absents = [];
+		var presents = [];
+
+		for (const p of tree.getPresentNodes()) {
+			presents.push(p.title);
+		}
+		for (const a of tree.getAbsentNodes(true)) {
+			absents.push(a.title);
+		}
+		return {
+			'present': presents,
+			'absent': absents
+		}
+	}
+
+	function get_effective_tree_selection() {
 		var tree = $("#tree").fancytree("getTree");
 		var absents = [];
 		var presents = new Set();
@@ -96,8 +109,7 @@ $(document).ready(function() {
 			for (const n of ancestor.findAll(n => !n.children)) {
 				if (!n.children) {
 					let taxid = n.data['taxid']
-					presents.add(taxid);
-					names[taxid] = n.title;
+					presents.add({'taxid': taxid, 'name': n.title});
 				}
 			}
 		}
@@ -106,8 +118,7 @@ $(document).ready(function() {
 		for (const n of tree.getAbsentNodes()) {
 			if (!n.children) {
 				let taxid = n.data['taxid']
-				absents.push(taxid);
-				names[taxid] = n.title;
+				absents.push({'taxid': taxid, 'name': n.title});
 			}
 		}
 		return {
@@ -158,7 +169,7 @@ $(document).ready(function() {
 	}
 
 	function updateButton() {
-		var isok = (selection['present'].length+selection['absent'].length > 0) && !!taxid;
+		var isok = (selection['present'].length+selection['absent'].length > 0) && Object.keys(query).length !== 0;
 		$('#submit').prop('disabled', !isok);
 	}
 
@@ -166,8 +177,14 @@ $(document).ready(function() {
 	$('#submit').click(function() {
 		const data = selection;
 
+		$('#form-query').val(JSON.stringify(query));
+		$('#form-present').val(JSON.stringify(data['present']));
+		$('#form-absent').val(JSON.stringify(data['absent']));
+		$('form#profile-srch').submit();
+
+		/*
 		var formData = new FormData();
-        formData.append('taxid', 559292);
+        formData.append('taxid', taxid);
         formData.append('present', data['present']);
         formData.append('absent', data['absent']);
 
@@ -184,5 +201,6 @@ $(document).ready(function() {
                 console.error('Error:', error);
             }
         });
+		*/
 	});
 });

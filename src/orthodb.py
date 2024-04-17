@@ -221,8 +221,8 @@ class OrthoDb():
                 parent = taxid
         return taxons
 
-    def get_sun_tree(self):
-        taxons = self._get_species_tree(exclude=('root', 'cellular organisms'))
+    def get_sun_tree(self, maxdepth=10):
+        taxons = self._get_species_tree(exclude=('root', 'cellular organisms'), maxdepth=maxdepth)
         return [{'id': key, **taxons[key]} for key in taxons]
 
     def get_profile_tree(self):
@@ -291,7 +291,11 @@ class OrthoDb():
         return ''.join(p)
 
     def search_by_profile(self, taxid, present, absent):
-        sql = """SELECT p.access, p.name, p.sequence, p.profile
+        sql = """SELECT p.access
+                ,p.name
+                ,LENGTH(p.sequence) AS length
+                ,p.profile
+                ,regexp_replace(p.description, '[^ ]* ([^=]+) [A-Z]{2}=.*', '\\1') AS short_desc
                 FROM protein AS p
                 INNER JOIN species AS s ON s.pk_species = p.pk_species
                 WHERE s.taxid = %(taxid)s"""

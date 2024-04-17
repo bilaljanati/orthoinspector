@@ -6,7 +6,7 @@
 {{ super() }}
 <script src="{{ prefix }}/static/js/jquery.fancytree-all-mod.js"></script>
 <script src="{{ prefix }}/static/js/profilesearch.js"></script>
-<link rel="stylesheet" href="{{ prefix }}/static/css/phylotree.css"></link>
+<link rel="stylesheet" href="{{ prefix }}/static/css/profilesearch.css"></link>
 {% endblock %}
 
 {% block content %}
@@ -14,7 +14,6 @@
 <p>Find all proteins from a given species following a selected phylogenetic profile.</p>
 <h3>How to use</h3>
 <ol>
-		<li><h4>Select a database. <small>You can query a domain specific database (Eukaryota, Bacteria, Archaea) or cross-domain database.</small></h4></li>
 		<li><h4>Select your query species.<small> You will obtain proteins of this species as results.</small></h4></li>
 		<li><h4>Define a phylogenetic profile.<small> Select clades or species in the taxonomic tree.</small></h4></li>
 	</ol>
@@ -32,8 +31,6 @@
 		<form class="form" role="search">
 			<div class="input-group" id="menu-srch-input">
 				<input type="text" class="form-control" placeholder="Select your query species" name="srch-species" id="srch-species">
-				<input type="hidden" id="taxid-orga" name="taxid-orga" value="">
-				<input type="hidden" id="name-orga" name="name-orga" value="">
 			</div>
 		</form>
 	</div>
@@ -57,4 +54,9 @@
 	<ul id="absent"></ul>
 </div>
 <button type="button" id="submit" class="btn btn-primary" disabled="disabled">Search</button>
+<form id="profile-srch" method="POST" action="{{ prefix }}/{{ db.name }}/profilesearch/result" target="_blank">
+	<input type="hidden" id="form-query" name="query" />
+	<input type="hidden" id="form-present" name="present" />
+	<input type="hidden" id="form-absent" name="absent" />
+</form>
 {% endblock %}

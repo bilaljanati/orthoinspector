@@ -14,6 +14,7 @@ warehouse:
       dbname: OrthoInspector_Decapoda2024
       host: derrick
       description: "Christelle's DB including Eukaryota2023 and 15 additional Decapoda species"
+      active: false
   hosts:
     derrick:
       port: 5432
@@ -26,3 +27,5 @@ geneontology:
     port: 5432
     user: nevers
     password: nisNEVER
+workers:
+  port: 5001

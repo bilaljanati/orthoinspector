@@ -1,0 +1,22 @@
+#toolbar {
+	margin-bottom: 2em;
+}
+.panel-heading {
+	vertical-align: bottom;
+	border-bottom: 0;
+}
+.panel-body {
+	display: none;
+}
+.panel-footer {
+	border-top: 0;
+}
+.oi_cell.left {
+	text-align: left;
+}
+.oi_cell.center {
+	text-align: center;
+}
+.oi_cell.right {
+	text-align: right;
+}

@@ -27,3 +27,6 @@ span.fancytree-selected-present span.fancytree-title {
 span.fancytree-selected-absent span.fancytree-title {
 	background-color: #FF6961;
 }
+#srch-species {
+	width: 35em;
+}

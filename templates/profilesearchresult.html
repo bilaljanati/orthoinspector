@@ -1,0 +1,56 @@
+{% extends "dbspecific.html" %}
+
+{% block title %} - Profile search{% endblock %}
+
+{% block header %}
+{{ super() }}
+<link href="{{ prefix }}/static/css/profilesearchresult.css" rel="stylesheet">
+<script src="{{ prefix }}/static/js/profilesearchresult.js"></script>
+<script>
+const taskid = '{{ taskid }}';
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="results-header oi_row">
+	<div class="oi_cell" style="vertical-align:middle;">
+		<p>
+			<b>Query species:</b> <span id="orga-name">{{ params.query.name }}</span>
+		</p>
+		<p></p>
+		<h4 id="numres" style="display: none;">
+			<b></b> proteins found
+		</h4>
+		<p></p>
+	</div>
+	<div class="oi_cell">
+		<p>
+			<b>Orthologs in: </b>
+		</p>
+		<ul>
+		{% for sp in params.present %}
+			<li class="present">{{ sp.name }}</li>
+		{% endfor %}
+		</ul>
+	</div>
+	<div class="oi_cell">
+		<p>
+			<b>No orthologs in:</b>
+		</p>
+		<ul>
+		{% for sp in params.present %}
+			<li class="absent">{{ sp.name }}</li>
+		{% endfor %}
+		</ul>
+	</div>
+</div>
+{#
+<div id="toolbar" style="display: none;">
+	<button id="download-fasta" class="btn btn-primary" title="Download all sequences as FASTA">Get FASTA</button>
+	<button id="download-orthoxml" class="btn btn-primary" title="Download all sequences as OrthoXML">Get OrthoXML</button>
+	<button id="download-idlist" class="btn btn-primary" title="Download ID list">Get ID list</button>
+</div>
+#}
+<div class="loader"></div>
+<div id="result"></div>
+{% endblock %}
