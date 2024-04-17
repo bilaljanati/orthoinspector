@@ -10,6 +10,60 @@ $(document).ready(function() {
 
 	var results = [];
 
+	/* Pagination */
+
+	function get_page_size() {
+		return parseInt($('#pagesize select').val());
+	}
+
+	function change_page(e) {
+		const pagesize = get_page_size();
+		var selected = 1;
+		if (e && $(e.target).attr('data-page')) {
+			selected = parseInt($(e.target).attr('data-page')) || 1;
+		}
+		display_results(results, get_page_size(), selected);
+		display_pagination(selected);
+	}
+
+	function display_pagination(selected=1) {
+		const pagesize = get_page_size();
+		const nbpages = Math.ceil(results.length/pagesize);
+
+		var ul = $("ul.pagination");
+		ul.empty();
+		let elem = $('<li><a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>');
+		if (selected == 1) {
+			elem.addClass('disabled');
+			elem.find('a').attr('href', 'javascript:void(0)');
+		} else {
+			elem.find('a').attr('data-page', selected-1);
+		}
+		ul.append(elem);
+		for (let i=1; i<=nbpages; i++) {
+			let active = (i==selected) ? ' class="active"' : '';
+			let elem = $('<li><a href="#">'+i+'</a></li>');
+			elem.find('a').attr('data-page', i);
+			if (i == selected) {
+				elem.addClass('active');
+				elem.attr('href', 'javascript:void(0)');
+			}
+			ul.append(elem);
+		}
+		elem = $('<li><a href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>');
+		if (selected == nbpages) {
+			elem.addClass('disabled');
+			elem.find('a').attr('href', 'javascript:void(0)');
+		} else {
+			elem.find('a').attr('data-page', selected+1);
+		}
+		ul.append(elem);
+
+		ul.find('li:not(.disabled) a').click(change_page);
+	}
+
+	/* Data retrieval */
+
 	function check_result() {
 		$.ajax({
 			url: prefix+"/"+database+"/profilesearch/result/"+taskid,
@@ -38,20 +92,24 @@ $(document).ready(function() {
 
 	function handle_results(res) {
 		results = res;
-		display_results(results);
+		change_page();
 	}
 
-	function display_results(res) {
+	function display_results(res, pagesize, page=1) {
 		$('.loader').hide();
-
-		display_sequences(res);
 
 		$('#numres b').html(res.length);
 		$('#numres').show();
-		$('#toolbar').show();
+		if (res.length > 0) {
+			console.log((page-1)*pagesize, page*pagesize);
+			display_sequences(res.slice((page-1)*pagesize, page*pagesize));
+			$('#toolbar').show();
+		}
+		$('#page').show();
 	}
 
 	function display_sequences(sequences) {
+		$('#result').empty();
 		for (const s of sequences) {
 			$('#result').append(draw_sequence(s));
 		}
@@ -176,6 +234,9 @@ $(document).ready(function() {
 		check_result();
 	}, 200 );
 
+	$('#pagesize select').change(change_page);
+	$('#pagechoice a').click(change_page);
 	$('#download-fasta').click(download_fasta);
 	$('#download-list').click(download_list);
+
 });

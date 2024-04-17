@@ -180,6 +180,7 @@ $(document).ready(function() {
 		$('#form-query').val(JSON.stringify(query));
 		$('#form-present').val(JSON.stringify(data['present']));
 		$('#form-absent').val(JSON.stringify(data['absent']));
+		$('#form-display').val(JSON.stringify(get_visible_tree_selection()));
 		$('form#profile-srch').submit();
 
 		/*

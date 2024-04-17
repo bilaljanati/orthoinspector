@@ -20,3 +20,9 @@
 .oi_cell.right {
 	text-align: right;
 }
+ul.pagination {
+	float: right;
+}
+#page {
+	display: none;
+}

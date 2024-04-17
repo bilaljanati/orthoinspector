@@ -29,8 +29,8 @@ const taskid = '{{ taskid }}';
 			<b>Orthologs in: </b>
 		</p>
 		<ul>
-		{% for sp in params.present %}
-			<li class="present">{{ sp.name }}</li>
+		{% for name in params.display.present %}
+			<li class="present">{{ name }}</li>
 		{% endfor %}
 		</ul>
 	</div>
@@ -39,8 +39,8 @@ const taskid = '{{ taskid }}';
 			<b>No orthologs in:</b>
 		</p>
 		<ul>
-		{% for sp in params.present %}
-			<li class="absent">{{ sp.name }}</li>
+		{% for name in params.display.absent %}
+			<li class="absent">{{ name }}</li>
 		{% endfor %}
 		</ul>
 	</div>
@@ -54,4 +54,18 @@ const taskid = '{{ taskid }}';
 </div>
 <div class="loader"></div>
 <div id="result"></div>
+<div id="page" class="row">
+	<div id="pagesize" class="form-inline">
+		<select class="form-control" id="numByPage">
+			<option value="25">25</option>
+				<option selected="" value="50">50</option>
+				<option value="100">100</option>
+				<option value="200">200</option>
+				<option value="500">500</option>
+		</select> results by page
+	</div>
+	<nav id="pagechoice" aria-label="Page navigation">
+		<ul class="pagination"></ul>
+	</nav>
+</div>
 {% endblock %}
