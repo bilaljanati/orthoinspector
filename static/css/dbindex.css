@@ -1,3 +1,6 @@
+.db-desc {
+	white-space: pre;
+}
 #species-plot {
 	width: 500px;
 	height: 500px;

@@ -27,7 +27,7 @@
 				<div class="db-badge" title="{% if not db.active %}Under construction{% endif %}">
 					<div class="db-logo"></div>
 					<h3>{{ db.name }}</h3>
-					<p class="description">{{ db.description }}</p>
+					<p class="description">{{ db.description.partition('\n')[0] }}</p>
 				</div>
 			</a>
 		</div>

@@ -43,3 +43,6 @@ p.description {
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
+.badge-container a:focus {
+	text-decoration: none;
+}

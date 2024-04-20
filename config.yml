@@ -9,12 +9,43 @@ warehouse:
     Yeast:
       dbname: oi_yeast
       host: derrick
-      description: "Small test DB of various yeast proteomes"
+      description: Small test DB of various yeast proteomes
     Decapoda2024:
-      dbname: OrthoInspector_Decapoda2024
+      dbname: OrthoInspector_Decapoda_2024
       host: derrick
-      description: "Christelle's DB including Eukaryota2023 and 15 additional Decapoda species"
-      active: false
+      description: |
+        Base pour Christelle incluant Eukaryota2023 et 15 protéomes de décapodes additionnels (mars 2024).
+
+        On a retiré le protéome de référence de Penaeus vannamei (UP000283509_6689).
+        Et on y a ajouté :
+
+        cherax_quadricarinatus
+        chionoecetes_opilio
+        eriocheir_sinensis
+        halocaridina_rubra
+        homarus_americanus
+        penaeus_chinensis
+        penaeus_indicus
+        penaeus_japonicus
+        penaeus_monodon
+        penaeus_vannamei
+        petrolisthes_cinctipes
+        petrolisthes_manimaculis
+        portunus_trituberculatus
+        procambarus_clarkii
+        scylla_paramamosain
+    Archaea2023:
+      dbname: OrthoInspector_Archaea_2023
+      host: derrick
+      description: "OrthoInspector official Archaea 2023 DB"
+    Bacteria2023:
+      dbname: OrthoInspector_Bacteria_2023
+      host: derrick
+      description: "OrthoInspector official Bacteria 2023 DB"
+    Eukaryota2023:
+      dbname: OrthoInspector_Eukaryota_2023
+      host: derrick
+      description: "OrthoInspector official Eukaryota 2023 DB"
   hosts:
     derrick:
       port: 5432

@@ -3,6 +3,7 @@ import sys
 from flask import Flask, request, render_template, Blueprint, abort, redirect, jsonify, Response, url_for
 import yaml
 import json
+import re
 
 curdir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(f'{curdir}/src')
@@ -24,6 +25,10 @@ interpro = Interpro()
 app = Flask(__name__, static_url_path=f"/{config['prefix']}/static")
 bp = Blueprint('bp', __name__)
 
+def regex_match(string, pattern):
+    return re.match(pattern, string) is not None
+
+app.jinja_env.filters['regex_match'] = regex_match
 
 @bp.context_processor
 def inject_globals():
@@ -150,10 +155,11 @@ def profile_search_run(database):
     if not db:
         abort(404)
     params = {'database': database}
+    fields = ['query', 'present', 'absent']
     for key in ['query', 'present', 'absent']:
         params[key] = request.form[key]
     res = submit_task(config['workers']['port'], 'profile_search', params)
-    parsed_params = {k: json.loads(v) for k, v in params.items() if k in ['query', 'present', 'absent']}
+    parsed_params = {k: json.loads(v) for k, v in request.form.items() if k in ['query', 'display']}
     return render_template('profilesearchresult.html', db=db.get_info(), params=parsed_params, taskid=res['id'])
 
 @bp.route("/<database>/profilesearch/result/<taskid>")

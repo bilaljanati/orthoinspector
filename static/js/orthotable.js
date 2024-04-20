@@ -63,7 +63,6 @@ $(document).ready(function() {
 		for (const f of [...$('#orthotable').bootstrapTable('getVisibleColumns'), ...$('#orthotable').bootstrapTable('getHiddenColumns')]) {
 			let col = f.field;
 			let action = toshow.has(col) ? 'showColumn' : 'hideColumn';
-			console.log(col, toshow.has(col));
 			$('#orthotable').bootstrapTable(action, col)
 		}
 	}

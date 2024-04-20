@@ -1,6 +1,5 @@
 SELECT p.access,
-	split_part(split_part(identifier, ' ', 1), '|', 3) AS uniprot_id,
-	split_part(split_part(identifier, '|', 3), '_', 1) AS gene_name,
+	p.name,
 	p.description,
 	regexp_replace(description, '[^ ]* ([^=]+) [A-Z]{2}=.*', '\1') AS short_desc,
 	p.sequence,

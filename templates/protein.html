@@ -1,6 +1,6 @@
 {% extends "dbspecific.html" %}
 
-{% block title %} | {{ protein.gene_name }}{% endblock %}
+{% block title %} | {{ protein.name }}{% endblock %}
 
 {% block header %}
 {{ super() }}
@@ -19,19 +19,24 @@
 {% endblock %}
 
 {% block content %}
-<h1>{{ protein.uniprot_id }} <span class="badge" title="Database version {{ db.version }}">{{ db.version }}</span></h1>
+{% set is_uniprot = protein.access|regex_match('[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2}') %}
+<h1>{{ protein.name }} <span class="badge" title="Database version {{ db.version }}">{{ db.version }}</span></h1>
+{% if is_uniprot %}
 <p>
-	<b>Gene name</b> {{ protein.gene_name }}
+	<b>Gene name</b> {{ protein.name.split('_')[0] }}
 </p>
 <p>
 	<b>Accession number</b> {{ protein.access }}
 </p>
+{% endif %}
 <p>
 	<b>Description</b> {{ protein.short_desc }}
 </p>
+{% if is_uniprot %}
 <p>
 	<b>Links</b> <a target="_blank" href="http://uniprot.org/uniprot/{{ protein.access }}">Uniprot</a>
 </p>
+{% endif %}
 <p>
 	<b>Organism</b> <a target="_blank" href="https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id={{ protein.taxid }}">{{ protein.species }}</a>
 </p>
