@@ -20,7 +20,11 @@ function sequence_formatter(value, row) {
 
 function taxonomy_formatter(value, row) {
 	const sep = ' - ';
-	return value.join(sep) + sep;
+	var names = [];
+	for (const t of value) {
+		names.push(t.name);
+	}
+	return names.join(sep) + sep;
 }
 
 function length_formatter(value, row) {

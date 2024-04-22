@@ -13,6 +13,7 @@ from src.geneontology import GeneOntology
 from src.taxonomy import Taxonomy
 from src.interpro import Interpro
 from src.tasks import submit_task, check_task
+from api import bp as bpapi
 
 
 with open('config.yml', 'r') as config_file:
@@ -171,3 +172,4 @@ def profile_search_res(database, taskid):
     return jsonify(res)
 
 app.register_blueprint(bp, url_prefix=config['prefix'])
+app.register_blueprint(bpapi, url_prefix=config['prefix']+'/api')

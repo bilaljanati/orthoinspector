@@ -1,0 +1,211 @@
+openapi: 3.0.0
+info:
+  title: {{ db }} API
+  description: Programmatic access to the OrthoInspector [{{ db }} database]({{ prefix }}/{{ db }}).
+tags:
+  - name: Database
+    description: Description of available databases and organisms
+  - name: Proteins
+    description: Information about stored proteins
+  - name: Orthologs
+    description: Orthologous relations between protein-coding genes
+servers:
+  - url: {{ prefix }}/api/{{ db }}
+paths:
+  /species:
+    get:
+      summary: Get available species in specified database
+      responses:
+        '200':
+          description: Unordered list of available species in database
+          content:
+            application/json:
+              schema: 
+                type: array
+                items:
+                  type: object
+                  properties: 
+                    id:
+                      type: integer
+                    name:
+                      type: string
+                    phylum:
+                      type: string
+      tags: [Database]
+  /species/{taxon}/proteins:
+    get:
+      summary: Get the list of proteins in the specified organism
+      parameters:
+        - name: taxon
+          in: path
+          description: The Uniprot taxon ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Array of children
+          content:
+            application/json:
+              schema: 
+                type: array
+                items:
+                    type: object
+                    properties: 
+                      access:
+                        type: string
+                      uniprot_id:
+                        type: string
+        '404':
+          description: Unknown database or taxon
+      tags: [Proteins]
+  /protein/{access}:
+    get:
+      summary: Get information about chosen protein
+      parameters:
+        - name: access
+          in: path
+          description: The Uniprot protein access
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema: 
+                type: array
+                items:
+                  type: object
+                  properties: 
+                    access:
+                      type: string
+                    uniprot_id:
+                      type: string
+                    description:
+                      type: string
+                    sequence:
+                      type: string
+                    species:
+                      type: integer
+        '400':
+          description: Unknown taxon
+      tags: [Proteins]
+  /protein/{access}/orthologs:
+    get:
+      summary: Get all orthologous relations involving chosen protein
+      parameters:
+        - name: access
+          in: path
+          description: The Uniprot protein access
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema: 
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                    species:
+                      type: integer
+                    inparalogs:
+                      type: array
+                      items:
+                        type: string
+                    orthologs:
+                      type: array
+                      items:
+                        type: string
+        '400':
+          description: Unknown taxon
+      tags: [Orthologs]
+{#
+  /protein/{access}/orthologs/{taxid}:
+    get:
+      summary: Get the orthologous relationship involving chosen protein and proteins of chosen species
+      parameters:
+        - name: access
+          in: path
+          description: The Uniprot protein access
+          required: true
+          schema:
+            type: string
+        - name: taxid
+          in: path
+          description: The Uniprot taxon ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Unordered list of all descendant taxa
+          content:
+            application/json:
+              schema: 
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                    species:
+                      type: integer
+                    inparalogs:
+                      type: array
+                      items:
+                        type: string
+                    orthologs:
+                      type: array
+                      items:
+                        type: string
+        '400':
+          description: Unknown taxon
+      tags: [Orthologs]
+  /species/{taxid1}/orthologs/{taxid2}:
+    get:
+      summary: Get the orthologous relationship involving first species towards a second species
+      parameters:
+        - name: taxid1
+          in: path
+          description: Main species of interest
+          required: true
+          schema:
+            type: integer
+        - name: taxid2
+          in: path
+          description: Relative species
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Unordered list of all orthologs from first to second species
+          content:
+            application/jon:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                    species:
+                      type: integer
+                    inparalogs:
+                      type: array
+                      items:
+                        type: string
+                    orthologs:
+                      type: array
+                      items:
+                        type: string
+      tags: [Orthologs]
+#}

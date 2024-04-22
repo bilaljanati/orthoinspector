@@ -150,10 +150,13 @@ class OrthoDb():
         return res[0] if res else res
 
     def get_orthologs(self, access, model=False):
+        res = self._fetch_orthologs(access, model)
+        return self._format_orthologs(res)
+
+    def _fetch_orthologs(self, access, model=False):
         query = "orthologs" + ("_model" if model else "")
         sql = self._get_sql(query)
-        res = self._query(sql, {'access': access})
-        return self._format_orthologs(res)
+        return self._query(sql, {'access': access})
 
     def _format_orthologs(self, data):
         return [self._format_ortholog_row(row) for row in data]
@@ -174,12 +177,13 @@ class OrthoDb():
     def _format_seq_array(self, group):
         return [{"access": pair.split(',')[0], "name": pair.split(',')[1]} for pair in group.split()]
 
-    def _format_lineage(self, lineage):
+    def _format_lineage(self, lineage, ignore_top_taxons=0):
         l = lineage.split(';')
-        if len(l) > 6:
-            l = l[6:]
-        names = [l[i] for i in range(len(l)) if i%2]
-        return names
+        if ignore_top_taxons > 0 and len(l) > ignore_top_taxons:
+            #l = l[ignore_top_taxons:]
+            l = l.slice(ignore_top_taxons)
+        taxons = [{'taxid': l[i], 'name': l[i+1]} for i in range(0, len(l), 2)]
+        return taxons
 
     # TODO
     def _reduce_lineage(self, lineage):
@@ -307,3 +311,37 @@ class OrthoDb():
             pa = self._list_to_profile(absent, taxid)
             sql += f"\nAND p.profile & B'{pa}' = B'{'0'*len(pa)}'"
         return self._query(sql, {'taxid': taxid})
+
+    # API
+
+    def get_species_proteins(self, taxid):
+        sql = self._get_sql("species_proteins")
+        return self._query(sql, {'taxid': taxid})
+
+    def get_protein_api(self, access):
+        p = self.get_protein(access)
+        if not p:
+            return {}
+        return {
+            'access': p['access'],
+            'name': p['name'],
+            'description': p['short_desc'],
+            'sequence': p['sequence'],
+            'species': p['taxid']
+        }
+
+    def get_orthologs_api(self, access):
+        raw = self._fetch_orthologs(access, model=False)
+        res = []
+        for r in raw:
+            tmp = {
+                'type': r['type'],
+                'species': r['taxid'],
+                'inparalogs': self._format_orthologs_api(r['inparalogs']),
+                'orthologs': self._format_orthologs_api(r['orthologs'])
+            }
+            res.append(tmp)
+        return res
+
+    def _format_orthologs_api(self, seqs):
+        return [pair.split(',')[0] for pair in seqs.split(' ')]

@@ -1,0 +1,27 @@
+<html>
+	<head>
+		<link href="{{prefix}}/static/css/swagger-ui.css" rel="stylesheet">
+		<script src="{{ prefix }}/static/js/swagger-ui-bundle.js"></script>
+		<script src="{{ prefix }}/static/js/swagger-ui-standalone-preset.js"></script>
+	</head>
+	<body>
+		<div id="swagger-ui"></div>
+	</body>
+	<script>
+		window.onload = function() {
+				const ui = SwaggerUIBundle({
+				url: "{{ prefix }}/api/desc/{{ db }}.yml",
+				dom_id: '#swagger-ui',
+				deepLinking: true,
+				presets: [
+					SwaggerUIBundle.presets.apis,
+					SwaggerUIStandalonePreset
+				],
+				plugins: [
+					SwaggerUIBundle.plugins.DownloadUrl
+				]
+			});
+			window.ui = ui;
+		}
+	</script>
+</html>
