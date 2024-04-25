@@ -71,11 +71,21 @@ $(document).ready(function() {
 		}
 	}
 
+	function update_nb_proteins() {
+		var nb = $('#orthotable').bootstrapTable('getData').length;
+		$('#prot-count span.nb').html(""+nb);
+		$('#prot-count span.name').html(nb<=1? "ortholog": "orthologs");
+	}
+
     $("table[data-search-placeholder]").each(function () {
         $(this).parents("div.bootstrap-table")
             .find("input[placeholder='Search']")
             .attr("placeholder", $(this).data("search-placeholder"));
     });
+
+	$('#orthotable').bind('load-success.bs.table search.bs.table', function(e,data) {
+		update_nb_proteins();
+	});
 
 	$('#orthotable').on('column-switch.bs.table', function(e, field, checked) {
 		save_displayed_fields();

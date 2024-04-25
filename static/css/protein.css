@@ -6,3 +6,8 @@ ul.res-list {
     margin-bottom: 0;
     padding: 0;
 }
+#prot-count {
+	display: inline;
+	font-size: large;
+	margin-left: 50px;
+}
