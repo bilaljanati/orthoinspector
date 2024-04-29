@@ -382,3 +382,6 @@ img.logo {
 div#collapseInparalogs {
 	margin-bottom: 5px;
 }
+.fixed-table-body {
+	background-color: white;
+}

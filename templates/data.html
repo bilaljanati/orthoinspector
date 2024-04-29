@@ -1,0 +1,55 @@
+{% extends "dbspecific.html" %}
+
+{% block title %} - {{ db.name }} download{% endblock %}
+
+{% block header %}
+{{ super() }}
+<link href="{{ prefix }}/static/css/bootstrap-table.min.css" rel="stylesheet">
+<script src="{{ prefix }}/static/js/bootstrap-table.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<h1>Download</h1>
+
+{% if not db.has_data %}
+No data available yet, please contact the admin !
+{% else %}
+<h3>Orthology data</h3>
+<p>
+    Orthologs data files are available as TSV files, one per species.
+</p>
+<table class="table table-striped talbe-hover"
+	data-search="true"
+	data-pagination="true"
+	data-page-size="20"
+	data-toggle="table">
+	<thead>
+		<tr>
+			<th data-field="file" data-width="180">File</th>
+			<th data-field="species">Species</th>
+		</tr>
+	</thead>
+	<tbody>
+	{% for sp in species %}
+		<tr>
+			<td>
+				<a href="{{ base_url }}/{{ db.name }}/data/{{ sp.taxid }}.tsv.gz">{{ sp.taxid }}.tsv.gz</a>
+			</td>
+			<td>{{ sp.name }}</td>
+		</tr>
+	{% endfor %}
+	</tbody>
+</table>
+<hr />
+<p>Download all data using this command :</p>
+<pre>
+#!/bin/bash
+
+for taxid in{% for sp in species %} {{ sp.taxid}}{% endfor %}; do
+    curl -so $taxid.tsv.gz '{{ base_url }}/{{ db.name }}/data/$taxid.tsv.gz' 
+done
+</pre>
+<h3>Proteomes</h3>
+All proteomes used for this database can be <a href="{{ base_url }}/{{ db.name }}/proteomes.tar.gz">downloaded here</a>.
+{% endif %}
+{% endblock %}

@@ -171,5 +171,12 @@ def profile_search_res(database, taskid):
     res = check_task(config['workers']['port'], taskid)
     return jsonify(res)
 
+@bp.route("/<database>/data")
+def data(database):
+    db = wh.get_db(database)
+    if not db:
+        abort(404)
+    return render_template('data.html', db=db.get_info(), species=db.get_species_list(), base_url=config['warehouse']['data_server_url'])
+
 app.register_blueprint(bp, url_prefix=config['prefix'])
 app.register_blueprint(bpapi, url_prefix=config['prefix']+'/api')

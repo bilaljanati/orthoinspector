@@ -6,16 +6,18 @@ from functools import cache, lru_cache
 
 
 class OrthoDb():
-    def __init__(self, display_name, dbname, conninfo, description):
+    def __init__(self, display_name, dbname, conninfo, description, data_url):
         self.display_name = display_name
         self.dbname = dbname
         self.conn = self._connect(conninfo)
         self.conn.autocommit = True
         self.description = description
+        self.data_url = data_url
 
         self.has_models = False
         self.has_profiles = False
         self.has_distances = False
+        self.has_data = False
         self._analyze_db()
 
     def _connect(self, ci):
@@ -45,6 +47,7 @@ class OrthoDb():
         self.has_models = self._check_for_models()
         self.has_profiles = self._check_for_profiles()
         self.has_distances = self._check_for_distances()
+        self.has_data = self._check_for_data()
 
     def _check_for_names(self):
         sql = """SELECT name
@@ -95,7 +98,8 @@ class OrthoDb():
             'description': self.description,
             'has_models': self.has_models,
             'has_profiles': self.has_profiles,
-            'has_distances': self.has_distances
+            'has_distances': self.has_distances,
+            'has_data': self.has_data
         }
 
     def get_status(self):
@@ -345,3 +349,27 @@ class OrthoDb():
 
     def _format_orthologs_api(self, seqs):
         return [pair.split(',')[0] for pair in seqs.split(' ')]
+
+    # Published data
+
+    def _get_base_data_url(self):
+        return f'{self.data_url}/{self.display_name}'
+
+    def _get_proteomes_url(self):
+        return f'{self._get_base_data_url()}/proteomes.tar.gz'
+
+    def _get_data_url(self):
+        taxid = self.get_species_list()[0]['taxid']
+        return f'{self._get_base_data_url()}/data/{taxid}.tsv.gz'
+
+    def _fetch_data(self, url):
+        import requests
+        try:
+            response = requests.head(url)
+        except:
+            return False
+        return response.status_code == 200
+
+    @cache
+    def _check_for_data(self):
+        return self._fetch_data(self._get_proteomes_url()) and self._fetch_data(self._get_data_url())
