@@ -24,6 +24,7 @@
 		<li class="dropdown">
 			<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Explore <span class="caret"></span></a>
 			<ul class="dropdown-menu">
+				<li><a href="{{ prefix }}/{{ db.name }}/blastsearch">BLAST search</a></li>
 				{% if db.has_profiles %}
 				<li><a href="{{ prefix }}/{{ db.name }}/profilesearch">Profile search</a></li>
 				{% endif %}

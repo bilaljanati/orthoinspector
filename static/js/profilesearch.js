@@ -182,26 +182,5 @@ $(document).ready(function() {
 		$('#form-absent').val(JSON.stringify(data['absent']));
 		$('#form-display').val(JSON.stringify(get_visible_tree_selection()));
 		$('form#profile-srch').submit();
-
-		/*
-		var formData = new FormData();
-        formData.append('taxid', taxid);
-        formData.append('present', data['present']);
-        formData.append('absent', data['absent']);
-
-        $.ajax({
-            type: 'POST',
-            url: prefix+'/'+database+'/profilesearch/submit',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function(response){
-                console.log('Success:', response);
-            },
-            error: function(xhr, status, error){
-                console.error('Error:', error);
-            }
-        });
-		*/
 	});
 });

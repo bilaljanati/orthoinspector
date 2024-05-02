@@ -1,0 +1,19 @@
+#result {
+	display: none;
+}
+.blast-hit a {
+	color: black;
+	text-decoration: none;
+	font-weight: bold;
+}
+.blast-hit a:hover {
+	color: #fff;
+    background-color: #3e83c9;
+    text-decoration: none;
+}
+.blast-even {
+	background-color: #bcd4ec;
+}
+.blast-odd {
+	background-color: #fff;
+}

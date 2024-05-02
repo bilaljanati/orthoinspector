@@ -59,5 +59,7 @@ geneontology:
     port: 5432
     user: nevers
     password: nisNEVER
-workers:
-  port: 5001
+worker_pool:
+  nworkers: 8
+  host: localhost:5001
+  blast_db_dir: "/data/oidb"

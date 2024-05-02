@@ -373,3 +373,27 @@ class OrthoDb():
     @cache
     def _check_for_data(self):
         return self._fetch_data(self._get_proteomes_url()) and self._fetch_data(self._get_data_url())
+
+    # For background jobs
+
+    def _format_sequence_batch(self, batch):
+        prots = []
+        for row in batch:
+            s = ">" + row['description'] + "\n" + self._format_fasta_seq(row['sequence'])
+            prots.append(s)
+        return '\n'.join(prots)
+
+    # Generator returning the whole proteome as FASTA
+    def get_proteome(self, batch_size=100):
+        sql = """SELECT description, sequence
+                 FROM protein
+                 WHERE pk_protein > %(offset)s
+                 ORDER BY pk_protein
+                 LIMIT %(batch_size)s"""
+        offset = 0
+        while True:
+            batch = self._query(sql, {'offset': offset, 'batch_size': batch_size})
+            if len(batch) == 0:
+                break
+            offset += batch_size
+            yield self._format_sequence_batch(batch)

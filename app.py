@@ -143,6 +143,30 @@ def taxo_test(taxid):
 def do_stats():
     return render_template('dbstats.html', stats=wh.get_stats())
 
+@bp.route("/<database>/blastsearch", methods=['GET', 'POST'])
+def blast_search(database):
+    db = wh.get_db(database)
+    if not db:
+        abort(404)
+    query = request.form['query'] if request.method == 'POST' else ''
+    return render_template('blastsearch.html', db=db.get_info(), query=query)
+
+@bp.route("/<database>/blastsearch/submit", methods=['POST'])
+def blast_search_run(database):
+    db = wh.get_db(database)
+    if not db:
+        abort(404)
+    res = submit_task(config['worker_pool']['host'], 'blast_search', request.form.to_dict())
+    return jsonify(res)
+
+@bp.route("/<database>/blastsearch/result/<taskid>")
+def blast_search_res(database, taskid):
+    db = wh.get_db(database)
+    if not db:
+        abort(404)
+    res = check_task(config['worker_pool']['host'], taskid)
+    return jsonify(res)
+
 @bp.route("/<database>/profilesearch")
 def profile_search(database):
     db = wh.get_db(database)
@@ -159,7 +183,7 @@ def profile_search_run(database):
     fields = ['query', 'present', 'absent']
     for key in ['query', 'present', 'absent']:
         params[key] = request.form[key]
-    res = submit_task(config['workers']['port'], 'profile_search', params)
+    res = submit_task(config['worker_pool']['host'], 'profile_search', params)
     parsed_params = {k: json.loads(v) for k, v in request.form.items() if k in ['query', 'display']}
     return render_template('profilesearchresult.html', db=db.get_info(), params=parsed_params, taskid=res['id'])
 
@@ -168,7 +192,7 @@ def profile_search_res(database, taskid):
     db = wh.get_db(database)
     if not db:
         abort(404)
-    res = check_task(config['workers']['port'], taskid)
+    res = check_task(config['worker_pool']['host'], taskid)
     return jsonify(res)
 
 @bp.route("/<database>/data")

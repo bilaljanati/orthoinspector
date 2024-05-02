@@ -10,8 +10,8 @@ sys.path.append(f'{curdir}/src')
 with open('config.yml', 'r') as config_file:
     config = yaml.safe_load(config_file)
 
-job_types = ['profile_search']
-pool = WorkerPool()
+job_types = ['profile_search', 'blast_search']
+pool = WorkerPool(nworkers=config['worker_pool']['nworkers'])
 
 app = Flask(__name__)
 

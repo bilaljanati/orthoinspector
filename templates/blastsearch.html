@@ -1,0 +1,30 @@
+{% extends "dbspecific.html" %}
+
+{% block title %} - BLAST search{% endblock %}
+
+{% block header %}
+{{ super() }}
+<script src="{{prefix}}/static/js/blastsearch.js"></script>
+<link rel="stylesheet" href="{{ prefix }}/static/css/blastsearch.css"></link>
+{% endblock %}
+
+{% block content %}
+<h1>Protein BLAST for sequence similarity search</h1>
+<p>Search your sequence or close homologs in OrthoInspector databases using BLASTP.
+Enter your query protein sequence below in FASTA format or plain text:
+(If multiple sequences are uploaded, only the first one is taken into account)</p>
+<form id="profile-srch" method="POST" action="{{ prefix }}/{{ db.name }}/profilesearch/result" target="_blank">
+	<div class="form-group">
+		<label for="input-blast">Enter your query protein sequence below in FASTA format or plain text</label>
+		<textarea id="blast-input" name="input-blast" rows="6" cols="70" class="form-control blast_textarea"></textarea>
+	</div>
+	<div class="form-group">
+		<label for="expect-cutoff">Expect value cutoff</label>
+		<input type="text" id="expect" name="expect-cutoff" class="form-control blast_expect" value="0.001" />
+	</div>
+	<button type="button" id="submit" class="btn btn-primary" disabled="disabled">Search</button>
+</form>
+<hr />
+<div id="loader"></div>
+<pre id="result"></pre>
+{% endblock %}
