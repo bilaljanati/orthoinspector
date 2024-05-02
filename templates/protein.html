@@ -14,7 +14,7 @@
 	const access="{{protein.access}}";
 	const dbSize="{{protein.taxon|length}}";
 	const seqLength={{protein.length}};
-	const model=Boolean("{{model}}");
+	const model={% if model %}true{% else %}false{% endif %};
 </script>
 {% endblock %}
 
