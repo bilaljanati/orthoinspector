@@ -5,6 +5,7 @@ SELECT p.access,
 	p.sequence,
 	LENGTH(p.sequence) AS length,
 	s.taxid,
+	s.lineage,
 	s.name AS species
 	,s.model
 FROM protein AS p

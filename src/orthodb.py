@@ -151,21 +151,26 @@ class OrthoDb():
         sql = self._get_sql("protein")
         sql = '\n'.join(line for line in sql.splitlines() if 'model' not in line)
         res = self._query(sql, {'access': access})
-        return res[0] if res else res
+        if res:
+            res = res[0]
+            res['lineage'] = self._format_lineage(res['lineage'])
+        return res
 
     def get_orthologs(self, access, model=False):
         res = self._fetch_orthologs(access, model)
-        return self._format_orthologs(res)
+        #TODO fetch query lineage to compute taxonomic distance
+        query = self.get_protein(access)
+        return self._format_orthologs(res, query)
 
     def _fetch_orthologs(self, access, model=False):
         query = "orthologs" + ("_model" if model else "")
         sql = self._get_sql(query)
         return self._query(sql, {'access': access})
 
-    def _format_orthologs(self, data):
-        return [self._format_ortholog_row(row) for row in data]
+    def _format_orthologs(self, data, query):
+        return [self._format_ortholog_row(row, query) for row in data]
 
-    def _format_ortholog_row(self, row):
+    def _format_ortholog_row(self, row, query):
         res = {}
         res['type'] = row['type']
         res['inparalogs'] = self._format_seq_array(row['inparalogs'])
@@ -175,8 +180,14 @@ class OrthoDb():
         lineage = self._format_lineage(row['lineage'])
         res['fullTaxonomy'] = lineage
         res['reducedTaxonomy'] = self._reduce_lineage(lineage)
-        res['taxoDist'] = 1
+        res['taxoDist'] = self._compute_taxo_distance(lineage, query['lineage'])
         return res
+
+    def _compute_taxo_distance(self, lineage1, lineage2):
+        lca = 0
+        while lca < min(len(lineage1), len(lineage2)) and lineage1[lca]['taxid'] == lineage2[lca]['taxid']:
+            lca += 1
+        return len(lineage1)+len(lineage2)-2*lca
 
     def _format_seq_array(self, group):
         return [{"access": pair.split(',')[0], "name": pair.split(',')[1]} for pair in group.split()]
