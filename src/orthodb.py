@@ -84,7 +84,8 @@ class OrthoDb():
 
     def _check_for_distances(self):
         sql = """SELECT pk_distance
-                 FROM distance"""
+                 FROM distance
+                 LIMIT 1"""
         try:
             res = self._query(sql)
             has_dist = True
