@@ -127,8 +127,57 @@ $(document).ready(function() {
 		}
 	}
 
+	function init_tree_filtering() {
+		var tree = $("#tree").fancytree("getTree");
+		$("input[name=search]").keyup(function(e){
+			var n;
+			var tree = $.ui.fancytree.getTree();
+			var opts = {};
+			var filterFunc = tree.filterBranches;
+			var match = $(this).val();
+
+			if (e && e.which === $.ui.keyCode.ESCAPE || $.trim(match) === "") {
+				$("button#btnResetSearch").click();
+				return;
+			}
+			if (match.length>=3) {
+				n = filterFunc.call(tree, match, opts);
+			}
+			$("button#btnResetSearch").attr("disabled", false);
+			var txt;
+			if (n === 1) {
+				txt = "1 match";
+			} else if (n) {
+				txt = n + " matches";
+			} else {
+				txt = "No match";
+			}
+			$("span#matches").text('('+txt+')');
+		}).focus();
+
+		$("button#btnResetSearch").click(function(e){
+				$("input[name=search]").val("");
+				$("span#matches").text("");
+				tree.clearFilter();
+			}).attr("disabled", true);
+
+		$("fieldset input:checkbox").change(function(e){
+			var id = $(this).attr("id"),
+			flag = $(this).is(":checked");
+
+			switch( id ) {
+				case "counter":
+				case "hideExpandedCounter":
+				tree.options.filter[id] = flag;
+				break;
+			}
+			tree.clearFilter();
+			$("input[name=search]").keyup();
+		});
+	}
+
 	function load_tree() {
-		$("#tree").fancytree({
+		var tree = $("#tree").fancytree({
 			extensions: ["glyph", "filter"],
 			checkbox: true,
 			selectMode: 3,
@@ -137,6 +186,7 @@ $(document).ready(function() {
 				map: {}
 			},
 			icon: false,
+			quicksearch: true,
 			filter: {
 				autoApply: false,
 				autoExpand: true,
@@ -166,6 +216,7 @@ $(document).ready(function() {
 			}
 		});
 		$.ui.fancytree.debugLevel = 0;
+		init_tree_filtering();
 	}
 
 	function updateButton() {

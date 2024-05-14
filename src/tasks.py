@@ -45,7 +45,10 @@ def profile_search(database, query, present, absent):
     wh = get_warehouse(config)
     db = wh.get_db(database)
 
-    return db.search_by_profile(taxid, present, absent)
+    prots = db.search_by_profile(taxid, present, absent)
+    if db.has_distances:
+        prots = cluster_result(db, prots)
+    return prots
 
 def blast_check_db(database):
     import os
@@ -93,3 +96,28 @@ def blast_search(database, query, cutoff):
     if return_code != 0:
         raise Exception(stderr)
     return stdout.decode('utf-8')
+
+def fetch_protein_edges(db, access_list):
+    if not db or not db.has_distances:
+        return False
+    return db.get_distances(access_list)
+
+def cluster_result(db, proteins):
+    proteins = {p['access']: p for p in proteins}
+    access_list = proteins.keys()
+    edges = fetch_protein_edges(db, access_list)
+    if not edges:
+        return False
+    import networkx as nx
+    g = nx.Graph()
+    g.add_nodes_from(access_list)
+    for edge in edges:
+        u, v = edge['a'], edge['b']
+        g.add_edge(u, v)
+    components = list(nx.connected_components(g))
+    clusters = [s for s in components if len(s) > 1]
+    default_cluster = {s.pop() for s in components if len(s) == 1}
+    # replace with actual rows
+    clusters = [[proteins[access] for access in c] for c in clusters]
+    default_cluster = [proteins[access] for access in default_cluster]
+    return {'clusters': clusters, 'singletons': default_cluster}

@@ -409,3 +409,7 @@ class OrthoDb():
                 break
             offset += batch_size
             yield self._format_sequence_batch(batch)
+
+    def get_distances(self, access_list):
+        sql = self._get_sql("distance")
+        return self._query(sql, {"access_list": tuple(access_list)})

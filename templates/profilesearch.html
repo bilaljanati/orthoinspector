@@ -39,7 +39,14 @@
 	<div class="panel-heading">
 		<b>Taxonomy</b>
 	</div>
-	<div id="tree" class="panel-body fancytree-colorize-hover fancytree-fade-expander"></div>
+	<div id="tree" class="panel-body fancytree-colorize-hover fancytree-fade-expander">
+		<p>
+			<label>Search:</label>
+			<input name="search" placeholder="Search for a taxon" autocomplete="off">
+			<button id="btnResetSearch">&times;</button>
+			<span id="matches"></span>
+		</p>
+	</div>
 	<div class="panel-footer"></div>
 </div>
 <div id="selection" style="display: none;">

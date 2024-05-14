@@ -8,6 +8,10 @@ $(document).ready(function() {
 	const FAILED  = 2;
 	const UNKNOWN = 3;
 
+	const start_interval = 1500;
+	const interval_multiplier = 1.75;
+	const max_interval = 15000;
+
 	var results = [];
 
 	/* Pagination */
@@ -64,7 +68,8 @@ $(document).ready(function() {
 
 	/* Data retrieval */
 
-	function check_result() {
+	function check_result(interval=-1) {
+		var interval = Math.max(interval, start_interval);
 		$.ajax({
 			url: prefix+"/"+database+"/profilesearch/result/"+taskid,
 			type: 'GET',
@@ -79,6 +84,10 @@ $(document).ready(function() {
 					case UNKNOWN:
 						display_error();
 					case RUNNING:
+						interval = Math.min(max_interval, Math.round(interval*1.75));
+						setTimeout(function() {
+							check_result(interval);
+						}, interval);
 						break;
 				}
 			}
@@ -95,17 +104,73 @@ $(document).ready(function() {
 		change_page();
 	}
 
+	function display_one_cluster(cluster, name, id) {
+		var c = $(`<div class="panel panel-default panel-cluster">
+					<div class="panel-heading">
+						<div class="oi_row">
+							<div class="oi_cell left"></div>
+							<div class="oi_cell center">
+								<h3>
+									<a data-toggle="collapse" href="#collapse0" aria-expanded="false" aria-controls="collapse0" style="color: #673ab7" class="collapsed cluster-name"></a>
+								</h3>
+							</div>
+							<div class="oi_cell right cluster-size"></div>
+						</div>
+					</div>
+					<div class="panel-body">
+						<div class="oi_row">
+							<div class="oi_cell left cluster-desc">
+								<h4></h4>
+							</div>
+						</div>
+						<div class="banner"></div>
+						<div id="collapsen" class="panel panel-collapse proteins collapse" aria-expanded="false"></div>
+					</div>
+				</div>`);
+		var link = c.find('.cluster-name')
+		link.html(name)
+			.attr('href', '#collapse'+id)
+			.attr('aria-controls', 'collapse'+id);
+		c.find('#collapsen').attr('id', 'collapse'+id);
+		c.find('.cluster-size').html(' '+cluster.length+' proteins');
+		c.find('.cluster-desc h4').html('Example of distribution with '+cluster[0].name);
+
+		var prots = c.find('.proteins:first');
+		for (const p of cluster) {
+			prots.append(draw_sequence(p));
+		}
+
+		return c;
+	}
+
+	function display_clusters(res) {
+		var i = 1;
+		var dest = $('#result');
+
+		dest.empty();
+		for (const c of res['clusters']) {
+			dest.append(display_one_cluster(c, 'Cluster '+i, i));
+			i++;
+		}
+		dest.append(display_one_cluster(res['singletons'], 'Singletons', i));
+	}
+
+	function display_plain_results(res, pagesize, page) {
+		display_sequences(res.slice((page-1)*pagesize, page*pagesize));
+		$('#toolbar').show();
+		$('#page').show();
+	}
+
 	function display_results(res, pagesize, page=1) {
 		$('.loader').hide();
-
 		$('#numres b').html(res.length);
 		$('#numres').show();
-		if (res.length > 0) {
-			console.log((page-1)*pagesize, page*pagesize);
-			display_sequences(res.slice((page-1)*pagesize, page*pagesize));
-			$('#toolbar').show();
+
+		if ('clusters' in res) {
+			display_clusters(res);
+		} else if (res.length > 0) {
+			display_plain_results(results, get_page_size(), page);
 		}
-		$('#page').show();
 	}
 
 	function display_sequences(sequences) {
@@ -223,16 +288,7 @@ $(document).ready(function() {
 		URL.revokeObjectURL(url);
 	}
 
-	var delay = ( function() {
-		var timer = 0;
-		return function(callback, ms) {
-			clearTimeout (timer);
-			timer = setTimeout(callback, ms);
-		};
-	})();
-	delay(function(){
-		check_result();
-	}, 200 );
+	check_result();
 
 	$('#pagesize select').change(change_page);
 	$('#pagechoice a').click(change_page);
