@@ -16,6 +16,7 @@ $(function() {
 		$('#loading').toggle(active);
 		$('#submit').prop('disabled', active);
 		$('#result').toggle(!active);
+		$('#loader').toggle(active);
 	}
 
 	function run_blast() {
@@ -94,7 +95,7 @@ $(function() {
 		if (i == lines.length) {
 			return {'hits': [], 'alignments': []};
 		}
-		i += 2;
+		i += 1;
 		// parse hits
 		while (lines[i] !== '') {
 			hits.push(format_hit_line(lines[i]));
@@ -144,21 +145,22 @@ $(function() {
 
 		d.html('Sequences producing significant alignments:                          (Bits)  Value\n\n');
 
-		var i = 0;
+		var i = 1;
 		for (const h of data['hits']) {
-			let hclass = (i++%2)==0 ? 'blast-odd' : 'blast-even';
+			let hclass = (i%2)==0 ? 'blast-odd' : 'blast-even';
 			let name = h['name'];
 
 			d.append('<span class="blast-hit '+hclass+'">'
 				+'<a href="'+get_protein_url(name)+'" target="_blank">'+name+'</a> '
 				+h['description']+'  '
 				+'<a>'+h['score']+'</a>'+' '.repeat(8-h['score'].length)
-				+'<a>'+h['evalue']+'</a>'
-				+'   <a href="#hit'+i+'">Go to alignment</a>'
+				+'<a>'+h['evalue']+'</a>'+' '.repeat(9-h['evalue'].length)
+				+'<a href="#hit'+i+'">Go to alignment</a>'
 				+'</span>\n');
+			i++;
 		}
 		d.append('\n\n');
-		var i = 0;
+		var i = 1;
 		for (const a of data['alignments']) {
 			let name = extract_alignment_name(a);
 			d.append('<a id="hit'+(i++)+'"></a>'+a);

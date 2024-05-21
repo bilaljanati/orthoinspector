@@ -25,6 +25,8 @@ Enter your query protein sequence below in FASTA format or plain text:
 	<button type="button" id="submit" class="btn btn-primary" disabled="disabled">Search</button>
 </form>
 <hr />
-<div id="loader"></div>
+<div id="loader" class="loader" style="display: none;">
+	<img src="{{ prefix }}/static/images/gears.svg" />
+</div>
 <pre id="result"></pre>
 {% endblock %}
