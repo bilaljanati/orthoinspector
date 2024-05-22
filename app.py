@@ -115,10 +115,11 @@ def download_fasta(database):
     if not db:
         abort(404)
     access_list = request.form['access_list'].split(',')
-    filename = request.form['filename']
     fasta = db.get_fasta(access_list)
     res = Response(fasta, mimetype='text/plain')
-    res.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
+    filename = request.form.get('filename', None)
+    if filename:
+        res.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
     return res
 
 @bp.route("/annotations/go/<access>")
@@ -131,13 +132,6 @@ def interpro_annotations(access):
     if not annots:
         abort(404)
     return jsonify(annots)
-
-# Test route for taxonomy
-@bp.route("/taxo/<taxid>")
-def taxo_test(taxid):
-    if not taxid.isdigit():
-        return jsonify([]), 404
-    return jsonify(taxo.get_lineage(taxid))
 
 @bp.route("/stats")
 def do_stats():
