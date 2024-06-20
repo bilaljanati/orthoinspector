@@ -1,4 +1,4 @@
-{% extends "dbspecific.html" %}
+{% extends "base.html" %}
 
 {% block title %} - BLAST search{% endblock %}
 
@@ -13,7 +13,7 @@
 <p>Search your sequence or close homologs in OrthoInspector databases using BLASTP.
 Enter your query protein sequence below in FASTA format or plain text:
 (If multiple sequences are uploaded, only the first one is taken into account)</p>
-<form id="profile-srch" method="POST" action="{{ prefix }}/{{ db.name }}/profilesearch/result" target="_blank">
+<form id="profile-srch" method="POST" action="{{ prefix }}/profilesearch/result" target="_blank">
 	<div class="form-group">
 		<label for="input-blast">Enter your query protein sequence below in FASTA format or plain text</label>
 		<textarea id="blast-input" name="input-blast" rows="6" cols="70" class="form-control blast_textarea"></textarea>

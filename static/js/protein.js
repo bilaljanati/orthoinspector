@@ -26,7 +26,7 @@ $(function() {
 	function downloadSequences(format) {
 		var form = document.createElement("form");
 		form.setAttribute("method", "POST");
-		form.setAttribute("action", prefix+'/'+database+'/download/'+format);
+		form.setAttribute("action", prefix+'/'+database+'/'+release+'/download/'+format);
 		form.setAttribute("target", "_blank");
 
 		var access_list = [access];
@@ -329,7 +329,7 @@ function launchAlignment() {
 
     $.ajax({
 		type:"POST",
-		url: prefix+'/'+database+'/download/fasta',
+		url: prefix+'/'+database+'/'+release+'/download/fasta',
 		data: data,
 		success: function(html, statut) {
 			var fasta = html;

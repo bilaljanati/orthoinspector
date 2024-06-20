@@ -14,26 +14,6 @@
 <div class="row">
 	<div style="text-align: left" class="tile col-xs-12">
 		<h2 style="text-align: center">Welcome to OrthoInspector</h2>
-		This is the portal for tailor-made OrthoInspector databases.
 	</div>
-</div>
-<div id="db-list">
-{% for db in dblist %}
-	{% if loop.index is divisibleby(3) %}
-	<div class="row">
-	{% endif %}
-		<div class="badge-container col-xs-4{% if not db.active %} inactive{% endif %}">
-			<a href="{{ prefix }}/{{ db.name }}">
-				<div class="db-badge" title="{% if not db.active %}Under construction{% endif %}">
-					<div class="db-logo"></div>
-					<h3>{{ db.name }}</h3>
-					<p class="description">{{ db.description.partition('\n')[0] }}</p>
-				</div>
-			</a>
-		</div>
-	{% if loop.index is divisibleby(3) %}
-	</div>
-	{% endif %}
-{% endfor %}
 </div>
 {% endblock %}

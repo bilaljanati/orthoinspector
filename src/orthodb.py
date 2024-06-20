@@ -6,9 +6,10 @@ from functools import cache, lru_cache
 
 
 class OrthoDb():
-    def __init__(self, display_name, dbname, conninfo, description, data_url):
+    def __init__(self, display_name, release, dbname, conninfo, description, data_url):
         self.display_name = display_name
         self.dbname = dbname
+        self.release = release
         self.conn = self._connect(conninfo)
         self.conn.autocommit = True
         self.description = description
@@ -96,6 +97,7 @@ class OrthoDb():
     def get_info(self):
         return {
             'name': self.display_name,
+            'release': self.release,
             'description': self.description,
             'has_models': self.has_models,
             'has_profiles': self.has_profiles,

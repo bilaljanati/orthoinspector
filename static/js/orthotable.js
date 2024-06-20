@@ -8,7 +8,7 @@ function sequence_formatter(value, row) {
 		let content;
 
 		if  (qAccess != access) {
-			let OIlink = "<a title='OrthoInspector entry' class='id' data-access='"+qAccess+"' href='"+prefix+"/"+database+"/protein/"+qAccess+full+"'>"+qIdentifier+"</a>&nbsp;";
+			let OIlink = "<a title='OrthoInspector entry' class='id' data-access='"+qAccess+"' href='"+prefix+"/"+database+"/"+release+"/protein/"+qAccess+full+"'>"+qIdentifier+"</a>&nbsp;";
 			let Unilink = "<a title='Uniprot entry' href='http://uniprot.org/uniprot/"+qAccess+"' target='_blank'><span class='glyphicon glyphicon-new-window'></span></a>";
 			content = OIlink+Unilink;
 		} else {

@@ -3,7 +3,7 @@ from orthodb import OrthoDb
 
 class Warehouse():
     def __init__(self, config):
-        self.dblist = config['databases']
+        self.dbcatalog = config['databases']
         self.conninfo = config['hosts']
         self.data_url = config['data_server_url']
         self.databases = {}
@@ -24,18 +24,19 @@ class Warehouse():
          }
 
     def get_dblist(self):
-        res = []
-        for name in self.dblist.keys():
-            res.append(self.get_dbinfo(name))
+        res = {}
+        for release, dbs in self.dbcatalog.items():
+            res[release] = list(dbs.keys())
         return res
 
-    def get_db(self, name):
+    def get_db(self, name, release):
         try:
-            dbname = self.dblist[name]['dbname']
+            dbinfo = self.dbcatalog[release][name]
+            dbname = dbinfo['dbname']
             if dbname not in self.databases:
-                hostname = self.dblist[name]['host']
-                desc = self.dblist[name]['description']
-                self.databases[dbname] = OrthoDb(name, dbname, conninfo=self._get_conn_info(hostname), description=desc, data_url=self.data_url)
+                hostname = dbinfo['host']
+                desc = dbinfo['description']
+                self.databases[dbname] = OrthoDb(name, release, dbname, conninfo=self._get_conn_info(hostname), description=desc, data_url=self.data_url)
             db = self.databases[dbname]
         except KeyError:
             return False

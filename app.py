@@ -43,19 +43,19 @@ def page_not_found(e):
 def home():
     return render_template('index.html', dblist=wh.get_dblist())
 
-@bp.route("/<database>")
-def db_home(database):
-    db = wh.get_db(database)
+@bp.route("/<database>/<int:release>")
+def db_home(database, release):
+    db = wh.get_db(database, release)
     if not db:
         abort(404)
     status = db.get_status()
     stats = db.get_stats()
     species = db.get_species_list()
-    return render_template('dbindex.html', db=db.get_info(), status=status, stats=stats, species=species)
+    return render_template('dbindex.html', dblist=wh.get_dblist(), db=db.get_info(), status=status, stats=stats, species=species)
 
-@bp.route("/<database>/tree/sun")
-def species_tree_sun(database):
-    db = wh.get_db(database)
+@bp.route("/<database>/<int:release>/tree/sun")
+def species_tree_sun(database, release):
+    db = wh.get_db(database, release)
     if not db:
         abort(404)
     tree = db.get_sun_tree(maxdepth=12)
@@ -69,49 +69,41 @@ def species_tree_profile(database):
     tree = db.get_profile_tree()
     return jsonify(tree)
 
-@bp.route("/<database>/search/protein")
-def search_protein(database):
-    db = wh.get_db(database)
+@bp.route("/<database>/<int:release>/search/protein")
+def search_protein(database, release):
+    db = wh.get_db(database, release)
     if not db:
         abort(404)
     pattern = request.args.get("term")
     return jsonify(db.search_protein(pattern))
 
-@bp.route("/<database>/protein/random")
-def random_protein(database):
-    db = wh.get_db(database)
-    if not db:
-        abort(404)
-    access = db.get_random_access()
-    return redirect(url_for('bp.protein', database=database, access=access), code=302)
-
-@bp.route("/<database>/protein/<access>")
-@bp.route("/<database>/protein/<access>/full")
-def protein(database, access):
-    db = wh.get_db(database)
+@bp.route("/<database>/<int:release>/protein/<access>")
+@bp.route("/<database>/<int:release>/protein/<access>/full")
+def protein(database, release, access):
+    db = wh.get_db(database, release)
     if not db:
         abort(404)
     model_only = not request.base_url.endswith('full')
     if not db.has_models and model_only:
-        return redirect(url_for('bp.protein', database=database, access=access), code=302)
+        return redirect(url_for('bp.protein', database=database, release=release, access=access), code=302)
     prot = db.get_protein(access)
     if not prot:
         abort(404)
-    return render_template('protein.html', db=db.get_info(), protein=prot, model=model_only)
+    return render_template('protein.html', dblist=wh.get_dblist(), db=db.get_info(), protein=prot, model=model_only)
 
-@bp.route("/<dbname>/orthologs/<access>")
-@bp.route("/<dbname>/orthologs/<access>/full")
-def orthologs(dbname, access):
-    db = wh.get_db(dbname)
+@bp.route("/<dbname>/<int:release>/orthologs/<access>")
+@bp.route("/<dbname>/<int:release>/orthologs/<access>/full")
+def orthologs(dbname, release, access):
+    db = wh.get_db(dbname, release)
     if not db:
         abort(404)
     model_only = not request.base_url.endswith('full')
     orthos = db.get_orthologs(access, model=model_only)
     return jsonify(orthos)
 
-@bp.route("/<database>/download/fasta", methods=['POST'])
-def download_fasta(database):
-    db = wh.get_db(database)
+@bp.route("/<database>/<int:release>/download/fasta", methods=['POST'])
+def download_fasta(database, release):
+    db = wh.get_db(database, release)
     if not db:
         abort(404)
     access_list = request.form['access_list'].split(',')
@@ -137,60 +129,45 @@ def interpro_annotations(access):
 def do_stats():
     return render_template('dbstats.html', stats=wh.get_stats())
 
-@bp.route("/<database>/blastsearch", methods=['GET', 'POST'])
-def blast_search(database):
-    db = wh.get_db(database)
-    if not db:
-        abort(404)
+@bp.route("/blastsearch", methods=['GET', 'POST'])
+def blast_search():
     query = request.form['query'] if request.method == 'POST' else ''
-    return render_template('blastsearch.html', db=db.get_info(), query=query)
+    return render_template('blastsearch.html', dblist=wh.get_dblist(), query=query)
 
-@bp.route("/<database>/blastsearch/submit", methods=['POST'])
-def blast_search_run(database):
+@bp.route("/blastsearch/submit", methods=['POST'])
+def blast_search_run():
     db = wh.get_db(database)
     if not db:
         abort(404)
     res = submit_task(config['worker_pool']['host'], 'blast_search', request.form.to_dict())
     return jsonify(res)
 
-@bp.route("/<database>/blastsearch/result/<taskid>")
-def blast_search_res(database, taskid):
-    db = wh.get_db(database)
-    if not db:
-        abort(404)
+@bp.route("/blastsearch/result/<taskid>")
+def blast_search_res(taskid):
     res = check_task(config['worker_pool']['host'], taskid)
     return jsonify(res)
 
-@bp.route("/<database>/profilesearch")
-def profile_search(database):
-    db = wh.get_db(database)
-    if not db:
-        abort(404)
-    return render_template('profilesearch.html', db=db.get_info())
+@bp.route("/profilesearch")
+def profile_search():
+    return render_template('profilesearch.html', dblist=wh.get_dblist())
 
-@bp.route("/<database>/profilesearch/result", methods=['POST'])
-def profile_search_run(database):
-    db = wh.get_db(database)
-    if not db:
-        abort(404)
+@bp.route("/profilesearch/result", methods=['POST'])
+def profile_search_run():
     params = {'database': database}
     fields = ['query', 'present', 'absent']
     for key in ['query', 'present', 'absent']:
         params[key] = request.form[key]
     res = submit_task(config['worker_pool']['host'], 'profile_search', params)
     parsed_params = {k: json.loads(v) for k, v in request.form.items() if k in ['query', 'display']}
-    return render_template('profilesearchresult.html', db=db.get_info(), params=parsed_params, taskid=res['id'])
+    return render_template('profilesearchresult.html', params=parsed_params, taskid=res['id'])
 
-@bp.route("/<database>/profilesearch/result/<taskid>")
-def profile_search_res(database, taskid):
-    db = wh.get_db(database)
-    if not db:
-        abort(404)
+@bp.route("/profilesearch/result/<taskid>")
+def profile_search_res(taskid):
     res = check_task(config['worker_pool']['host'], taskid)
     return jsonify(res)
 
-@bp.route("/<database>/data")
-def data(database):
+@bp.route("/data")
+def data():
     db = wh.get_db(database)
     if not db:
         abort(404)

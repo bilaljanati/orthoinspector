@@ -1,4 +1,4 @@
-{% extends "dbspecific.html" %}
+{% extends "base.html" %}
 
 {% block title %} - Profile search{% endblock %}
 
@@ -27,6 +27,12 @@
 </p>
 <hr />
 <div class="row">
+	<div class="col-xs-2 form">
+		<select class="form-control" id="sel-db-profile"></select>
+	</div>
+	<div class="col-xs-2 form">
+		<select class="form-control" id="sel-release-profile"></select>
+	</div>
 	<div class="col-xs-5">
 		<form class="form" role="search">
 			<div class="input-group" id="menu-srch-input">
@@ -61,7 +67,7 @@
 	<ul id="absent"></ul>
 </div>
 <button type="button" id="submit" class="btn btn-primary" disabled="disabled">Search</button>
-<form id="profile-srch" method="POST" action="{{ prefix }}/{{ db.name }}/profilesearch/result" target="_blank">
+<form id="profile-srch" method="POST" action="{{ prefix }}/profilesearch/result" target="_blank">
 	<input type="hidden" id="form-query" name="query" />
 	<input type="hidden" id="form-present" name="present" />
 	<input type="hidden" id="form-absent" name="absent" />

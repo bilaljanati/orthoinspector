@@ -10,7 +10,7 @@ $(function() {
 	}
 
 	function load_species() {
-		const url = prefix+'/'+database+'/tree/sun';
+		const url = prefix+'/'+database+'/'+release+'/tree/sun';
 
 		$.get(url, function(res) {
 			draw_sun(res);
