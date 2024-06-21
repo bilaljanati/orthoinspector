@@ -1,4 +1,45 @@
+/* DB & releases fields */
+
+const default_db = "Eukaryota";
+
+function fillSelect(select, values, selected=undefined) {
+	$(select).find("option").remove();
+	for (const v of values) {
+		$(select).append(
+			$('<option>', {
+				value: v,
+				text: v
+			})
+		);
+	}
+	if (!selected || $(select).find('option[value='+selected+']').length == 0) {
+		selected = default_db;
+	}
+	$(select).val(selected).change();
+}
+
+function updateDBField(e) {
+	const dbfieldid = $(e.target).data("dbfield");
+	var select_db = $("#"+dbfieldid);
+	var release = $(e.target).val();
+	fillSelect(select_db, dbs[release], select_db.val());
+}
+
+function initDBFields(select_db, select_release) {
+	var dblist = Object.keys(dbs);
+	dblist = dblist.map(Number);
+	dblist.sort();
+	var last_release = dblist[dblist.length-1];
+	fillSelect(select_release, dblist, last_release);
+	fillSelect(select_db, dbs[last_release], default_db);
+
+	$(select_release).data("dbfield", $(select_db)[0].id);
+	$(select_release).change(updateDBField);
+}
+
 $(document).ready(function() {
+
+	/* Protein search */
 
 	function getSelectedDatabase(form) {
 		var sdb = $(form).find(".sel-db").val();
@@ -91,9 +132,9 @@ $(document).ready(function() {
 		update_protein_autocomplete(elem);
 	}
 
-	$('.protein-srch').each(function(i,v) {
+	$('.protein-srch').each(function(i, v) {
 		init_protein_autocomplete(v);
-		$(v).find('.sel-release').change(update_db_list);
+		initDBFields($(v).find('.sel-db'), $(v).find('.sel-release'));
 		$(v).find('.sel-db').change(db_change_callback);
 	});
 });

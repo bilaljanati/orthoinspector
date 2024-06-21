@@ -30,7 +30,9 @@ class Warehouse():
         return res
 
     def get_db(self, name, release):
+        import traceback
         try:
+            release = int(release)
             dbinfo = self.dbcatalog[release][name]
             dbname = dbinfo['dbname']
             if dbname not in self.databases:
@@ -39,5 +41,6 @@ class Warehouse():
                 self.databases[dbname] = OrthoDb(name, release, dbname, conninfo=self._get_conn_info(hostname), description=desc, data_url=self.data_url)
             db = self.databases[dbname]
         except KeyError:
+            traceback.print_exc()
             return False
         return db

@@ -61,9 +61,9 @@ def species_tree_sun(database, release):
     tree = db.get_sun_tree(maxdepth=12)
     return jsonify(tree)
 
-@bp.route("/<database>/tree/profile")
-def species_tree_profile(database):
-    db = wh.get_db(database)
+@bp.route("/<database>/<int:release>/tree/profile")
+def species_tree_profile(database, release):
+    db = wh.get_db(database, release)
     if not db:
         abort(404)
     tree = db.get_profile_tree()
@@ -153,13 +153,13 @@ def profile_search():
 
 @bp.route("/profilesearch/result", methods=['POST'])
 def profile_search_run():
-    params = {'database': database}
-    fields = ['query', 'present', 'absent']
-    for key in ['query', 'present', 'absent']:
+    params = {}
+    for key in ['database', 'release', 'query', 'present', 'absent', 'display']:
         params[key] = request.form[key]
-    res = submit_task(config['worker_pool']['host'], 'profile_search', params)
-    parsed_params = {k: json.loads(v) for k, v in request.form.items() if k in ['query', 'display']}
-    return render_template('profilesearchresult.html', params=parsed_params, taskid=res['id'])
+    params = {k: json.loads(v) for k, v in params.items()}
+    job_params = {k: v for k, v in params.items() if k != "display"}
+    res = submit_task(config['worker_pool']['host'], 'profile_search', job_params)
+    return render_template('profilesearchresult.html', params=params, taskid=res['id'], dblist=wh.get_dblist())
 
 @bp.route("/profilesearch/result/<taskid>")
 def profile_search_res(taskid):

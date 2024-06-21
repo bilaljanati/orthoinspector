@@ -14,6 +14,7 @@
 <p>Find all proteins from a given species following a selected phylogenetic profile.</p>
 <h3>How to use</h3>
 <ol>
+		<li><h4>Select a database and a release number. <small>You can query a domain specific database (Eukaryota, Bacteria, Archaea) or cross-domain database.</small></h4></li>
 		<li><h4>Select your query species.<small> You will obtain proteins of this species as results.</small></h4></li>
 		<li><h4>Define a phylogenetic profile.<small> Select clades or species in the taxonomic tree.</small></h4></li>
 	</ol>
@@ -68,6 +69,8 @@
 </div>
 <button type="button" id="submit" class="btn btn-primary" disabled="disabled">Search</button>
 <form id="profile-srch" method="POST" action="{{ prefix }}/profilesearch/result" target="_blank">
+	<input type="hidden" id="form-database" name="database" />
+	<input type="hidden" id="form-release" name="release" />
 	<input type="hidden" id="form-query" name="query" />
 	<input type="hidden" id="form-present" name="present" />
 	<input type="hidden" id="form-absent" name="absent" />

@@ -47,5 +47,5 @@ geneontology:
     password: nisNEVER
 worker_pool:
   nworkers: 8
-  host: localhost:5001
+  host: localhost:5006
   blast_db_dir: "/data/oidb"

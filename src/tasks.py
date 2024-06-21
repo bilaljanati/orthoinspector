@@ -1,4 +1,5 @@
 from functools import lru_cache
+import traceback
 
 
 # FRONTEND
@@ -6,8 +7,11 @@ def submit_task(host, tasktype, params):
     import requests
     import json
     url = f"http://{host}/submit"
-    params['type'] = tasktype
-    response = requests.post(url, params)
+    postdata = {
+        "type": tasktype,
+        "data": json.dumps(params)
+    }
+    response = requests.post(url, postdata)
     return json.loads(response.text)
 
 def check_task(host, taskid):
@@ -18,11 +22,15 @@ def check_task(host, taskid):
     return json.loads(response.text)
 
 # BACKEND
-def do_work(val):
-    func = val.pop('type')
+def do_work(data):
+    import json
+    func = data["type"]
+    params = json.loads(data["data"])
+    
     try:
-        return globals()[func](**val)
+        return globals()[func](**params)
     except Exception:
+        traceback.print_exc()
         return False
 
 def get_config():
@@ -35,18 +43,18 @@ def get_warehouse(config):
     from src.warehouse import Warehouse
     return Warehouse(config['warehouse'])
 
-def profile_search(database, query, present, absent):
+def profile_search(database, release, query, present, absent):
     import json
-    taxid = json.loads(query).get('taxid')
-    present = [p['taxid'] for p in json.loads(present)]
-    absent = [p['taxid'] for p in json.loads(absent)]
+    taxid = query['taxid']
+    present = [p['taxid'] for p in present]
+    absent = [p['taxid'] for p in absent]
 
     config = get_config()
     wh = get_warehouse(config)
-    db = wh.get_db(database)
+    db = wh.get_db(database, release)
 
     prots = db.search_by_profile(taxid, present, absent)
-    if db.has_distances:
+    if len(prots) > 0 and db.has_distances:
         prots = cluster_result(db, prots)
     return prots
 

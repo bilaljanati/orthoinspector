@@ -1,4 +1,4 @@
-{% extends "dbspecific.html" %}
+{% extends "base.html" %}
 
 {% block title %} - Profile search{% endblock %}
 
@@ -7,12 +7,15 @@
 <link href="{{ prefix }}/static/css/profilesearchresult.css" rel="stylesheet">
 <script src="{{ prefix }}/static/js/profilesearchresult.js"></script>
 <script>
+const database = '{{ params.database }}';
+const release = '{{ params.release }}';
 const query_taxid = '{{ params.query.taxid }}';
 const taskid = '{{ taskid }}';
 </script>
 {% endblock %}
 
 {% block content %}
+<h2>Profile search in {{ params.database }} {{ params.release }}</h2>
 <div class="results-header oi_row">
 	<div class="oi_cell" style="vertical-align:middle;">
 		<p>

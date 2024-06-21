@@ -23,9 +23,11 @@ class WorkerPool():
             random_id = ''.join(random.choices(characters, k=length))
         return random_id
 
-    def submit(self, val):
+    def submit(self, job_type, val):
         taskid = self._generate_id()
-        self.futures[taskid] = self.pool.submit(tasks.do_work, val)
+        params = val
+        params["type"] = job_type
+        self.futures[taskid] = self.pool.submit(tasks.do_work, params)
         return taskid
 
     def get_result(self, taskid):
@@ -37,7 +39,7 @@ class WorkerPool():
             status = __class__.DONE
             res = f.result()
             del self.futures[taskid]
-            if res == False:
+            if res is False:
                 status = __class__.FAILED
         else:
             status = __class__.RUNNING

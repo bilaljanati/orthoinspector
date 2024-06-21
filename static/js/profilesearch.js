@@ -6,6 +6,9 @@ $(document).ready(function() {
 	/* Species search */
 	var query = '';
 
+	function cleanup_search() {
+	}
+
 	function init_species_search() {
 		const maxResults = 10;
 
@@ -18,6 +21,11 @@ $(document).ready(function() {
 				'label': node.title
 			});
 		}
+
+		/* Cleanup existing autocomplete */
+		try {
+			$('#srch-species').autocomplete("destroy");
+		} catch (err) {}
 
 		$('#srch-species').autocomplete({
 			minLength: 2,
@@ -35,8 +43,8 @@ $(document).ready(function() {
 	}
 
 	$('#srch-species').change(function() {
-		if ($(this).val() == '') {
-			taxid = {};
+		if ($(this).val().trim() == '') {
+			query = '';
 			updateButton();
 		}
 	});
@@ -176,7 +184,18 @@ $(document).ready(function() {
 		});
 	}
 
+	function cleanup_tree() {
+		try {
+			var tree = $("#tree").fancytree("destroy");
+		} catch (err) {}
+	}
+
 	function load_tree() {
+		cleanup_tree();
+
+		var database = $('#sel-db-profile').val();
+		var release = $('#sel-release-profile').val();
+
 		var tree = $("#tree").fancytree({
 			extensions: ["glyph", "filter"],
 			checkbox: true,
@@ -200,7 +219,7 @@ $(document).ready(function() {
 				mode: "hide"
 			},
 			source: {
-				url: prefix+"/"+database+"/tree/profile",
+				url: prefix+"/"+database+"/"+release+"/tree/profile",
 			},
 			activate: function(event, data) {
 				$("#statusLine").text(event.type + ": " + data.node);
@@ -220,14 +239,24 @@ $(document).ready(function() {
 	}
 
 	function updateButton() {
-		var isok = (selection['present'].length+selection['absent'].length > 0) && Object.keys(query).length !== 0;
+		var isok = (selection['present'].length+selection['absent'].length > 0)
+				&& query != ''
+				&& Object.keys(query).length !== 0;
 		$('#submit').prop('disabled', !isok);
 	}
 
+	initDBFields($('#sel-db-profile'), $('#sel-release-profile'));
 	load_tree();
+	$('#sel-db-profile').change(load_tree);
+	$('#sel-db-profile').change(function() {
+		$('#srch-species').val('');
+		query = '';
+	});
 	$('#submit').click(function() {
 		const data = selection;
 
+		$('#form-database').val(JSON.stringify($('#sel-db-profile').val()));
+		$('#form-release').val(JSON.stringify(parseInt($('#sel-release-profile').val())));
 		$('#form-query').val(JSON.stringify(query));
 		$('#form-present').val(JSON.stringify(data['present']));
 		$('#form-absent').val(JSON.stringify(data['absent']));

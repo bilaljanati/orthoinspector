@@ -71,7 +71,7 @@ $(document).ready(function() {
 	function check_result(interval=-1) {
 		var interval = Math.max(interval, start_interval);
 		$.ajax({
-			url: prefix+"/"+database+"/profilesearch/result/"+taskid,
+			url: prefix+"/profilesearch/result/"+taskid,
 			type: 'GET',
 			success: function(response) {
 				switch (response.status) {
@@ -161,9 +161,21 @@ $(document).ready(function() {
 		$('#page').show();
 	}
 
+	function count_result_proteins(res) {
+		if (Array.isArray(res)) {
+			return res.length;
+		}
+		var n = res['singletons'].length;
+		for (const cluster of res['clusters']) {
+			n += cluster.length;
+		}
+		return n;
+	}
+
 	function display_results(res, pagesize, page=1) {
 		$('.loader').hide();
-		$('#numres b').html(res.length);
+		var nelems = count_result_proteins(res);
+		$('#numres b').html(nelems);
 		$('#numres').show();
 
 		if ('clusters' in res) {
@@ -205,7 +217,7 @@ $(document).ready(function() {
 				</div>`);
 		head.find('.prot-desc').html(s.short_desc);
 		head.find('.prot-length').html(s.length+' aa');
-		head.find('a.inlink').html(s.name).attr('href', prefix+'/'+database+'/protein/'+s.access)
+		head.find('a.inlink').html(s.name).attr('href', prefix+'/'+database+'/'+release+'/protein/'+s.access)
 		head.find('a.outlink').attr('href', 'http://uniprot.org/uniprot/'+s.access);
 
 		let body = `<div class="panel-body">

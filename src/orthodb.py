@@ -413,5 +413,7 @@ class OrthoDb():
             yield self._format_sequence_batch(batch)
 
     def get_distances(self, access_list):
+        if len(access_list) == 0:
+            return []
         sql = self._get_sql("distance")
         return self._query(sql, {"access_list": tuple(access_list)})

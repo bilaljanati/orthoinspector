@@ -3,6 +3,7 @@ import sys
 from flask import Flask, request, Blueprint, abort, redirect, jsonify, Response
 import yaml
 from src.pool import WorkerPool
+from src.tasks import do_work
 
 curdir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(f'{curdir}/src')
@@ -18,9 +19,10 @@ app = Flask(__name__)
 @app.route("/submit", methods=['POST'])
 def submit():
     params = request.form.to_dict()
-    if params['type'] not in job_types:
+    job_type = params["type"]
+    if job_type not in job_types:
         abort(404)
-    taskid = pool.submit(params)
+    taskid = pool.submit(job_type, params)
     return jsonify({'status': 'OK', 'id': taskid})
 
 @app.route("/result/<taskid>")
