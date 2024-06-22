@@ -20,7 +20,7 @@ class Warehouse():
          return {
              'name': name,
              'description': self.dblist[name].get('description', ""),
-             'active': self.dblist[name].get('active', True)
+             'active': self.dblist[name].get('active', True),
          }
 
     def get_dblist(self):
@@ -38,9 +38,13 @@ class Warehouse():
             if dbname not in self.databases:
                 hostname = dbinfo['host']
                 desc = dbinfo['description']
-                self.databases[dbname] = OrthoDb(name, release, dbname, conninfo=self._get_conn_info(hostname), description=desc, data_url=self.data_url)
+                self.databases[dbname] = OrthoDb(name, release, dbname, conninfo=self._get_conn_info(hostname), description=desc, data_url=self.data_url, has_transverse=self.has_transverse(name, release))
             db = self.databases[dbname]
         except KeyError:
             traceback.print_exc()
             return False
         return db
+
+    def has_transverse(self, name, release):
+        return (name is 'Transverse' or
+            (release in self.dbcatalog and 'Transverse' in self.dbcatalog[release]))

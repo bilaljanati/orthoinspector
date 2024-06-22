@@ -6,7 +6,7 @@ from functools import cache, lru_cache
 
 
 class OrthoDb():
-    def __init__(self, display_name, release, dbname, conninfo, description, data_url):
+    def __init__(self, display_name, release, dbname, conninfo, description, data_url, has_transverse):
         self.display_name = display_name
         self.dbname = dbname
         self.release = release
@@ -19,6 +19,7 @@ class OrthoDb():
         self.has_profiles = False
         self.has_distances = False
         self.has_data = False
+        self.has_transverse = has_transverse
         self._analyze_db()
 
     def _connect(self, ci):
@@ -102,7 +103,8 @@ class OrthoDb():
             'has_models': self.has_models,
             'has_profiles': self.has_profiles,
             'has_distances': self.has_distances,
-            'has_data': self.has_data
+            'has_data': self.has_data,
+            'has_transverse': self.has_transverse
         }
 
     def get_status(self):
@@ -161,7 +163,6 @@ class OrthoDb():
 
     def get_orthologs(self, access, model=False):
         res = self._fetch_orthologs(access, model)
-        #TODO fetch query lineage to compute taxonomic distance
         query = self.get_protein(access)
         return self._format_orthologs(res, query)
 
@@ -221,6 +222,10 @@ class OrthoDb():
             l = [(int(l[i]), l[i+1]) for i in range(0, len(l), 2)]
             res.append(l)
         return res
+
+    def get_proximal_proteins(self, access):
+        sql = self._get_sql("proximal")
+        return self._query(sql, {'access': access})
 
     @cache
     def _get_species_tree(self, exclude=[], maxdepth=math.inf):

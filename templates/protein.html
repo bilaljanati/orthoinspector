@@ -156,6 +156,34 @@
 		</div>
 	</div>
 	<div class="panel-group">
+        {% if db.has_distances and db.has_transverse %}
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h1 class="panel-title">
+					<a data-toggle="collapse" href="#collapseDistWhole" class="collapsed" aria-expanded="false"><b>Proteins with similar distribution in the three Life domains</b></a>
+				</h1>
+			</div>
+			<div id="collapseDistWhole" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+				<div class="panel-body">
+				</div>
+			</div>
+		</div>
+        {% endif %}
+        {% if db.has_distances and db.name != "Transverse" %}
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h1 class="panel-title">
+					<a data-toggle="collapse" href="#collapseDistDomain" class="collapsed" aria-expanded="false"><b>Proteins with similar distribution in {{ db.name }}</b></a>
+				</h1>
+			</div>
+			<div id="collapseDistDomain" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+				<div class="panel-body">
+				</div>
+			</div>
+		</div>
+        {% endif %}
+	</div>
+	<div class="panel-group">
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<h1 class="panel-title">

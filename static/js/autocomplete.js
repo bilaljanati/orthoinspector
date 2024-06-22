@@ -18,11 +18,25 @@ function fillSelect(select, values, selected=undefined) {
 	$(select).val(selected).change();
 }
 
+function hasOption(select, option) {
+	var opts = $(select).find('option[value='+option+']');
+	return opts.length > 0;
+}
+
 function updateDBField(e) {
 	const dbfieldid = $(e.target).data("dbfield");
 	var select_db = $("#"+dbfieldid);
 	var release = $(e.target).val();
 	fillSelect(select_db, dbs[release], select_db.val());
+
+	var previous_db = $(select_db).val();
+	if (hasOption(select_db, previous_db)) {
+		select_db.val(previous_db).change();
+	} else if (typeof(database) != 'undefined' && hasOption(select_db, database)) {
+		select_db.val(database).change();
+	} else if (hasOption(select_db, "Eukaryota")) {
+		select_db.val("Eukaryota").change();
+	}
 }
 
 function initDBFields(select_db, select_release) {
@@ -32,6 +46,11 @@ function initDBFields(select_db, select_release) {
 	var last_release = dblist[dblist.length-1];
 	fillSelect(select_release, dblist, last_release);
 	fillSelect(select_db, dbs[last_release], default_db);
+
+	if (typeof(database) != 'undefined' && typeof(release) != 'undefined') {
+		$(select_db).val(database);
+		$(select_release).val(release);
+	}
 
 	$(select_release).data("dbfield", $(select_db)[0].id);
 	$(select_release).change(updateDBField);
@@ -106,35 +125,9 @@ $(document).ready(function() {
 		};
 	}
 
-	function update_db_list(e) {
-		var elem = $(e.target);
-		var form = $(elem).parent();
-		var select = $(form).find('.sel-db');
-
-		let previous_db = getSelectedDatabase(form);
-		let release = getSelectedRelease(form);
-
-		$(select).find("option").remove();
-		for (let dbname of dbs[release]) {
-			$(select).append(
-				$('<option>', {
-					value: dbname,
-					text: dbname
-				})
-			);
-		}
-		var opt = $(select).find('option[value='+previous_db+']');
-		if (opt.length == 0) {
-			select.val("Eukaryota").change();
-		} else {
-			select.val(previous_db).change();
-		}
-		update_protein_autocomplete(elem);
-	}
-
 	$('.protein-srch').each(function(i, v) {
-		init_protein_autocomplete(v);
 		initDBFields($(v).find('.sel-db'), $(v).find('.sel-release'));
+		init_protein_autocomplete(v);
 		$(v).find('.sel-db').change(db_change_callback);
 	});
 });

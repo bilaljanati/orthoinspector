@@ -7,12 +7,6 @@ $(function() {
             $('#fitsform').hide();
     }
 
-    $('a.read_more').on('click',function(event){ /* find all a.read_more elements and bind the following code to them */
-        $(this).hide();
-        event.preventDefault(); /* prevent the a from changing the url */
-        $(this).parent().find('.more_text').show(); /* show the .more_text span */
-    });
-
 // Delete rows from data table
 
 	function add_form_input(form, key, val) {
@@ -300,12 +294,99 @@ $(function() {
 		$('#notFoundIn div.modal-body').html(content);
 	}
 
+	function proximalHeader() {
+		return $(`<row class="oi_row">
+			<div class="oi_cell"><b>Identifier</b></div>
+			<div class="oi_cell"><b>Description</b></div>
+			<div class="oi_cell"><b>Distance between phylogenetic profiles</b><a href="#" data-toggle="modal" data-target="#distanceHelpWindow"> <span class="glyphicon glyphicon-question-sign"></span></a></div>
+		</row>`);
+	}
+
+	function proximalRow(seq) {
+		let internal_link = $("<a>", {
+			text: seq["name"],
+			href: prefix+"/"+database+"/"+release+"/protein/"+seq["access"]
+		});
+		let external_link = $("<a>", {
+			href: "http://uniprot.org/uniprot/"+seq["access"]
+		}).append('<span class="glyphicon glyphicon-new-window">');
+		let distance = $("<span>", {
+			class: "badge",
+			html: seq["distance"].toFixed(3)
+		});
+		let row = $('<row class="oi_row">');
+		row.append(
+			$('<div class="oi_cell">').append(internal_link, " ", external_link),
+			$('<div class="oi_cell">').append(seq['description']),
+			$('<div class="oi_cell">').append(distance)
+		);
+		return row;
+	}
+
+	function displayProximal(div, data) {
+		if (data.length == 0) {
+			$(div).html("No protein with similar profile across the domains were found");
+			return;
+		}
+		$(div).append(proximalHeader());
+		for (const seq of data.slice(0, 5)) {
+			let row = proximalRow(seq);
+			$(div).append(row);
+		}
+		if (data.length <= 5) {
+			return;
+		}
+		var more = $('<div class="more-text" style="display: none;">');
+		for (const seq of data.slice(5)) {
+			more.append(proximalRow(seq));
+		}
+		$(div).append(more);
+		let morelink = $('<a>', {
+			text: "See more",
+			href: "#",
+			class: "read-more"
+		});
+		$(div).append(morelink);
+
+		initMoreLink(morelink);
+	}
+
+	function initMoreLink(link) {
+		link.on('click',function(event) {
+			$(this).hide();
+			event.preventDefault();
+			$(this).parent().find('.more-text').show();
+		});
+	}
+
+	function loadProximal() {
+		if ($('#collapseDistDomain').length) {
+			$.ajax({
+				type:"GET",
+				url: prefix+'/'+database+'/'+release+'/proximal/'+access,
+				success: function(res, st) {
+					displayProximal($('#collapseDistDomain .panel-body'), res);
+				}
+			});
+		}
+		if ($('#collapseDistWhole').length) {
+			$.ajax({
+				type:"GET",
+				url: prefix+'/Transverse/'+release+'/proximal/'+access,
+				success: function(res, st) {
+					displayProximal($('#collapseDistWhole .panel-body'), res);
+				}
+			});
+		}
+	}
+
 	$('#orthotable').on('load-success.bs.table', function(e,data) {
 		$('btn-inparalogs').removeAttr('disabled');
 		//checkInparalogs();
 	});
 
 	loadAbsentSummary();
+	loadProximal();
 });
 
 function PipeError() {

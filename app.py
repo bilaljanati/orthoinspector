@@ -37,7 +37,7 @@ def inject_globals():
 
 @bp.errorhandler(404)
 def page_not_found(e):
-    return render_template('404.html'), 404
+    return render_template('404.html', dblist=wh.get_dblist()), 404
 
 @bp.route("/")
 def home():
@@ -100,6 +100,13 @@ def orthologs(dbname, release, access):
     model_only = not request.base_url.endswith('full')
     orthos = db.get_orthologs(access, model=model_only)
     return jsonify(orthos)
+
+@bp.route("/<dbname>/<int:release>/proximal/<access>")
+def proximal(dbname, release, access):
+    db = wh.get_db(dbname, release)
+    if not db or not db.has_distances:
+        abort(404)
+    return jsonify(db.get_proximal_proteins(access))
 
 @bp.route("/<database>/<int:release>/download/fasta", methods=['POST'])
 def download_fasta(database, release):
@@ -168,10 +175,17 @@ def profile_search_res(taskid):
 
 @bp.route("/data")
 def data():
-    db = wh.get_db(database)
+    return render_template('data.html', dblist=wh.get_dblist(), base_url=config['warehouse']['data_server_url'])
+
+@bp.route("/data/<database>/<int:release>")
+def db_data(database, release):
+    db = wh.get_db(database, release)
     if not db:
         abort(404)
-    return render_template('data.html', db=db.get_info(), species=db.get_species_list(), base_url=config['warehouse']['data_server_url'])
+    data = {
+        "species": db.get_species_list()
+    }
+    return jsonify(data)
 
 app.register_blueprint(bp, url_prefix=config['prefix'])
 app.register_blueprint(bpapi, url_prefix=config['prefix']+'/api')
