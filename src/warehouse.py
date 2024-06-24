@@ -13,8 +13,8 @@ class Warehouse():
         info['host'] = hostname
         return info
 
-    def get_versions():
-        return self.databases.keys()
+    def get_versions(self):
+        return self.dbcatalog.keys()
 
     def get_dbinfo(self, name):
          return {

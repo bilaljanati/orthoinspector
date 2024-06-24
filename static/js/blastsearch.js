@@ -12,10 +12,10 @@ $(function() {
         active_mode(true);
     }
 
-	function active_mode(active) {
+	function active_mode(active, success=true) {
 		$('#loading').toggle(active);
 		$('#submit').prop('disabled', active);
-		$('#result').toggle(!active);
+		$('#result').toggle(!active && success);
 		$('#loader').toggle(active);
 	}
 
@@ -25,9 +25,9 @@ $(function() {
 		active_mode(true);
 
         $.ajax({
-            url: prefix+'/'+database+'/blastsearch/submit',
+            url: prefix+'/blastsearch/submit',
             type: 'POST',
-			data: {'database': database, 'query': query, 'cutoff': cutoff},
+			data: {'query': query, 'cutoff': cutoff},
             success: function(res) {
                 if (res.status !== "OK") {
                     error("Service unavailable, please retry later !");
@@ -40,7 +40,7 @@ $(function() {
 
 	function check_result(id, interval) {
 		$.ajax({
-			url: prefix+'/'+database+'/blastsearch/result/'+id,
+			url: prefix+'/blastsearch/result/'+id,
 			method: 'GET',
 			success: function(res) {
 				if (res.status === DONE) {
@@ -48,6 +48,7 @@ $(function() {
 					active_mode(false);
 				} else if (res.status === FAILED || res.status === UNKNOWN) {
                     error("An error occured.");
+					active_mode(false, false);
 				} else {
 					interval = Math.min(max_interval, Math.round(interval*1.75));
 					setTimeout(function() {
@@ -117,7 +118,6 @@ $(function() {
 	}
 
 	function extract_prot_access(name) {
-		var proturl = prefix+'/'+database+'/protein/';
 		var access = "";
 
 		const match = name.match(/^[^|]+\|([^|]+)\|[^|]+$/);
@@ -130,7 +130,7 @@ $(function() {
 	}
 
 	function get_protein_url(name) {
-		return prefix+'/'+database+'/protein/'+extract_prot_access(name);
+		return prefix+'/Transverse/protein/'+extract_prot_access(name);
 	}
 
 	function display_result(blast) {

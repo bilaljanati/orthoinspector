@@ -1,6 +1,7 @@
 import os
 import sys
 from flask import Flask, request, render_template, Blueprint, abort, redirect, jsonify, Response, url_for
+import jinja2
 import yaml
 import json
 import re
@@ -143,9 +144,6 @@ def blast_search():
 
 @bp.route("/blastsearch/submit", methods=['POST'])
 def blast_search_run():
-    db = wh.get_db(database)
-    if not db:
-        abort(404)
     res = submit_task(config['worker_pool']['host'], 'blast_search', request.form.to_dict())
     return jsonify(res)
 
@@ -186,6 +184,13 @@ def db_data(database, release):
         "species": db.get_species_list()
     }
     return jsonify(data)
+
+@bp.route("/<page>")
+def default(page):
+    try:
+        return render_template(f"{page}.html", dblist=wh.get_dblist())
+    except jinja2.exceptions.TemplateNotFound:
+        abort(404)
 
 app.register_blueprint(bp, url_prefix=config['prefix'])
 app.register_blueprint(bpapi, url_prefix=config['prefix']+'/api')

@@ -43,8 +43,8 @@ $(document).ready(function() {
 		for (const s of species) {
 			taxids.push(s["taxid"]+"");
 		}
-		$("#cmd-proteomes").html(formatScript(taxids, data_url+"/"+db+release+"data/$taxid.fasta.gz"));
-		$("#cmd-orthology").html(formatScript(taxids, data_url+"/"+db+release+"data/$taxid.tsv.gz"));
+		$("#cmd-proteomes").html(formatScript(taxids, data_url+"/"+db+release+"/data/$taxid.fasta.gz"));
+		$("#cmd-orthology").html(formatScript(taxids, data_url+"/"+db+release+"/data/$taxid.tsv.gz"));
 	}
 
 	function displayData(species) {

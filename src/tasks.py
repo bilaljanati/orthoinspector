@@ -58,15 +58,16 @@ def profile_search(database, release, query, present, absent):
         prots = cluster_result(db, prots)
     return prots
 
-def blast_check_db(database):
+def blast_check_db(database, release):
     import os
     import time
     config = get_config()
     wh = get_warehouse(config)
-    db = wh.get_db(database)
+    db = wh.get_db(database, release)
     if not db:
         return False
-    dbdir = f"{config['worker_pool']['blast_db_dir']}/{database}"
+    dbname = f"{database}{release}"
+    dbdir = f"{config['worker_pool']['blast_db_dir']}/{dbname}"
     lockfile = f"{dbdir}/lock"
     if os.path.exists(dbdir):
         while os.path.exists(lockfile):
@@ -82,19 +83,27 @@ def blast_check_db(database):
             f.write(batch)
             f.write('\n')
             f.flush()
-    cmd = f'/biolo/blast/bin/makeblastdb -dbtype prot -title {database} -in {fasta} -out {dbdir}/db'
+    cmd = f'/biolo/blast/bin/makeblastdb -dbtype prot -title {dbname} -in {fasta} -out {dbdir}/db'
     process = subprocess.Popen(cmd, shell=True)
     return_code = process.wait()
     os.remove(fasta)
     os.remove(lockfile)
     return os.path.exists(f'{dbdir}/db.phr') or os.path.exists(f'{dbdir}/db.pal')
 
-def blast_search(database, query, cutoff):
-    if not blast_check_db(database):
-        raise Exception(f"Unknown database {database}")
+def get_last_db_version():
+    config = get_config()
+    wh = get_warehouse(config)
+    return sorted(list(wh.get_versions())).pop()
+
+def blast_search(query, cutoff, database='Transverse', release=None):
+    if not release:
+        release = get_last_db_version()
+    if not blast_check_db(database, release):
+        raise Exception(f"Unknown database {database} {release}")
     import subprocess
     config = get_config()
-    dbdir = f"{config['worker_pool']['blast_db_dir']}/{database}/db"
+    dbname = f"{database}{release}"
+    dbdir = f"{config['worker_pool']['blast_db_dir']}/{dbname}/db"
     cmd = f'/biolo/blast/bin/blastp -db {dbdir} -outfmt 0 -evalue {cutoff} -num_descriptions 100 -num_alignments 100'
     if query[0] != '>':
         query = ">QUERY\n" + query
