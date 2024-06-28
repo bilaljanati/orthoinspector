@@ -76,15 +76,15 @@ $(document).ready(function() {
 	}
 
 	function update_protein_autocomplete(elem) {
-		var p = elem.parent();
-		$(elem).find("input.searchbar").autocomplete("destroy");
+		var p = elem.closest(".protein-srch");
+		$(p).find("input.searchbar").autocomplete("destroy");
 		init_protein_autocomplete(p);
 	}
 
 	function init_protein_autocomplete(form) {
 
-		var database = getSelectedDatabase(form);
-		var release = getSelectedRelease(form);
+		const database = getSelectedDatabase(form);
+		const release = getSelectedRelease(form);
 
 		if (!database || !release) {
 			console.error("No db info available");
@@ -94,7 +94,6 @@ $(document).ready(function() {
 		$(form).find("input.searchbar").autocomplete({
 			source: prefix+'/'+database+'/'+release+'/search/protein',
 			minLength: 2,
-	  
 			select: function(event, ui) {
 				let database = getSelectedDatabase(form);
 				let release = getSelectedRelease(form);

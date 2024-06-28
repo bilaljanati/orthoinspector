@@ -7,9 +7,9 @@ $(function() {
 	const interval_multiplier = 1.75;
 	const max_interval = 15000;
 
-    function error(msg) {
+    function do_error(msg) {
         alert(msg);
-        active_mode(true);
+        active_mode(false, false);
     }
 
 	function active_mode(active, success=true) {
@@ -25,29 +25,32 @@ $(function() {
 		active_mode(true);
 
         $.ajax({
-            url: prefix+'/blastsearch/submit',
+            url: prefix+'/blast/submit',
             type: 'POST',
 			data: {'query': query, 'cutoff': cutoff},
             success: function(res) {
                 if (res.status !== "OK") {
-                    error("Service unavailable, please retry later !");
+                    do_error("Service unavailable, please retry later !");
 					return;
 				}
 				check_result(res.id, start_interval);
-            }
+            },
+			error: function(xhr, status, error) {
+				do_error("Service unavailable, please retry later.");
+			}
         });
 	}
 
 	function check_result(id, interval) {
 		$.ajax({
-			url: prefix+'/blastsearch/result/'+id,
+			url: prefix+'/blast/result/'+id,
 			method: 'GET',
 			success: function(res) {
 				if (res.status === DONE) {
 					display_result(res.result);
 					active_mode(false);
 				} else if (res.status === FAILED || res.status === UNKNOWN) {
-                    error("An error occured.");
+                    do_error("An error occured.");
 					active_mode(false, false);
 				} else {
 					interval = Math.min(max_interval, Math.round(interval*1.75));
@@ -58,7 +61,7 @@ $(function() {
 				}
 			},
 			error: function(xhr, status, error) {
-				error("An error occured.");
+				do_error("An error occured.");
 			}
 		});
 	}
@@ -170,13 +173,17 @@ $(function() {
 
 	function check_input() {
 		var refloat = /^[+-]?\d+(\.\d+)?([eE][+-]?\d+)?$/;
-		var ready = $('#blast-input').val().length >= 10;
+		var input = $('#blast-input').val().trim();
+		var ready = input.length >= 10;
 		ready &= refloat.test($('#expect').val());
 		return ready;
 	}
 
 	function init() {
 		if ($('#blast-input').val().length == 0) {
+			return;
+		}
+		if (!check_input()) {
 			return;
 		}
 		run_blast();

@@ -16,4 +16,36 @@
 		<h2 style="text-align: center">Welcome to OrthoInspector</h2>
 	</div>
 </div>
+<h1 style="text-align: center"><b>SEARCH ORTHOINSPECTOR DATABASES</b></h1>
+<div class="row">
+	<div class="col-xs-6">
+		<div class="tile col-xs-12">
+			<h3>Search by identifier</h3>
+			<p> Select the domain of life you wish to query and search a protein by its Uniprot identifier or access.</p>
+
+			<form id="srch-home" class="form protein-srch" role="search">
+				<div class="col-xs-3 form">
+					<select class="form-control sel-db" id="sel-db-home"></select>
+					<select class="form-control sel-release" id="sel-release-home"></select>
+				</div>
+				<div class="col-xs-9">
+			        <div class="input-group" id="menu-srch-input">
+				        <input type="text" class="form-control searchbar ui-autocomplete-input" placeholder="Search your favorite protein" name="srch-protein-home" id="srch-protein-home" autocomplete="off">
+					</div>
+				</div>
+				<p>Examples: <a href="{{ prefix }}/Eukaryota/2023/protein/Q13613">MTMR1_HUMAN</a>, <a href="{{ prefix }}/Eukaryota/2023/protein/Q8IWZ6">Q8IWZ6</a></p>
+			</form>
+		</div>
+	</div>
+	<div class="col-xs-6">
+		<div class="tile col-xs-12">
+			<h3>Search by sequence similarity</h3>
+			<p>Search your sequence in OrthoInspector databases using BLASTP</p>
+			<form action="{{ prefix }}/blast" method="POST">
+				<textarea row="10" name="query" id="blast-query" style="width:100%; height:100px" class="blast_textarea" placeholder="Enter your sequence in FASTA format or plain text"></textarea>
+				<button class="btn btn-primary" id="blast-search-home" style="float: right">Submit</button>
+			</form>
+		</div>
+	</div>
+</div>
 {% endblock %}

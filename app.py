@@ -137,17 +137,17 @@ def interpro_annotations(access):
 def do_stats():
     return render_template('dbstats.html', stats=wh.get_stats())
 
-@bp.route("/blastsearch", methods=['GET', 'POST'])
+@bp.route("/blast", methods=['GET', 'POST'])
 def blast_search():
     query = request.form['query'] if request.method == 'POST' else ''
     return render_template('blastsearch.html', dblist=wh.get_dblist(), query=query)
 
-@bp.route("/blastsearch/submit", methods=['POST'])
+@bp.route("/blast/submit", methods=['POST'])
 def blast_search_run():
     res = submit_task(config['worker_pool']['host'], 'blast_search', request.form.to_dict())
     return jsonify(res)
 
-@bp.route("/blastsearch/result/<taskid>")
+@bp.route("/blast/result/<taskid>")
 def blast_search_res(taskid):
     res = check_task(config['worker_pool']['host'], taskid)
     return jsonify(res)
