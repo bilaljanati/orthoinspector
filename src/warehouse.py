@@ -1,4 +1,5 @@
 from orthodb import OrthoDb
+from functools import cache, lru_cache
 
 
 class Warehouse():
@@ -48,3 +49,13 @@ class Warehouse():
     def has_transverse(self, name, release):
         return (name is 'Transverse' or
             (release in self.dbcatalog and 'Transverse' in self.dbcatalog[release]))
+
+    @cache
+    def gather_stats(self):
+        stats = {}
+        for release, dbs in self.dbcatalog.items():
+            stats[release] = {}
+            for name in dbs.keys():
+                stats[release][name] = self.get_db(name, release).get_stats()
+        print(stats)
+        return stats

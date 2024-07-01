@@ -2,7 +2,7 @@
 
 {% from "macros.html" import format_integer %}
 
-{% block title %} - {{ db.name }}{% endblock %}
+{% block title %} - {{ db.name }} {{ db.release }}{% endblock %}
 
 {% block header %}
 {{ super() }}
@@ -21,25 +21,6 @@
 		<p class="db-desc">{{ db.description }}</p>
 	</div>
 </div>
-{% set ns = namespace(missing=false) %}
-{% for value in status.values() %}
-	{% if value == false %}
-		{% set ns.missing = true %}
-	{% endif %}
-{% endfor %}
-{% if ns.missing %}
-<div class="alert alert-warning" role="alert">
-	<b>Warning</b>, this database is missing the following features :
-	<ul>
-	{% set missing_desc = ({"names":"Pre-formatted protein names"}) %}
-	{% for key, value in status.items() %}
-		{% if not value %}
-		<li>{{ missing_desc[key] }}</li>
-		{% endif %}
-	{% endfor %}
-	</ul>
-</div>
-{% endif %}
 <div id="stats">
 	<h1>{{ format_integer(stats.species) }} species, {{ format_integer(stats.proteins) }} proteins</h1>
 </div>

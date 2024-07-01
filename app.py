@@ -185,6 +185,32 @@ def db_data(database, release):
     }
     return jsonify(data)
 
+@bp.route("/database/<database>/<int:release>")
+def db_details(database, release):
+    db = wh.get_db(database, release)
+    if not db:
+        abort(404)
+    species = db.get_species_list()
+    return render_template("database.html",
+                            db=db.get_info(),
+                            stats=db.get_stats(),
+                            species=db.get_species_list(),
+                            dblist=wh.get_dblist()
+                        )
+
+@bp.route("/databases")
+def db_list():
+    return render_template('dblist.html', dblist=wh.get_dblist(), dbstats=wh.gather_stats())
+    stats = {
+        2019: {
+            "Airchaea": {"proteins": 1211454564, "species": 2},
+            "Aarchaea": {"proteins": 12, "species": 2},
+            "Archaea": {"proteins": 12, "species": 2},
+            "Baxcteri": {"proteins": 12, "species": 2},
+        }
+    }
+    return render_template('dblist.html', dblist=wh.get_dblist(), dbstats=stats)
+
 @bp.route("/<page>")
 def default(page):
     try:

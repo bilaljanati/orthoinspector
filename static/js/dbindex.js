@@ -4,4 +4,6 @@ $(document).ready(function() {
             .find("input[placeholder='Search']")
             .attr("placeholder", $(this).data("search-placeholder"));
     });
+
+	draw_sunplot(database, release);
 });
