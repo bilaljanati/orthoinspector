@@ -38,6 +38,9 @@
 				<tr>
 					<th data-field="id">Taxid</th>
 					<th data-field="name">Name</th>
+					{% if db.has_models %}
+					<th data-field="model">Model species</th>
+					{% endif %}
 					<th data-field="link" data-searchable="false">Link</th>
 					<th data-field="lineage" data-visible="false"></th>
 				</tr>
@@ -49,6 +52,9 @@
 				<td>
 					<span class="species-name">{{ s.name }}</span>
 				</td>
+				{% if db.has_models %}
+				<td>{% if s.model %}Yes{% else %}No{% endif %}</td>
+				{% endif %}
 				<td>
 					<a href="https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?mode=Info&id={{ s.taxid }}" target="_blank">More info</a>
 				</td>

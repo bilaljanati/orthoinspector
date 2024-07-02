@@ -48,4 +48,104 @@
 		</div>
 	</div>
 </div>
+<h1 style="text-align: center"><b>DATABASES</b></h1>
+<div class="row">
+	<div class="tile col-xs-12" style="text-align: left">
+		<div>
+			<div>
+				<h3 style="text-align: center">Domain databases</h3>
+				<p>OrthoInspector dataset is divided into <b>three domain specific databases</b>, one for each of the three domains of cellular life. Each of these databases contains all intra-domain orthologs and inparalogs relationships inferred by OrthoInspector and can be specifically queried using the drop down menu next to the search bar.
+				</p>
+				<h3 style="text-align: center">Cross-domain database</h3>
+				<p>
+	 The cross-domain database contains orthology relationships between <b>model species</b> of the three Life domains. These model species have been selected to include well-studied organisms and to ensure a good taxonomic sampling. These inter-domain relationships are available on protein pages of model species.
+				</p>
+			</div>
+		</div>
+		{% set latest_release = stats.keys()|max %}
+		<div class="row">
+			{% for domain in ["Eukaryota", "Bacteria", "Archaea"] %}
+			<div class="col-xs-4 {{ domain|lower }}" style="text-align: center">
+				<div class="col-xs-12">
+					<div>
+						<b><p>{{ domain }} database</p></b>
+					</div>
+					<div>
+						<a class="{{ domain|lower }}" href="{{ prefix }}/database/{{ domain }}/{{ latest_release }}" target="_blank"><span class="icon-database" style="font-size: 60px; width: 60px; float: left;"></span></a><p><b>{{ stats[latest_release][domain]["species"] }}</b> species</p>
+						{% if "model_species" in stats[latest_release][domain] %}
+						<p><b>{{ stats[latest_release][domain]["model_species"] }}</b> model species</p>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+		{% if "Transverse" in stats[latest_release] %}
+		<div class="row">
+			<div class="col-xs-4 col-xs-offset-4">
+				<div class="col-xs-12" style="text-align: center">
+					<div>
+						<p><b>Cross-domain database</b></p>
+					</div>
+					<div>
+						<a class="transverse" href="{{ prefix }}/database/Transverse/{{ latest_release }}" target="_blank"><span class="fa fa-database" style=" font-size: 60px; width: 60px; float: left"></span></a><p>Species from the three domains</p><p><b>{{ stats[latest_release]["Transverse"]["species"] }}</b> model species</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		{% endif %}
+	<div>
+		<br>
+		<p>Further information about database content is provided in the Databases section or by clicking on the database icons above.</p>
+	</div>
+</div>
+<hr>
+<div class="row">
+	<div class="col-xs-6">
+		<div class="tile col-xs-12">
+			<h3>How to cite</h3>
+			<p>If OrthoInspector has been useful to you, consider citing:</p>
+
+			<div class="reference">
+				<div class="title">OrthoInspector 3.0: open portal for comparative genomics.</div>
+				<div class="authors">Nevers Y, Kress A, Defosset A, Ripp R, Linard B, Thompson JD, Poch O, Lecompte O.</div>
+				<div class="journal"><u>Nucleic Acids Research.</u> 2018 Oct 31; epub ahead of print <a href="https://doi.org/10.1093/nar/gky1068" ref="aid_type=doi" target="_blank">10.1093/nar/gky1068
+				</a>.</div>
+			</div>
+			<br>
+			<div class="reference">
+				<div class="title">OrthoInspector 2.0: Software and database updates.
+</div>
+				<div class="authors">Linard B, Allot A, Schneider R, Morel C, Ripp R, Bigler M, Thompson JD, Poch O, Lecompte O.</div>
+				<div class="journal"><u>Bioinformatics.</u> 2015 Feb 1;31(3):447-8. <a href="https://doi.org/10.1093/bioinformatics/btu642" ref="aid_type=doi" target="_blank">10.1093/bioinformatics/btu642</a>.</div>
+			</div>
+			<br>
+			<div class="reference">
+				<div class="title">OrthoInspector: comprehensive orthology analysis and visual exploration.
+
+</div>
+				<div class="authors">Linard B, Thompson JD, Poch O, Lecompte O.</div>
+				<div class="journal"><u>BMC Bioinformatics.</u> 2011 Jan 10;12:11. <a href="https://doi.org/10.1186/1471-2105-12-11" ref="aid_type=doi" target="_blank">10.1186/1471-2105-12-11</a>.</div>
+			</div>
+
+			<h3>Institutions</h3>
+			<a class="institution" href="https://icube.unistra.fr" target="_blank">
+				<img class="logo" src="{{ prefix }}/static/images/icube.png" alt="logo icube">
+			</a>
+			<a class="institution" href="https://unistra.fr" target="_blank">
+				<img class="logo" src="{{ prefix }}/static/images/unistra.png" alt="logo unistra">
+			</a>
+		</div>
+	</div>
+	<div class="col-xs-6">
+		<div class="tile col-xs-12">
+			<div>
+				<h3>Statistics</h3>
+				<div id="widgetIframe">
+					<iframe width="100%" height="350" src="https://lbgi.fr/trk/index.php?module=Widgetize&amp;action=iframe&amp;widget=1&amp;moduleToWidgetize=UserCountryMap&amp;actionToWidgetize=visitorMap&amp;idSite=5&amp;period=range&amp;date=last30&amp;disableLink=1&amp;widget=1&amp;language=en_US" scrolling="no" frameborder="0" marginheight="0" marginwidth="0"></iframe>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
 {% endblock %}

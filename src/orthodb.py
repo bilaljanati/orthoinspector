@@ -114,12 +114,17 @@ class OrthoDb():
 
     @cache
     def get_stats(self):
-        nb_species = len(self.get_species_list())
+        species = self.get_species_list()
+        nb_species = len(species)
         nb_proteins = self.get_nb_proteins()
-        return {
+        stats = {
             'species': nb_species,
             'proteins': nb_proteins
         }
+        if self.has_models:
+            nb_models = len([sp for sp in species if 'model' in sp and sp['model']])
+            stats['model_species'] = nb_models
+        return stats
 
     # DB queries
 
@@ -134,16 +139,21 @@ class OrthoDb():
 
     @cache
     def get_species_list(self):
-        sql = """SELECT taxid, name, lineage
-                 FROM species
-                 ORDER BY name ASC"""
+        if self.has_models:
+            sql = "SELECT taxid, name, lineage, model"
+        else:
+            sql = "SELECT taxid, name, lineage"
+        sql += " FROM species ORDER BY name ASC"
         species = []
         for row in self._query(sql):
-            species.append({
+            sp = {
                 'taxid': row['taxid'],
                 'name': row['name'],
                 'lineage': self._format_lineage(row['lineage'])
-            })
+            }
+            if self.has_models:
+                sp['model'] = row['model']
+            species.append(sp)
         return species
 
     def get_nb_proteins(self):
