@@ -1,9 +1,16 @@
 from functools import cache
 import psycopg2
+import psycopg2.extras
 
 
 class DbService():
-    def connect(self, ci):
+    
+    def __init__(self, dbname, conninfo):
+        conninfo['dbname'] = dbname
+        self.conn = self._connect(conninfo)
+        self.conn.autocommit = True
+
+    def _connect(self, ci):
         return psycopg2.connect(
             dbname=ci['dbname'],
             host=ci['host'],
@@ -12,15 +19,15 @@ class DbService():
             password=ci['password']
         )
 
-    def query(self, sql, parameters=None):
-        cursor = self.conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        cursor.execute(sql, parameters)
-        res = cursor.fetchall()
-        cursor.close()
-        return res
-
     @cache
-    def get_sql(self, query):
-        with open(f"sql/{query}.sql") as f:
+    def _get_sql(self, _query):
+        with open(f"sql/{_query}.sql") as f:
             sql = f.read()
         return sql
+
+    def _query(self, sql, parameters=None):
+        with self.conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cursor:
+            cursor.execute(sql, parameters)
+            res = cursor.fetchall()
+        return res
+

@@ -1,17 +1,16 @@
-import psycopg2
-import psycopg2.extras
+from dbservice import DbService
 import random
 import math
 from functools import cache, lru_cache
 
 
-class OrthoDb():
+class OrthoDb(DbService):
     def __init__(self, display_name, release, dbname, conninfo, description, data_url, has_transverse):
+        super().__init__(dbname, conninfo)
+
         self.display_name = display_name
         self.dbname = dbname
         self.release = release
-        self.conn = self._connect(conninfo)
-        self.conn.autocommit = True
         self.description = description
         self.data_url = data_url
 
@@ -22,7 +21,7 @@ class OrthoDb():
         self.has_transverse = has_transverse
         self._analyze_db()
 
-    def _connect(self, ci):
+    def _deprecate_connect(self, ci):
         return psycopg2.connect(
             dbname=self.dbname,
             host=ci['host'],
@@ -32,12 +31,12 @@ class OrthoDb():
         )
 
     @cache
-    def _get_sql(self, _query):
+    def _deprecate_get_sql(self, _query):
         with open(f"sql/{_query}.sql") as f:
             sql = f.read()
         return sql
 
-    def _query(self, sql, parameters=None):
+    def _deprecate_query(self, sql, parameters=None):
         with self.conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cursor:
             cursor.execute(sql, parameters)
             res = cursor.fetchall()
@@ -170,6 +169,12 @@ class OrthoDb():
             res = res[0]
             res['lineage'] = self._format_lineage(res['lineage'])
         return res
+
+    def get_proteins(self, access_list):
+        sql = self._get_sql("protein_list")
+        if not self.has_profiles:
+            sql = '\n'.join(line for line in sql.splitlines() if 'profile' not in line)
+        return self._query(sql, {'access_list': tuple(access_list)})
 
     def get_orthologs(self, access, model=False):
         res = self._fetch_orthologs(access, model)
@@ -344,6 +349,10 @@ class OrthoDb():
             pa = self._list_to_profile(absent, taxid)
             sql += f"\nAND p.profile & B'{pa}' = B'{'0'*len(pa)}'"
         return self._query(sql, {'taxid': taxid})
+    
+    def search_by_go(self, taxid, goterm, goservice):
+        matches = goservice.get_matching_proteins(taxid, goterm)
+        return self.get_proteins(access_list=matches)
 
     # API
 
