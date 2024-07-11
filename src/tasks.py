@@ -58,6 +58,20 @@ def profile_search(database, release, query, present, absent):
         prots = cluster_result(db, prots)
     return prots
 
+def go_search(database, release, taxid, goid):
+    from src.geneontology import GeneOntology
+    config = get_config()
+    wh = get_warehouse(config)
+    db = wh.get_db(database, release)
+    if not db:
+        return False
+    go = GeneOntology(config['geneontology'])
+    prots = db.search_by_go(taxid, goid, goservice=go)
+
+    if len(prots) > 0 and db.has_distances:
+        prots = cluster_result(db, prots)
+    return prots
+
 def blast_check_db(database, release):
     import os
     import time

@@ -38,6 +38,9 @@ $(document).ready(function() {
 				$(e.target).val(ui.item.label);
 				query = {'taxid': ui.item.value, 'name': ui.item.label};
 				updateButton();
+			},
+			focus: function(e, ui) {
+				$(e.target).val(ui.item.label);
 			}
 		});
 	}

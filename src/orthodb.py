@@ -155,6 +155,11 @@ class OrthoDb(DbService):
             species.append(sp)
         return species
 
+    # Species list with only taxid and name
+    def get_simple_species_list(self):
+        species = self.get_species_list()
+        return [{'taxid': s['taxid'], 'name': s['name']} for s in species]
+
     def get_nb_proteins(self):
         sql = """SELECT COUNT(pk_protein) AS count
                  FROM protein"""
@@ -351,7 +356,7 @@ class OrthoDb(DbService):
         return self._query(sql, {'taxid': taxid})
     
     def search_by_go(self, taxid, goterm, goservice):
-        matches = goservice.get_matching_proteins(taxid, goterm)
+        matches = goservice.get_matching_proteins(goterm, taxid)
         return self.get_proteins(access_list=matches)
 
     # API

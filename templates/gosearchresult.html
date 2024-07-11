@@ -1,25 +1,27 @@
 {% extends "base.html" %}
 
-{% block title %} - Profile search{% endblock %}
+{% block title %} - GO search{% endblock %}
 
 {% block header %}
 {{ super() }}
 <link href="{{ prefix }}/static/css/searchresult.css" rel="stylesheet">
-<script src="{{ prefix }}/static/js/profilesearchresult.js"></script>
+<script src="{{ prefix }}/static/js/gosearchresult.js"></script>
 <script>
 const database = '{{ params.database }}';
 const release = '{{ params.release }}';
-const query_taxid = '{{ params.query.taxid }}';
+const taxid = '{{ params.taxid }}';
+const species_name = '{{ params.species_name }}';
+const goid = '{{ params.goid }}';
 const taskid = '{{ taskid }}';
 </script>
 {% endblock %}
 
 {% block content %}
-<h2>Profile search in {{ params.database }} {{ params.release }}</h2>
+<h2>GO search in {{ params.database }} {{ params.release }}</h2>
 <div class="results-header oi_row">
 	<div class="oi_cell" style="vertical-align:middle;">
 		<p>
-			<b>Query species:</b> <span id="orga-name">{{ params.query.name }}</span>
+			<b>Query species:</b> <span id="species-name">{{ params.species_name }}</span>
 		</p>
 		<p></p>
 		<h4 id="numres" style="display: none;">
@@ -27,34 +29,19 @@ const taskid = '{{ taskid }}';
 		</h4>
 		<p></p>
 	</div>
-	<div class="oi_cell">
+	<div class="oi_cell" style="vertical-align:middle;">
 		<p>
-			<b>Orthologs in: </b>
+			<b>GO term:</b> <a href="https://www.ebi.ac.uk/QuickGO/term/{{ params.goid }}" target="_blank">{{ params.goid }} - {{ params.goname }}</a>
 		</p>
-		<ul>
-		{% for name in params.display.present %}
-			<li class="present">{{ name }}</li>
-		{% endfor %}
-		</ul>
-	</div>
-	<div class="oi_cell">
-		<p>
-			<b>No orthologs in:</b>
-		</p>
-		<ul>
-		{% for name in params.display.absent %}
-			<li class="absent">{{ name }}</li>
-		{% endfor %}
-		</ul>
 	</div>
 </div>
+{#
 <div id="toolbar" style="display: none;">
 	<button id="download-fasta" class="btn btn-primary" title="Download all sequences as FASTA">Get FASTA</button>
-	{#
 	<button id="download-orthoxml" class="btn btn-primary" title="Download all sequences as OrthoXML">Get OrthoXML</button>
-	#}
 	<button id="download-list" class="btn btn-primary" title="Download ID list">Get ID list</button>
 </div>
+#}
 <div class="loader">
 	<br />
 	<img src="{{ prefix }}/static/images/gears.svg" />

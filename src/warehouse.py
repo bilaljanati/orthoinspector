@@ -57,5 +57,4 @@ class Warehouse():
             stats[release] = {}
             for name in dbs.keys():
                 stats[release][name] = self.get_db(name, release).get_stats()
-        print(stats)
         return stats

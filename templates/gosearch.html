@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %} - GO search{% endblock %}
+
+{% block header %}
+{{ super() }}
+<script src="{{ prefix }}/static/js/gosearch.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+	<h1>GO term profiles</h1>
+	Find all proteins associated to a GO term in query species and show their distribution.
+	<ol>
+		<li><h4>Select a database.</h4></li>
+		<li><h4>Select your query species.</h4></li>
+		<li><h4>Select your query GO term.</h4></li>
+	</ol>
+</div>
+<hr />
+<div class="row">
+	<div class="col-xs-3">
+		<select class="form-control " id="sel-db-go" name="database"></select>
+	</div>
+	<div class="col-xs-3">
+		<select class="form-control " id="sel-release-go" name="release"></select>
+	</div>
+	<div class="col-xs-5">
+		<div class="input-group" id="menu-srch-input">
+			<input type="text" class="form-control" placeholder="Select a species" name="organism" id="srch-species">
+			<input type="hidden" id="taxid" name="taxid" value="">
+			<input type="hidden" id="species-name" name="species-name" value="">
+		</div>
+	</div>
+</div>
+<br />
+<div class="row">
+	<div class="col-xs-5">
+		<div class="input-group" id="menu-srch-input">
+			<input type="text" class="form-control" placeholder="Select a GO term" name="goid" id="srch-go" disabled>
+			<input type="hidden" id="go-term-id" name="go-term-id" value="">
+			<input type="hidden" id="go-term-name" name="go-term-name" value="">
+		</div>
+	</div>
+</div>
+<br />
+<div>
+	<input type="submit" value="Search by GO term" class="btn btn-primary" id="btn-go-query" disabled="">
+</div>
+{% endblock %}

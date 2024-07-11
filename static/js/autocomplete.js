@@ -39,6 +39,7 @@ function updateDBField(e) {
 	}
 }
 
+/* Link two selects to select database and release */
 function initDBFields(select_db, select_release) {
 	var dblist = Object.keys(dbs);
 	dblist = dblist.map(Number);

@@ -42,7 +42,7 @@ def page_not_found(e):
 
 @bp.route("/")
 def home():
-    return render_template('index.html', dblist=wh.get_dblist())
+    return render_template('index.html', dblist=wh.get_dblist(), stats=wh.gather_stats())
 
 @bp.route("/<database>/<int:release>")
 def db_home(database, release):
@@ -53,6 +53,13 @@ def db_home(database, release):
     stats = db.get_stats()
     species = db.get_species_list()
     return render_template('dbindex.html', dblist=wh.get_dblist(), db=db.get_info(), status=status, stats=stats, species=species)
+
+@bp.route("/<database>/<int:release>/species")
+def species_list(database, release):
+    db = wh.get_db(database, release)
+    if not db:
+        abort(404)
+    return jsonify(db.get_simple_species_list())
 
 @bp.route("/<database>/<int:release>/tree/sun")
 def species_tree_sun(database, release):
@@ -170,6 +177,31 @@ def profile_search_run():
 def profile_search_res(taskid):
     res = check_task(config['worker_pool']['host'], taskid)
     return jsonify(res)
+
+@bp.route("/go/autocomplete/<int:taxid>")
+def go_autocomplete(taxid):
+    pattern = request.args.get("term")
+    return jsonify(go.search_term(pattern, taxid))
+
+@bp.route("/gosearch")
+def go_search():
+    return render_template('gosearch.html', dblist=wh.get_dblist())
+
+@bp.route("/gosearch/result", methods=['POST'])
+def go_search_run():
+    params = {}
+    for key in ['database', 'release', 'taxid', 'goid', 'species_name', 'goname']:
+        params[key] = request.form[key]
+    job_params = {k: v for k, v in params.items() if k not in ['species_name', 'goname']}
+    res = submit_task(config['worker_pool']['host'], 'go_search', job_params)
+    return render_template('gosearchresult.html', params=params, taskid=res['id'], dblist=wh.get_dblist())
+
+@bp.route("/go/match/<database>/<int:release>/<int:taxid>/<goid>")
+def go_match(database, release, taxid, goid):
+    db = wh.get_db(database, release)
+    if not db:
+        abort(404)
+    return jsonify(db.search_by_go(goid, taxid, goservice=go))
 
 @bp.route("/data")
 def data():
