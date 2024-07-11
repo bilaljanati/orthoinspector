@@ -32,6 +32,10 @@ warehouse:
         dbname: OrthoInspector_Eukaryota_2023
         host: derrick
         description: "OrthoInspector official Eukaryota 2023 DB"
+      Transverse:
+        dbname: OrthoInspector_Transverse_2023
+        host: derrick
+        description: "OrthoInspector official Transverse 2023 DB"
   hosts:
     derrick:
       port: 5432
