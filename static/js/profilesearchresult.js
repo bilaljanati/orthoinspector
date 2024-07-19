@@ -127,6 +127,7 @@ $(document).ready(function() {
 						<div id="collapsen" class="panel panel-collapse proteins collapse" aria-expanded="false"></div>
 					</div>
 				</div>`);
+		c.find('.banner').append(create_heatmap(cluster[0].distribution));
 		var link = c.find('.cluster-name')
 		link.html(name)
 			.attr('href', '#collapse'+id)
@@ -227,22 +228,17 @@ $(document).ready(function() {
 						<row class="oi_row">
 							<div class="oi_cell">
 								<div class="distribution">
-									<div class="banner">
-										<div class="hm_row">
-											<div class="hm_rect"></div>
-										</div>
-										<div class="hm_row"></div>
-									</div>
+									<div class="banner"></div>
 								</div>
 							</div>
 						</row>
 					</div>`;
 		let footer = '<div class="panel-footer"></div>';
 		p.append(head, body, footer);
+		if (s.distribution) {
+			p.find('.banner').append(create_heatmap(s.distribution));
+		}
 		return p;
-	}
-
-	function draw_profile(prof) {
 	}
 
 	function add_form_field(form, key, val) {

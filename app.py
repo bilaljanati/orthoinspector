@@ -233,15 +233,6 @@ def db_details(database, release):
 @bp.route("/databases")
 def db_list():
     return render_template('dblist.html', dblist=wh.get_dblist(), dbstats=wh.gather_stats())
-    stats = {
-        2019: {
-            "Airchaea": {"proteins": 1211454564, "species": 2},
-            "Aarchaea": {"proteins": 12, "species": 2},
-            "Archaea": {"proteins": 12, "species": 2},
-            "Baxcteri": {"proteins": 12, "species": 2},
-        }
-    }
-    return render_template('dblist.html', dblist=wh.get_dblist(), dbstats=stats)
 
 @bp.route("/<page>")
 def default(page):

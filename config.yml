@@ -7,18 +7,22 @@ warehouse:
         dbname: OrthoInspector_Archaea_2019_new
         host: derrick
         description: "OrthoInspector official Archaea 2019 DB"
+        clades: ['Candidatus Lokiarchaeota','Candidatus Thorarchaeota','Candidatus Thermoplasmatota','Candidatus Altiarchaeota','Candidatus Micrarchaeota','Nanoarchaeota','Archaeoglobi','Hadesarchaea','Methanomada group','Methanomada group','Methanonatronarchaeia','Methanopyri','Stenosarchaea group','Stenosarchaea group','Thermococci','Candidatus Bathyarchaeota','Candidatus Korarchaeota','Crenarchaeota','Thaumarchaeota']
       Bacteria:
         dbname: OrthoInspector_Bacteria_2019_new
         host: derrick
         description: "OrthoInspector official Bacteria 2019 DB"
+        clades: ['FCB group','Acidobacteriia','Aquificae','Caldiserica','Calditrichaeota','Chrysiogenetes','Coprothermobacterota','Deferribacteres','Dictyoglomi','Elusimicrobia','Fusobacteriia','Nitrospirae','Spirochaetes','Synergistetes','Thermodesulfobacteria','Thermotogae','Proteobacteria','PVC group','Terrabacteria group','Other Bacteria']
       Eukaryota:
         dbname: OrthoInspector_Eukaryota_2019_new
         host: derrick
         description: "OrthoInspector official Eukaryota 2019 DB"
+        clades: ['Amoebozoa','Choanoflagellata','Filasterea','Fungi','Metazoa','Rotosphaerida','Apusozoa','Cryptophyceae','Discoba','Haptista','Metamonada','Rhodophyta','Alveolata','Rhizaria','Stramenopiles','Viridiplantae']
       Transverse:
         dbname: OrthoInspector_Transverse_2019_new
         host: derrick
         description: "OrthoInspector official Transverse 2019 DB"
+        clades: ['Amoebozoa','Opisthokonta','Other Eukaryota','Sar','Viridiplantae', 'Asgard group','Candidatus Thermoplasmatota','DPANN group','Euryarchaeota','TACK group', 'FCB group','Other Bacteria','Proteobacteria','PVC group','Terrabacteria group']
     2023:
       Archaea:
         dbname: OrthoInspector_Archaea_2023

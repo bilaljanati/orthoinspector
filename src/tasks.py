@@ -43,6 +43,13 @@ def get_warehouse(config):
     from src.warehouse import Warehouse
     return Warehouse(config['warehouse'])
 
+def add_distributions(db, prots):
+    if not db.has_clades:
+        return prots
+    for prot in prots:
+        prot['distribution'] = db.build_distribution(prot)
+    return prots
+
 def profile_search(database, release, query, present, absent):
     import json
     taxid = query['taxid']
@@ -54,6 +61,7 @@ def profile_search(database, release, query, present, absent):
     db = wh.get_db(database, release)
 
     prots = db.search_by_profile(taxid, present, absent)
+    prots = add_distributions(db, prots)
     if len(prots) > 0 and db.has_distances:
         prots = cluster_result(db, prots)
     return prots
@@ -68,6 +76,7 @@ def go_search(database, release, taxid, goid):
     go = GeneOntology(config['geneontology'])
     prots = db.search_by_go(taxid, goid, goservice=go)
 
+    prots = add_distributions(db, prots)
     if len(prots) > 0 and db.has_distances:
         prots = cluster_result(db, prots)
     return prots
@@ -137,7 +146,7 @@ def cluster_result(db, proteins):
     proteins = {p['access']: p for p in proteins}
     access_list = proteins.keys()
     edges = fetch_protein_edges(db, access_list)
-    if not edges:
+    if edges is False:
         return False
     import networkx as nx
     g = nx.Graph()

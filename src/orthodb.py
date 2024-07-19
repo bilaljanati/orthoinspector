@@ -5,7 +5,7 @@ from functools import cache, lru_cache
 
 
 class OrthoDb(DbService):
-    def __init__(self, display_name, release, dbname, conninfo, description, data_url, has_transverse):
+    def __init__(self, display_name, release, dbname, conninfo, description, data_url, has_transverse, clades=None):
         super().__init__(dbname, conninfo)
 
         self.display_name = display_name
@@ -13,13 +13,16 @@ class OrthoDb(DbService):
         self.release = release
         self.description = description
         self.data_url = data_url
+        self.clades = clades
 
         self.has_models = False
         self.has_profiles = False
         self.has_distances = False
         self.has_data = False
+        self.has_clades = False
         self.has_transverse = has_transverse
         self._analyze_db()
+        self._format_clades()
 
     def _deprecate_connect(self, ci):
         return psycopg2.connect(
@@ -49,6 +52,7 @@ class OrthoDb(DbService):
         self.has_profiles = self._check_for_profiles()
         self.has_distances = self._check_for_distances()
         self.has_data = self._check_for_data()
+        self.has_clades = self.clades is not None
 
     def _check_for_names(self):
         sql = """SELECT name
@@ -94,16 +98,29 @@ class OrthoDb(DbService):
             has_dist = False
         return has_dist
 
+    def _format_clades(self):
+        if not self.has_clades:
+            return
+        clades = set(self.clades)
+        new_clades = {}
+        for row in self.get_species_list():
+            for sp in row['lineage']:
+                if sp['name'] in clades:
+                    new_clades[sp['taxid']] = sp['name']
+        self.clades = [{'taxid': k, 'name': v} for k, v in new_clades.items()]
+
     def get_info(self):
         return {
             'name': self.display_name,
             'release': self.release,
             'description': self.description,
+            'clades': self.clades,
             'has_models': self.has_models,
             'has_profiles': self.has_profiles,
             'has_distances': self.has_distances,
             'has_data': self.has_data,
-            'has_transverse': self.has_transverse
+            'has_transverse': self.has_transverse,
+            'has_clades': self.has_clades
         }
 
     def get_status(self):
@@ -180,6 +197,38 @@ class OrthoDb(DbService):
         if not self.has_profiles:
             sql = '\n'.join(line for line in sql.splitlines() if 'profile' not in line)
         return self._query(sql, {'access_list': tuple(access_list)})
+
+    def _species_clade(self, species):
+        clades_ids = set([c['taxid'] for c in self.clades])
+        ancestors = set([a['taxid'] for a in species['lineage']])
+        match = list(clades_ids & ancestors)
+        if len(match) == 0:
+            return None
+        return match[0]
+
+    # distribution for display
+    def build_distribution(self, prot):
+        if not self.has_clades or not 'profile' in prot:
+            return None
+        res = {}
+        membership = {}
+        # determine each species' clade
+        for sp in self.get_species_list():
+            match = self._species_clade(sp)
+            match = 0 if not match else int(match)
+            membership[sp['taxid']] = match
+        # index reference clades by id
+        indexed_clades = {int(s['taxid']): s['name'] for s in self.clades}
+        indexed_clades[0] = "Other"
+        # enumerate relationships for each ref clade
+        for i, taxid in enumerate([s['taxid'] for s in self._fetch_profile_species()]):
+            clade = membership[taxid]
+            present = int(prot['profile'][i])
+            if clade not in res:
+                res[clade] = {'taxid': clade, 'name': indexed_clades[clade], 'total': 0, 'present': 0}
+            res[clade]['total'] += 1
+            res[clade]['present'] += present
+        return list(res.values())
 
     def get_orthologs(self, access, model=False):
         res = self._fetch_orthologs(access, model)
