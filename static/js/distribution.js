@@ -91,7 +91,6 @@ function create_heatmap(clades, options={}) {
 		div.append(domain_row);
 	*/
 	div.append(label_row, box_row);
-	console.log(div);
 	color_boxes(box_row);
 	return div;
 }

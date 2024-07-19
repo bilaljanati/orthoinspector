@@ -173,11 +173,6 @@ def profile_search_run():
     res = submit_task(config['worker_pool']['host'], 'profile_search', job_params)
     return render_template('profilesearchresult.html', params=params, taskid=res['id'], dblist=wh.get_dblist())
 
-@bp.route("/profilesearch/result/<taskid>")
-def profile_search_res(taskid):
-    res = check_task(config['worker_pool']['host'], taskid)
-    return jsonify(res)
-
 @bp.route("/go/autocomplete/<int:taxid>")
 def go_autocomplete(taxid):
     pattern = request.args.get("term")
@@ -202,6 +197,12 @@ def go_match(database, release, taxid, goid):
     if not db:
         abort(404)
     return jsonify(db.search_by_go(goid, taxid, goservice=go))
+
+@bp.route("/profilesearch/result/<taskid>")
+@bp.route("/gosearch/result/<taskid>")
+def profile_search_res(taskid):
+    res = check_task(config['worker_pool']['host'], taskid)
+    return jsonify(res)
 
 @bp.route("/data")
 def data():

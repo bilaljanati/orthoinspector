@@ -5,6 +5,9 @@
 {% block header %}
 {{ super() }}
 <link href="{{ prefix }}/static/css/searchresult.css" rel="stylesheet">
+<script src="{{ prefix }}/static/js/chroma.min.js"></script>
+<script src="{{ prefix }}/static/js/distribution.js"></script>
+<script src="{{ prefix }}/static/js/searchresult.js"></script>
 <script src="{{ prefix }}/static/js/gosearchresult.js"></script>
 <script>
 const database = '{{ params.database }}';
@@ -35,13 +38,13 @@ const taskid = '{{ taskid }}';
 		</p>
 	</div>
 </div>
-{#
 <div id="toolbar" style="display: none;">
 	<button id="download-fasta" class="btn btn-primary" title="Download all sequences as FASTA">Get FASTA</button>
+{#
 	<button id="download-orthoxml" class="btn btn-primary" title="Download all sequences as OrthoXML">Get OrthoXML</button>
+#}
 	<button id="download-list" class="btn btn-primary" title="Download ID list">Get ID list</button>
 </div>
-#}
 <div class="loader">
 	<br />
 	<img src="{{ prefix }}/static/images/gears.svg" />
