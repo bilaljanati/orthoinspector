@@ -116,6 +116,17 @@ def proximal(dbname, release, access):
         abort(404)
     return jsonify(db.get_proximal_proteins(access))
 
+@bp.route("/<dbname>/<int:release>/distribution/<access>")
+def distribution(dbname, release, access):
+    db = wh.get_db(dbname, release)
+    if not db or not db.has_distances:
+        abort(404)
+    if not db.has_profiles or not db.has_clades:
+        abort(404)
+    prot = db.get_protein(access)
+    dist = db.build_distribution(prot)
+    return jsonify(dist)
+
 @bp.route("/<database>/<int:release>/download/fasta", methods=['POST'])
 def download_fasta(database, release):
     db = wh.get_db(database, release)

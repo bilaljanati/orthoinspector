@@ -13,11 +13,19 @@ warehouse:
         host: derrick
         description: "OrthoInspector official Bacteria 2019 DB"
         clades: ['FCB group','Acidobacteriia','Aquificae','Caldiserica','Calditrichaeota','Chrysiogenetes','Coprothermobacterota','Deferribacteres','Dictyoglomi','Elusimicrobia','Fusobacteriia','Nitrospirae','Spirochaetes','Synergistetes','Thermodesulfobacteria','Thermotogae','Proteobacteria','PVC group','Terrabacteria group','Other Bacteria']
+        subclades:
+          FCB group: ['Bacteroidetes','Balneolaeota','Chlorobi','Fibrobacteres','Gemmatimonadetes','Other FCB group']
+          Proteobacteria: ['Acidithiobacillia','Alphaproteobacteria','Betaproteobacteria','Deltaproteobacteria','Gammaproteobacteria','Epsilonproteobacteria','Hydrogenophilalia','Oligoflexia','unclassified','Zetaproteobacteria','Other Proteobacteria']
+          Terrabacteria group: ['Actinobacteria','Armatimonadetes','Chloroflexi','Cyanobacteria','Deinococci','Firmicutes','Tenericutes']
       Eukaryota:
         dbname: OrthoInspector_Eukaryota_2019_new
         host: derrick
         description: "OrthoInspector official Eukaryota 2019 DB"
         clades: ['Amoebozoa','Choanoflagellata','Filasterea','Fungi','Metazoa','Rotosphaerida','Apusozoa','Cryptophyceae','Discoba','Haptista','Metamonada','Rhodophyta','Alveolata','Rhizaria','Stramenopiles','Viridiplantae']
+        subclades:
+          Fungi: ['Pezizomycotina','Saccharomycotina','Taphrinomycotina','Agaricomycotina','Pucciniomycotina','Ustilaginomycotina','Wallemiomycotina','Blastocladiomycota','Chytridiomycota','Cryptomycota','Microsporidia','Mucoromycota','unclassified Fungi','Zoopagomycota']
+          Metazoa: ['Craniata','Echinodermata','Tunicata','Cephalochordata','Nematoda','Chelicerata','Myriapoda','Crustacea','Hexapoda','Tardigrada','Mollusca','Platyhelminthes','Annelida','Brachiopoda','Cnidaria','Placozoa','Porifera']
+          Viridiplantae: ['Chlorophyta','Amborellales','Bryophyta','Charophyceae','Klebsormidiophyceae','Lycopodiopsida','Marchantiophyta','eudicotyledons','Liliopsida','Magnoliidae','Proteales','Ranunculales']
       Transverse:
         dbname: OrthoInspector_Transverse_2019_new
         host: derrick

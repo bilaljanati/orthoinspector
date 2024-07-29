@@ -8,6 +8,7 @@ SELECT p.access,
 	s.lineage,
 	s.name AS species
 	,s.model
+	,p.profile
 FROM protein AS p
 INNER JOIN species AS s ON s.pk_species = p.pk_species
 WHERE access = %(access)s

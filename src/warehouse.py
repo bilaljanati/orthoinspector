@@ -39,7 +39,7 @@ class Warehouse():
             if dbname not in self.databases:
                 hostname = dbinfo['host']
                 desc = dbinfo['description']
-                self.databases[dbname] = OrthoDb(name, release, dbname, conninfo=self._get_conn_info(hostname), description=desc, data_url=self.data_url, has_transverse=self.has_transverse(name, release), clades=dbinfo.get('clades', None))
+                self.databases[dbname] = OrthoDb(name, release, dbname, conninfo=self._get_conn_info(hostname), description=desc, data_url=self.data_url, has_transverse=self.has_transverse(name, release), clades=dbinfo.get('clades', None), subclades=dbinfo.get('subclades', {}))
             db = self.databases[dbname]
         except KeyError:
             traceback.print_exc()

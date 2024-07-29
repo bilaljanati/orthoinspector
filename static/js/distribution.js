@@ -25,6 +25,20 @@ function abbreviate(string, maxlen) {
 	return string.slice(0, maxlen-1)+'.';
 }
 
+function get_distribution_stats(clades) {
+	var total_species = 0;
+	var total_present = 0;
+
+	for (const c of clades) {
+		total_species += c.total;
+		total_present += c.present;
+	}
+	return {
+		total_species: total_species,
+		total_present: total_present
+	}
+}
+
 function create_heatmap(clades, options={}) {
 	var label_row = $('<div class="hm_row">');
 	var box_row = $('<div class="hm_row">');
@@ -68,13 +82,12 @@ function create_heatmap(clades, options={}) {
 		}
 		box_row.append(box);
 
-		if ('zoom' in options && options.zoom && 'additional' in clade) {
-			let boxtitle = box.attr('title');
-			box.removeAttr('title');
+		if ('additional' in options && 'children' in clade) {
 			box.addClass('popup-elem');
 
 			let zoomdiv = $('<div class="banner">');
-			create_heatmap(zoomdiv, clade.additional, options);
+			let hm = create_heatmap(clade.children, options);
+			zoomdiv.append(hm);
 			let pop_options = {'title': name+' distribution',
 							template: '<div class="popover popover-distribution" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>',
 							'content': zoomdiv,
@@ -82,7 +95,6 @@ function create_heatmap(clades, options={}) {
 							'trigger': 'click',
 							'placement': 'bottom'}
 			box.popover(pop_options);
-			box.attr('title', boxtitle);
 		}
 	}
 	var div = $("<div>");

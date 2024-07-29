@@ -7,14 +7,16 @@
 <link href="{{ prefix }}/static/css/bootstrap-table.min.css" rel="stylesheet">
 <link href="{{ prefix }}/static/css/bootstrap-table-export.min.css" rel="stylesheet">
 <link href="{{ prefix }}/static/css/protein.css" rel="stylesheet">
+<script src="{{ prefix }}/static/js/chroma.min.js"></script>
+<script src="{{ prefix }}/static/js/distribution.js"></script>
 <script src="{{ prefix }}/static/js/protein.js"></script>
 <script src="{{ prefix }}/static/js/bootstrap-table.min.js"></script>
 <script src="{{ prefix }}/static/js/orthotable.js"></script>
 <script>
 	const access="{{protein.access}}";
-	const dbSize="{{protein.taxon|length}}";
 	const seqLength={{protein.length}};
 	const model={% if model %}true{% else %}false{% endif %};
+	const has_clades={% if db.has_clades %}true{% else %}false{% endif %};
 </script>
 {% endblock %}
 
@@ -198,7 +200,9 @@
 						<li {% if not model %}class="active" {% endif %}><a href="{{prefix}}/{{db.name}}/{{db.release}}/protein/{{protein.access}}/full">Whole domain</a></li>
 					</ul>        
                     {% endif %}
-					<div class="tax_summary" id='band'></div>
+					<div class="tax-summary" id='band'>
+						<div id="taxo-profile"></div>
+					</div>
 					<table id="orthotable" class="table" data-toolbar="#toolbar" data-toggle ="table" data-url="{{prefix}}/{{db.name}}/{{db.release}}/orthologs/{{protein.access}}{% if not model %}/full{% endif %}" data-sort-name="taxoDist" data-sort-order="asc" data-show-toggle="true" data-show-export="true" data-show-columns="true" data-search="true" data-search-placeholder="Search protein or taxon" data-click-to-select="true" data-select-item-name="input" data-id-field="id">
 						<div id="toolbar">
 							<button id="align-button" class="btn btn-primary" onclick="launchAlignment()">Align with PipeAlign</button>

@@ -204,6 +204,7 @@ $(function() {
 	});
 
 	// taxo profile generation
+	/*
 	(function() {
 		var div = $('.taxo-profile');
 		if (div.length == 0) {
@@ -218,6 +219,7 @@ $(function() {
 			$('.popup-elem').not($(this)).popover('hide');
 		});
 	})();
+	*/
 
 	function sortDictKeys(d) {
 		let res = {}
@@ -380,6 +382,29 @@ $(function() {
 		}
 	}
 
+	function displayDistribution(target, clades) {
+		var stats = get_distribution_stats(clades);
+		$(target).prepend($('<h3>').text('Orthologs found in '+stats.total_present+' species (out of '+stats.total_species+')'));
+
+		var heatmap = create_heatmap(clades, {
+			'additional': true // show subclades
+		});
+		$(target).find('#taxo-profile').append(heatmap);
+	}
+
+	function loadDistribution() {
+		if (!has_clades) {
+			return;
+		}
+		$.ajax({
+			type:"GET",
+			url: prefix+'/'+database+'/'+release+'/distribution/'+access,
+			success: function(res, st) {
+				displayDistribution($('.tax-summary'), res);
+			}
+		});
+	}
+
 	$('#orthotable').on('load-success.bs.table', function(e,data) {
 		$('btn-inparalogs').removeAttr('disabled');
 		//checkInparalogs();
@@ -387,6 +412,7 @@ $(function() {
 
 	loadAbsentSummary();
 	loadProximal();
+	loadDistribution();
 });
 
 function PipeError() {

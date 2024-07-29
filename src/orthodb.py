@@ -5,7 +5,7 @@ from functools import cache, lru_cache
 
 
 class OrthoDb(DbService):
-    def __init__(self, display_name, release, dbname, conninfo, description, data_url, has_transverse, clades=None):
+    def __init__(self, display_name, release, dbname, conninfo, description, data_url, has_transverse, clades=None, subclades={}):
         super().__init__(dbname, conninfo)
 
         self.display_name = display_name
@@ -14,6 +14,7 @@ class OrthoDb(DbService):
         self.description = description
         self.data_url = data_url
         self.clades = clades
+        self.subclades = subclades
 
         self.has_models = False
         self.has_profiles = False
@@ -99,15 +100,22 @@ class OrthoDb(DbService):
         return has_dist
 
     def _format_clades(self):
-        if not self.has_clades:
-            return
-        clades = set(self.clades)
+        self.clades = self._generic_format_clades(self.clades)
+        if not self.subclades:
+            self.subclades = {}
+        self.subclades = {k: self._generic_format_clades(v) for k, v in self.subclades.items()}
+
+    def _generic_format_clades(self, clades):
+        if not clades:
+            return []
         new_clades = {}
         for row in self.get_species_list():
             for sp in row['lineage']:
                 if sp['name'] in clades:
                     new_clades[sp['taxid']] = sp['name']
-        self.clades = [{'taxid': k, 'name': v} for k, v in new_clades.items()]
+        name_order = {name: index for index, name in enumerate(clades)}
+        res = [{'taxid': k, 'name': v} for k, v in new_clades.items()]
+        return sorted(res, key=lambda d: name_order.get(d['name'], float('inf')))
 
     def get_info(self):
         return {
@@ -185,7 +193,10 @@ class OrthoDb(DbService):
 
     def get_protein(self, access):
         sql = self._get_sql("protein")
-        sql = '\n'.join(line for line in sql.splitlines() if 'model' not in line)
+        if not self.has_models:
+            sql = '\n'.join(line for line in sql.splitlines() if 'model' not in line)
+        if not self.has_profiles:
+            sql = '\n'.join(line for line in sql.splitlines() if 'profile' not in line)
         res = self._query(sql, {'access': access})
         if res:
             res = res[0]
@@ -198,18 +209,59 @@ class OrthoDb(DbService):
             sql = '\n'.join(line for line in sql.splitlines() if 'profile' not in line)
         return self._query(sql, {'access_list': tuple(access_list)})
 
-    def _species_clade(self, species):
-        clades_ids = set([c['taxid'] for c in self.clades])
+    # test if species is in a reference clade
+    def _species_in_clade(self, species, clades):
+        clades_ids = set([c['taxid'] for c in clades])
         ancestors = set([a['taxid'] for a in species['lineage']])
         match = list(clades_ids & ancestors)
         if len(match) == 0:
             return None
         return match[0]
 
+    # make inventory of matches in given clades
+    def _count_for_clades(self, profile, species, clades):
+        res = {}
+        membership = {}
+        # determine each species' clade
+        for sp in species:
+            match = self._species_in_clade(sp, clades)
+            match = 0 if not match else int(match)
+            membership[sp['taxid']] = match
+        # index reference clades by id
+        indexed_clades = {int(s['taxid']): s['name'] for s in clades}
+        indexed_clades[0] = "Other"
+        # enumerate relationships for each ref clade
+        for i, taxid in enumerate([s['taxid'] for s in self._fetch_profile_species()]):
+            clade = membership[taxid]
+            present = int(profile[i])
+            if clade not in res:
+                res[clade] = {'taxid': clade, 'name': indexed_clades[clade], 'total': 0, 'present': 0}
+            res[clade]['total'] += 1
+            res[clade]['present'] += present
+        res = list(res.values())
+        # sort to conserve order of 'clades' list
+        order = {name: index for index, name in enumerate([c['name'] for c in clades])}
+        return sorted(res, key=lambda d: order.get(d['name'], float('inf')))
+
     # distribution for display
     def build_distribution(self, prot):
         if not self.has_clades or not 'profile' in prot:
             return None
+        profile = prot['profile']
+        species = self.get_species_list()
+        res = self._count_for_clades(profile, species, self.clades)
+        if not self.subclades:
+            return res
+
+        parent_clades_names = set(self.subclades.keys())
+        for clade in res:
+            clade_name = clade['name']
+            if clade_name not in parent_clades_names:
+                continue
+            subclade = self.subclades[clade_name]
+            clade['children'] = self._count_for_clades(profile, species, subclade)
+        return res
+
         res = {}
         membership = {}
         # determine each species' clade
