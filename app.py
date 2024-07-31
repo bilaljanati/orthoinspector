@@ -15,6 +15,7 @@ from src.taxonomy import Taxonomy
 from src.interpro import Interpro
 from src.tasks import submit_task, check_task
 from api import bp as bpapi
+from secret import bp as bpsecret
 
 
 with open('config.yml', 'r') as config_file:
@@ -255,3 +256,4 @@ def default(page):
 
 app.register_blueprint(bp, url_prefix=config['prefix'])
 app.register_blueprint(bpapi, url_prefix=config['prefix']+'/api')
+app.register_blueprint(bpsecret, url_prefix=config['prefix'])
