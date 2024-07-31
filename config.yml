@@ -53,7 +53,7 @@ warehouse:
       port: 5432
       user: orthoinspector
       password: W34oyYFZ6dbOIivkTwyLvuzIWLoiWsi1kumALaMJ
-  data_server_url: "http://data.lbgi.fr/orthoinspector"
+  data_server_url: "https://data.lbgi.fr/orthoinspector"
 geneontology:
   connection:
     dbname: 'go'

@@ -19,7 +19,7 @@ $(document).ready(function() {
 			let name = s["name"];
 			res.push({
 				"proteome": "<a href=\""+data_url+"/"+db+release+"/proteomes/"+taxid+".fasta.gz\">"+taxid+".fasta.gz</a>",
-				"data": "<a href=\""+data_url+"/"+db+release+"/data/"+taxid+".tsv.gz\">"+taxid+".tsv.gz</a>",
+				"data": "<a href=\""+data_url+"/"+db+release+"/orthologs/"+taxid+".tsv.gz\">"+taxid+".tsv.gz</a>",
 				"species": name
 			});
 		}
@@ -43,8 +43,8 @@ $(document).ready(function() {
 		for (const s of species) {
 			taxids.push(s["taxid"]+"");
 		}
-		$("#cmd-proteomes").html(formatScript(taxids, data_url+"/"+db+release+"/data/$taxid.fasta.gz"));
-		$("#cmd-orthology").html(formatScript(taxids, data_url+"/"+db+release+"/data/$taxid.tsv.gz"));
+		$("#cmd-proteomes").html(formatScript(taxids, data_url+"/"+db+release+"/proteomes/$taxid.fasta.gz"));
+		$("#cmd-orthology").html(formatScript(taxids, data_url+"/"+db+release+"/orthologs/$taxid.tsv.gz"));
 	}
 
 	function displayData(species) {

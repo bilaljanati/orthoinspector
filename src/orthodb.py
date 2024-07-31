@@ -497,14 +497,15 @@ class OrthoDb(DbService):
     # Published data
 
     def _get_base_data_url(self):
-        return f'{self.data_url}/{self.display_name}'
+        return f'{self.data_url}/{self.display_name}{self.release}'
 
     def _get_proteomes_url(self):
-        return f'{self._get_base_data_url()}/proteomes.tar.gz'
+        taxid = self.get_species_list()[0]['taxid']
+        return f'{self._get_base_data_url()}/proteomes/{taxid}.fasta.gz'
 
     def _get_data_url(self):
         taxid = self.get_species_list()[0]['taxid']
-        return f'{self._get_base_data_url()}/data/{taxid}.tsv.gz'
+        return f'{self._get_base_data_url()}/orthologs/{taxid}.tsv.gz'
 
     def _fetch_data(self, url):
         import requests

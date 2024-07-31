@@ -328,3 +328,6 @@ div#collapseInparalogs {
 .sel-db {
 	width: 120px !important;
 }
+.spaced-form-group {
+	margin-top: 1em;
+}
