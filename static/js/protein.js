@@ -1,5 +1,7 @@
 $(function() {
 
+	var reference_clades = [];
+
     // Submit the table form
     function tableform(){
             var form = $('#sastableform');
@@ -229,46 +231,59 @@ $(function() {
 		return res;
 	}
 
-	function checkInparalogs() {
-		let div = $('#collapseInparalogs');
-
-		if (div.data('seen') === true)
-			return;
-		if (drawInparalogs(div))
-			$('#btn-inparalogs').show();
-		div.data('seen', true);
-	}
-
-	function drawInparalogs(div) {
+	function displayInparalogs(div) {
 		let tabledata = $('#orthotable').bootstrapTable('getData');
-		let refclades = Object.keys(JSON.parse($('.taxo-profile').attr('data-profile')).clades);
-		let matrix = {};
+		if (!reference_clades.length || !tabledata.length) {
+			return;
+		}
 
+		let presence = {};
+		for (const taxid of reference_clades) {
+			presence[taxid] = new Set();
+		}
+
+		// determine presence of inparalogs in ref. clades
 		for (const row of tabledata) {
-			let inter = row.fullTaxonomy.filter(x => refclades.includes(x));
-			if (inter.length == 0) continue;
-			let clade = inter[0];
-
-			for (const prot of row.query) {
-				let name = prot.name;
-				if (!(name in matrix))
-					matrix[name] = [];
-				matrix[name][clade] = true;
+			for (const taxid of reference_clades) {
+				if (!row['fullTaxonomy'].some(obj => parseInt(obj.taxid) === taxid)) {
+					continue;
+				}
+				for (const inpa of row['inparalogs']) {
+					if (inpa['access'] === access) {
+						continue;
+					}
+					let protname = inpa['name'];
+					presence[taxid].add(protname);
+				}
+				break;
 			}
 		}
-		for (const genename in matrix) {
-			let presence = matrix[genename];
+
+		// get total number of inparalogs
+		let all_inpas = new Set();
+		for (const e of Object.values(presence)) {
+			all_inpas = all_inpas.union(e);
+		}
+		// for each clades, display
+		for (const e of all_inpas) {
 			let row = $('<div class="hm_row">');
-			row.append($('<div class="hm_col inparalog-name">').html(genename).attr('title', genename));
-			for (const clade of refclades) {
+			let col = $('<div class="hm_col inparalog-name">');
+			col.html(e).attr('title', e);
+			row.append(col);
+
+			for (const taxid of reference_clades) {
+				const s = presence[taxid];
 				let col = $('<div class="hm_col">');
-				if (clade in presence)
-					col.html($('<span class="glyphicon glyphicon-ok">'));
+				if (s.has(e)) {
+					col.append('<span class="glyphicon glyphicon-ok">');
+				}
 				row.append(col);
 			}
-			div.append(row);
+			$(div).append(row);
 		}
-		return Object.keys(matrix).length > 1;
+		if (all_inpas.size > 1) {
+			$('#btn-inparalogs').show();
+		}
 	}
 
 	function loadAbsentSummary() {
@@ -392,27 +407,48 @@ $(function() {
 		$(target).find('#taxo-profile').append(heatmap);
 	}
 
-	function loadDistribution() {
-		if (!has_clades) {
-			return;
+	function storeClades(distribution) {
+		for (const c of distribution) {
+			reference_clades.push(c.taxid);
 		}
-		$.ajax({
-			type:"GET",
-			url: prefix+'/'+database+'/'+release+'/distribution/'+access,
-			success: function(res, st) {
-				displayDistribution($('.tax-summary'), res);
+	}
+
+	function onDistributionLoaded() {
+		return new Promise((resolve) => {
+			if (!has_clades) {
+				return;
 			}
+			$.ajax({
+				type:"GET",
+				url: prefix+'/'+database+'/'+release+'/distribution/'+access,
+				success: function(res, st) {
+					displayDistribution($('.tax-summary'), res);
+					storeClades(res);
+					resolve();
+				}
+			});
 		});
 	}
 
 	$('#orthotable').on('load-success.bs.table', function(e,data) {
 		$('btn-inparalogs').removeAttr('disabled');
-		//checkInparalogs();
 	});
 
-	loadAbsentSummary();
+	function onTableLoaded() {
+		return new Promise((resolve) => {
+			$('#orthotable').on('load-success.bs.table', function () {
+            resolve();
+			});
+		});
+	}
+
+	Promise.all([onDistributionLoaded(), onTableLoaded()])
+    .then(() => {
+		displayInparalogs('#collapseInparalogs');
+    });
+
+	//loadAbsentSummary();
 	loadProximal();
-	loadDistribution();
 });
 
 function PipeError() {
