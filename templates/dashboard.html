@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %} - Dashboard{% endblock %}
+
+{% block header %}
+<style>
+td.green {
+	background-color: green;
+}
+td.red {
+	background-color: red;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<h1>Databases status</h1>
+
+{% set fields = ["profiles", "distances", "models", "data", "clades"] %}
+
+<table class="table">
+    <thead>
+        <th>Database</th>
+        {% for f in fields %}
+        <th>{{ f }}</th>
+        {% endfor %}
+    </thead>
+    <tbody>
+        {% for dbinfo in data %}
+        <tr>
+            <td>{{ dbinfo.name }}</td>
+            {% for f in fields %}
+			{% set key = 'has_' ~ f %}
+            <td class="{% if dbinfo[key] %}green{% else %}red{% endif %}">{{ dbinfo[key] }}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
