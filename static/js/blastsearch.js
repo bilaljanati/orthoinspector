@@ -132,8 +132,14 @@ $(function() {
 		return access;
 	}
 
+	function get_latest_release() {
+		let releases = Object.keys(dbs);
+		return Math.max(...releases.map(r => parseInt(r)))
+	}
+
 	function get_protein_url(name) {
-		return prefix+'/Transverse/protein/'+extract_prot_access(name);
+		let latest_release = get_latest_release();
+		return prefix+'/Transverse/'+latest_release+'/protein/'+extract_prot_access(name);
 	}
 
 	function display_result(blast) {
