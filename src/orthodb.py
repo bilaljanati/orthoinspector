@@ -320,7 +320,6 @@ class OrthoDb(DbService):
     def _format_lineage(self, lineage, ignore_top_taxons=0):
         l = lineage.split(';')
         if ignore_top_taxons > 0 and len(l) > ignore_top_taxons:
-            #l = l[ignore_top_taxons:]
             l = l.slice(ignore_top_taxons)
         taxons = [{'taxid': l[i], 'name': l[i+1]} for i in range(0, len(l), 2)]
         return taxons

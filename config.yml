@@ -2,6 +2,19 @@ title: OrthoInspector
 prefix: /oi
 warehouse:
   databases:
+    2016:
+      Archaea:
+        dbname: OrthoInspector_Archaea_2016_new
+        host: derrick
+      Bacteria:
+        dbname: OrthoInspector_Bacteria_2016_new
+        host: derrick
+      Eukaryota:
+        dbname: OrthoInspector_Eukaryota_2016_new
+        host: derrick
+      Transverse:
+        dbname: OrthoInspector_Transverse_2016_new
+        host: derrick
     2019:
       Archaea:
         dbname: OrthoInspector_Archaea_2019_new
