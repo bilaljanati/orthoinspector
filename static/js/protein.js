@@ -405,6 +405,7 @@ $(function() {
 			'additional': true // show subclades
 		});
 		$(target).find('#taxo-profile').append(heatmap);
+		$('.tax-summary').show();
 	}
 
 	function storeClades(distribution) {
@@ -442,7 +443,13 @@ $(function() {
 		});
 	}
 
-	Promise.all([onDistributionLoaded(), onTableLoaded()])
+	const distrib_promise = onDistributionLoaded();
+
+	distrib_promise.then(() => {
+		$('#btn-group-distribution').show();
+	});
+
+	Promise.all([distrib_promise, onTableLoaded()])
     .then(() => {
 		displayInparalogs('#collapseInparalogs');
     });
