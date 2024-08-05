@@ -1,5 +1,8 @@
+const GREEN = '#70ff4d';
+const RED = '#ff4d4d';
+
 function color_boxes(father) {
-	let fcol = chroma.scale(['#70ff4d','#ff4d4d']).mode('hsv');
+	let fcol = chroma.scale([GREEN, RED]).mode('hsv');
 	$(father).find(".hm_rect").each(function(i, el) {
 		let ratio = $(el).attr('data-ratio') || false;
 		if (ratio !== false)
@@ -104,5 +107,22 @@ function create_heatmap(clades, options={}) {
 	*/
 	div.append(label_row, box_row);
 	color_boxes(box_row);
+	return div;
+}
+
+function create_heatmap_without_clades(profile) {
+	var div = $('<div>');
+	var row = $('<div class="hm_row">');
+	row.append($('<div class="hm_col">'));
+
+	for (let c of profile) {
+		let column = $('<div>').attr({
+			class: 'hm_rect',
+			style: 'background-color: '+(c == '1' ? GREEN : RED)+';'
+		});
+		row.append(column);
+	}
+	row.append($('<div class="hm_col">'));
+	div.append(row);
 	return div;
 }

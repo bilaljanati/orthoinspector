@@ -150,6 +150,13 @@ class SearchResultPage {
 		this.toolbar.show();
 	}
 
+	draw_distribution(prot) {
+		if (prot.distribution) {
+			return create_heatmap(prot);
+		}
+		return create_heatmap_without_clades(prot.profile);
+	}
+
 	display_one_cluster(cluster, name, id) {
 		var c = $(`<div class="panel panel-default panel-cluster">
 					<div class="panel-heading">
@@ -173,9 +180,7 @@ class SearchResultPage {
 						<div id="collapsen" class="panel panel-collapse proteins collapse" aria-expanded="false"></div>
 					</div>
 				</div>`);
-		if (cluster[0].distribution) {
-			c.find('.banner').append(create_heatmap(cluster[0].distribution));
-		}
+		c.find('.banner').append(this.draw_distribution(cluster[0]));
 		var link = c.find('.cluster-name')
 		link.html(name)
 			.attr('href', '#collapse'+id)
@@ -284,9 +289,7 @@ class SearchResultPage {
 					</div>`;
 		let footer = '<div class="panel-footer"></div>';
 		p.append(head, body, footer);
-		if (s.distribution) {
-			p.find('.banner').append(create_heatmap(s.distribution));
-		}
+		p.find('.banner').append(this.draw_distribution(s));
 		return p;
 	}
 
