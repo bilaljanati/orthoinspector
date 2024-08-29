@@ -49,18 +49,94 @@ warehouse:
         dbname: OrthoInspector_Archaea_2023
         host: derrick
         description: "OrthoInspector official Archaea 2023 DB"
+        clades:
+            - Candidatus Lokiarchaeota
+            - Candidatus Thorarchaeota
+            - Candidatus Thermoplasmatota
+            - Candidatus Micrarchaetota
+            - Candidatus Undinarchaeota
+            - Nanoarchaeota
+            - Other DPANN group
+            - Archaeoglobi
+            - Methanobacteria
+            - Methanococci
+            - Halobacteria
+            - Methanomicrobia
+            - Thermococci
+            - Other Euryarchaeota
+            - Candidatus Bathyarchaeota
+            - Candidatus Korarchaeota
+            - Crenarchaeota
+            - Thaumarchaeota
+            - Other TACK group
       Bacteria:
         dbname: OrthoInspector_Bacteria_2023
         host: derrick
         description: "OrthoInspector official Bacteria 2023 DB"
+        clades:
+            - FCB group
+            - Proteobacteria
+            - PVC group
+            - Terrabacteria group
+            - Acidobacteriota
+            - Aquificae
+            - Fusobacteria
+            - Nitrospirae
+            - Nitrospinae
+            - Spirochaetes
+            - Synergistia
+            - Nitrospinota/Tectimicrobiota group
+            - Spirochaetes
+            - Synergistia
+            - Caldiserica/Cryosericota group
+            - Chrysiogenetes
+            - Deferribacteres
+            - Elusimicrobia
+            - Thermodesulfobacteria
+            - Thermotogae
+            - Other Bacteria
       Eukaryota:
         dbname: OrthoInspector_Eukaryota_2023
         host: derrick
         description: "OrthoInspector official Eukaryota 2023 DB"
+        clades:
+            - Amoebozoa
+            - Choanoflagellata
+            - Filasterea
+            - Fungi
+            - Metazoa
+            - Rotosphaerida
+            - Alveolata
+            - Rhizaria
+            - Stramenopiles
+            - Chlorophyta
+            - Streptophyta
+            - Apusozoa
+            - Cryptophyceae
+            - Discoba
+            - Haptista
+            - Metamonada
+            - Rhodophyta
       Transverse:
         dbname: OrthoInspector_Transverse_2023
         host: derrick
         description: "OrthoInspector official Transverse 2023 DB"
+        clades:
+            - Asgard group
+            - Candidatus Thermoplasmatota
+            - DPANN group
+            - Euryarchaeota
+            - TACK group
+            - Amoebozoa
+            - Opisthokonta
+            - Sar
+            - Viridiplantae
+            - Other Eukaryota
+            - FCB group
+            - Proteobacteria
+            - PVC group
+            - Terrabacteria group
+            - Other Bacteria
   hosts:
     derrick:
       port: 5432

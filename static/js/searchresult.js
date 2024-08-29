@@ -152,7 +152,7 @@ class SearchResultPage {
 
 	draw_distribution(prot) {
 		if (prot.distribution) {
-			return create_heatmap(prot);
+			return create_heatmap(prot.distribution);
 		}
 		return create_heatmap_without_clades(prot.profile);
 	}
