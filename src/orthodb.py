@@ -1,11 +1,12 @@
 from dbservice import DbService
+from cladehandler import CladeHandler
 import random
 import math
 from functools import cache, lru_cache
 
 
 class OrthoDb(DbService):
-    def __init__(self, display_name, release, dbname, conninfo, description, data_url, has_transverse, clades=None, subclades={}):
+    def __init__(self, display_name, release, dbname, conninfo, description, data_url, has_transverse, clades=None):
         super().__init__(dbname, conninfo)
 
         self.display_name = display_name
@@ -14,7 +15,6 @@ class OrthoDb(DbService):
         self.description = description
         self.data_url = data_url
         self.clades = clades
-        self.subclades = subclades
 
         self.has_models = False
         self.has_profiles = False
@@ -23,7 +23,7 @@ class OrthoDb(DbService):
         self.has_clades = False
         self.has_transverse = has_transverse
         self._analyze_db()
-        self._format_clades()
+        self.cladeh = CladeHandler(self.get_species_list(), self.clades)
 
     def _deprecate_connect(self, ci):
         return psycopg2.connect(
@@ -98,36 +98,6 @@ class OrthoDb(DbService):
         except Exception:
             has_dist = False
         return has_dist
-
-    def _search_ancestor(self, species, ancestors):
-        res = False
-        for s in species['lineage']:
-            if s['name'] in ancestors:
-                res = s['name']
-        return res
-
-    def _format_clades(self):
-        # determine clade for each species
-        # thats all
-        if len(self.clades) == 0:
-            return
-        clades = set(self.clades)
-        other_clades = set([c[6:] for c in self.clades if c.startswith("Other ")])
-        clades -= other_clades
-        unclassified = []
-        membership = {}
-        for species in self.get_species_list():
-            found = self._search_ancestor(species, clades)
-            if found:
-                membership[species['taxid']] = found
-            else:
-                unclassified.append(species)
-        # Look for default "Other" clade
-        for species in unclassified:
-            found = self._search_ancestor(species, other_clades)
-            if found:
-                membership[species['taxid']] = "Other " + found
-        self.clade_membership = membership
 
     def get_info(self):
         return {
@@ -230,23 +200,10 @@ class OrthoDb(DbService):
             return None
         return match[0]
 
-    def build_distribution(self, prot):
+    def build_distribution(self, prot, clades=None):
         if not self.has_clades or not 'profile' in prot:
             return None
-        profile = prot['profile']
-        dist = {}
-        for i, species in enumerate(self.get_species_list()):
-            present = profile[i] == "1"
-            clade = self.clade_membership[species['taxid']]
-            if clade not in dist:
-                dist[clade] = {'name': clade, 'total': 0, 'present': 0}
-            dist[clade]['total'] += 1
-            dist[clade]['present'] += present
-        res = []
-        for name in self.clades:
-            if name in dist:
-                res.append(dist[name])
-        return res
+        return self.cladeh.build_distribution(prot['profile'])
 
     def get_orthologs(self, access, model=False):
         res = self._fetch_orthologs(access, model)
