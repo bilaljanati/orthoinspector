@@ -57,6 +57,7 @@ function create_heatmap(clades, options={}) {
 	}
 
 	var prev_domain = null;
+	var has_subclades = false;
 	for (const clade of clades) {
 		let name = clade.name;
 		let domain = clade.domain;
@@ -73,7 +74,6 @@ function create_heatmap(clades, options={}) {
 		label_row.append(label);
 
 		let box = $('<div class="hm_rect">')
-		box.attr('title', clade.present+"/"+clade.total).attr('data-ratio', clade.present/clade.total);
 		if (display_domains) {
 			let domblock = $('<div class="hm_rect">');
 
@@ -98,13 +98,18 @@ function create_heatmap(clades, options={}) {
 							'trigger': 'click',
 							'placement': 'bottom'}
 			box.popover(pop_options);
+			has_subclades = true;
 		}
+		box.attr('title', clade.present+"/"+clade.total).attr('data-ratio', clade.present/clade.total);
 	}
+	/* Showing a popover hides the others */
 	var div = $("<div>");
-	/*
-	if (display_domains)
-		div.append(domain_row);
-	*/
+	if (has_subclades) {
+		box_row.find('.hm_rect.popup-elem').on('show.bs.popover', function(e) {
+			let t = e.target;
+			$(t).siblings('.hm_rect.popup-elem').popover('hide');
+		});
+	}
 	div.append(label_row, box_row);
 	color_boxes(box_row);
 	return div;
