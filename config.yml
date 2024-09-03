@@ -12,6 +12,22 @@ warehouse:
       Eukaryota:
         dbname: OrthoInspector_Eukaryota_2016_new
         host: derrick
+        clades:
+          - Alveolata
+          - Rhizaria
+          - Stramenopiles
+          - Viridiplantae
+          - Rhodophyta
+          - Cryptophyceae
+          - Haptophyta
+          - Apusozoa
+          - Metamonada
+          - Discoba
+          - Amoebozoa
+          - Fungi
+          - Choanoflagellata
+          - Metazoa
+          - Other Eukaryota
       Transverse:
         dbname: OrthoInspector_Transverse_2016_new
         host: derrick
@@ -20,30 +36,164 @@ warehouse:
         dbname: OrthoInspector_Archaea_2019_new
         host: derrick
         description: "OrthoInspector official Archaea 2019 DB"
-        clades: ['Candidatus Lokiarchaeota','Candidatus Thorarchaeota','Candidatus Thermoplasmatota','Candidatus Altiarchaeota','Candidatus Micrarchaeota','Nanoarchaeota','Archaeoglobi','Hadesarchaea','Methanomada group','Methanomada group','Methanonatronarchaeia','Methanopyri','Stenosarchaea group','Stenosarchaea group','Thermococci','Candidatus Bathyarchaeota','Candidatus Korarchaeota','Crenarchaeota','Thaumarchaeota']
+        clades:
+          - Candidatus Lokiarchaeota
+          - Candidatus Thorarchaeota
+          - Candidatus Thermoplasmatota
+          - Candidatus Altiarchaeota
+          - Candidatus Micrarchaeota
+          - Nanoarchaeota
+          - Archaeoglobi
+          - Hadesarchaea
+          - Methanomada group
+          - Methanomada group
+          - Methanonatronarchaeia
+          - Methanopyri
+          - Stenosarchaea group
+          - Stenosarchaea group
+          - Thermococci
+          - Candidatus Bathyarchaeota
+          - Candidatus Korarchaeota
+          - Crenarchaeota
+          - Thaumarchaeota
       Bacteria:
         dbname: OrthoInspector_Bacteria_2019_new
         host: derrick
         description: "OrthoInspector official Bacteria 2019 DB"
-        clades: ['FCB group','Acidobacteriia','Aquificae','Caldiserica','Calditrichaeota','Chrysiogenetes','Coprothermobacterota','Deferribacteres','Dictyoglomi','Elusimicrobia','Fusobacteriia','Nitrospirae','Spirochaetes','Synergistetes','Thermodesulfobacteria','Thermotogae','Proteobacteria','PVC group','Terrabacteria group','Other Bacteria']
-        subclades:
-          FCB group: ['Bacteroidetes','Balneolaeota','Chlorobi','Fibrobacteres','Gemmatimonadetes','Other FCB group']
-          Proteobacteria: ['Acidithiobacillia','Alphaproteobacteria','Betaproteobacteria','Deltaproteobacteria','Gammaproteobacteria','Epsilonproteobacteria','Hydrogenophilalia','Oligoflexia','unclassified','Zetaproteobacteria','Other Proteobacteria']
-          Terrabacteria group: ['Actinobacteria','Armatimonadetes','Chloroflexi','Cyanobacteria','Deinococci','Firmicutes','Tenericutes']
+        clades:
+          - name: FCB group
+            clades:
+              - Bacteroidota
+              - Balneolota
+              - Chlorobiota
+              - Fibrobacterota
+              - Gemmatimonadetes
+              - Other FCB group
+          - Acidobacteriota
+          - Aquificae
+          - Caldisericota
+          - Calditrichota
+          - Chrysiogenetes
+          - Coprothermobacterota
+          - Deferribacteres
+          - Dictyoglomota
+          - Elusimicrobia
+          - Fusobacteriia
+          - Nitrospirota
+          - Spirochaetota
+          - Synergistota
+          - Thermodesulfobacteria
+          - Thermotogae
+          - name: Pseudomonadota
+            clades:
+              - Acidithiobacillia
+              - Alphaproteobacteria
+              - Betaproteobacteria
+              #- Deltaproteobacteria
+              - Gammaproteobacteria
+              - Epsilonproteobacteria
+              - Fibrobacterota
+              - Oligoflexia
+              - Zetaproteobacteria
+              - Other Pseudomonadota
+          - PVC group
+          - name: Terrabacteria group
+            clades:
+              - Actinomycetota
+              - Armatimonadota
+              - Chloroflexia
+              - Cyanobacteriota
+              - Deinococci
+              - Bacillota
+              - Mycoplasmatota
+              - Other Terrabacteria group
       Eukaryota:
         dbname: OrthoInspector_Eukaryota_2019_new
         host: derrick
         description: "OrthoInspector official Eukaryota 2019 DB"
-        clades: ['Amoebozoa','Choanoflagellata','Filasterea','Fungi','Metazoa','Rotosphaerida','Apusozoa','Cryptophyceae','Discoba','Haptista','Metamonada','Rhodophyta','Alveolata','Rhizaria','Stramenopiles','Viridiplantae']
-        subclades:
-          Fungi: ['Pezizomycotina','Saccharomycotina','Taphrinomycotina','Agaricomycotina','Pucciniomycotina','Ustilaginomycotina','Wallemiomycotina','Blastocladiomycota','Chytridiomycota','Cryptomycota','Microsporidia','Mucoromycota','unclassified Fungi','Zoopagomycota']
-          Metazoa: ['Craniata','Echinodermata','Tunicata','Cephalochordata','Nematoda','Chelicerata','Myriapoda','Crustacea','Hexapoda','Tardigrada','Mollusca','Platyhelminthes','Annelida','Brachiopoda','Cnidaria','Placozoa','Porifera']
-          Viridiplantae: ['Chlorophyta','Amborellales','Bryophyta','Charophyceae','Klebsormidiophyceae','Lycopodiopsida','Marchantiophyta','eudicotyledons','Liliopsida','Magnoliidae','Proteales','Ranunculales']
+        clades:
+            - Amoebozoa
+            - Choanoflagellata
+            - Filasterea
+            - name: Fungi
+              clades:
+                - Pezizomycotina
+                - Saccharomycotina
+                - Taphrinomycotina
+                - Agaricomycotina
+                - Pucciniomycotina
+                - Ustilaginomycotina
+                - Wallemiomycotina
+                - Blastocladiomycota
+                - Chytridiomycota
+                - Cryptomycota
+                - Microsporidia
+                - Mucoromycota
+                - unclassified Fungi
+                - Zoopagomycota
+            - name: Metazoa
+              clades:
+                - Craniata
+                - Echinodermata
+                - Tunicata
+                - Cephalochordata
+                - Nematoda
+                - Chelicerata
+                - Myriapoda
+                - Crustacea
+                - Hexapoda
+                - Tardigrada
+                - Mollusca
+                - Platyhelminthes
+                - Annelida
+                - Brachiopoda
+                - Cnidaria
+                - Placozoa
+                - Porifera
+            - Rotosphaerida
+            - Apusozoa
+            - Cryptophyceae
+            - Discoba
+            - Haptista
+            - Metamonada
+            - Rhodophyta
+            - Alveolata
+            - Rhizaria
+            - Stramenopiles
+            - name: Viridiplantae
+              clades:
+                - Chlorophyta
+                - Amborellales
+                - Bryophyta
+                - Charophyceae
+                - Klebsormidiophyceae
+                - Lycopodiopsida
+                - Marchantiophyta
+                - eudicotyledons
+                - Liliopsida
+                - Magnoliidae
+                - Proteales
+                - Ranunculales
       Transverse:
         dbname: OrthoInspector_Transverse_2019_new
         host: derrick
         description: "OrthoInspector official Transverse 2019 DB"
-        clades: ['Amoebozoa','Opisthokonta','Other Eukaryota','Sar','Viridiplantae', 'Asgard group','Candidatus Thermoplasmatota','DPANN group','Euryarchaeota','TACK group', 'FCB group','Other Bacteria','Proteobacteria','PVC group','Terrabacteria group']
+        clades:
+            - Amoebozoa
+            - Opisthokonta
+            - Other Eukaryota
+            - Sar
+            - Viridiplantae
+            - Asgard group
+            - Candidatus Thermoplasmatota
+            - DPANN group
+            - Euryarchaeota
+            - TACK group
+            - FCB group
+            - Other Bacteria
+            - Proteobacteria
+            - PVC group
+            - Terrabacteria group
     2023:
       Archaea:
         dbname: OrthoInspector_Archaea_2023
@@ -53,7 +203,7 @@ warehouse:
             - Candidatus Lokiarchaeota
             - Candidatus Thorarchaeota
             - Candidatus Thermoplasmatota
-            - Candidatus Micrarchaetota
+            - Candidatus Micrarchaeota
             - Candidatus Undinarchaeota
             - Nanoarchaeota
             - Other DPANN group
@@ -66,29 +216,63 @@ warehouse:
             - Other Euryarchaeota
             - Candidatus Bathyarchaeota
             - Candidatus Korarchaeota
-            - Crenarchaeota
-            - Thaumarchaeota
-            - Other TACK group
+            - Thermoprotei
+            - Nitrososphaerota
       Bacteria:
         dbname: OrthoInspector_Bacteria_2023
         host: derrick
         description: "OrthoInspector official Bacteria 2023 DB"
         clades:
-            - FCB group
-            - Proteobacteria
-            - PVC group
-            - Terrabacteria group
+            - name: FCB group
+              clades:
+                - Bacteroidota
+                - Balneolota
+                - Chlorobiota
+                - Ignavibacteriota
+                - Rhodothermota
+                - Zixibacteria
+                - Candidatus Cloacimonadota
+                - Candidatus Kryptonia
+                - Fibrobacterota
+                - Gemmatimonadetes
+            - name: Pseudomonadota
+              clades:
+                - Acidithiobacillia
+                - Alphaproteobacteria
+                - Betaproteobacteria
+                - Deltaproteobacteria
+                - Epsilonproteobacteria
+                - Gammaproteobacteria
+                - Hydrogenophilia
+                - Oligoflexia
+                - Zetaproteobacteria
+                - Other Pseudomonadota
+            - name: PVC group
+              clades:
+                - Chlamydiota
+                - Kiritimatiellota
+                - Lentisphaerota
+                - Planctomycetota
+                - Verrucomicrobiota
+                - Candidatus Omnitrophota
+            - name: Terrabacteria group
+              clades:
+                - Abditibacteriota
+                - Actinomycetota
+                - Armatimonadota
+                - Chloroflexota
+                - Cyanobacteriota/Melainabacteria group
+                - Deinococcota
+                - Bacillota
+                - Mycoplasmatota
             - Acidobacteriota
             - Aquificae
-            - Fusobacteria
-            - Nitrospirae
-            - Nitrospinae
-            - Spirochaetes
-            - Synergistia
-            - Nitrospinota/Tectimicrobiota group
-            - Spirochaetes
-            - Synergistia
-            - Caldiserica/Cryosericota group
+            - Fusobacteriota
+            - Nitrospirota
+            - Nitrospinota
+            - Spirochaetota
+            - Synergistota
+            - Caldisericota/Cryosericota group
             - Chrysiogenetes
             - Deferribacteres
             - Elusimicrobia
@@ -103,8 +287,41 @@ warehouse:
             - Amoebozoa
             - Choanoflagellata
             - Filasterea
-            - Fungi
-            - Metazoa
+            - name: Fungi
+              clades:
+                - Pezizomycotina
+                - Saccharomycotina
+                - Taphrinomycotina
+                - Agaricomycotina
+                - Pucciniomycotina
+                - Ustilaginomycotina
+                - Wallemiomycotina
+                - Blastocladiomycota
+                - Chytridiomycota
+                - Cryptomycota
+                - Microsporidia
+                - Mucoromycota
+                - Zoopagomycota
+                - Other Fungi
+            - name: Metazoa
+              clades:
+                - Craniata
+                - Cephalochordata
+                - Tunicata
+                - Echinodermata
+                - Nematoda
+                - Chelicerata
+                - Myriapoda
+                - Crustacea
+                - Hexapoda
+                - Rotifera
+                - Annelida
+                - Brachiopoda
+                - Mollusca
+                - Platyhelminthes
+                - Cnidaria
+                - Placozoa
+                - Porifera
             - Rotosphaerida
             - Alveolata
             - Rhizaria
@@ -133,7 +350,7 @@ warehouse:
             - Viridiplantae
             - Other Eukaryota
             - FCB group
-            - Proteobacteria
+            - Pseudomonadota
             - PVC group
             - Terrabacteria group
             - Other Bacteria
