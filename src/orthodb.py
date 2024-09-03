@@ -247,9 +247,23 @@ class OrthoDb(DbService):
         taxons = [{'taxid': l[i], 'name': l[i+1]} for i in range(0, len(l), 2)]
         return taxons
 
-    # TODO
+    def _flatten_clades(self):
+        fc = []
+        for c in self.clades:
+            if isinstance(c, str):
+                fc.append(c)
+            elif "name" in c and "clades" in c:
+                print(c["name"])
+                fc.append(c["name"])
+                fc.extend([child for child in c["clades"]])
+        return set(fc)
+
     def _reduce_lineage(self, lineage):
-        return lineage[-6:]
+        if not self.clades:
+            return lineage[-6:]
+        if not hasattr(self, 'flat_clades'):
+            self.flat_clades = self._flatten_clades()
+        return [taxon for taxon in lineage if taxon["name"] in self.flat_clades]
 
     def _fetch_lineages(self):
         sql = """SELECT lineage
