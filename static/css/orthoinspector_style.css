@@ -331,3 +331,8 @@ div#collapseInparalogs {
 .spaced-form-group {
 	margin-top: 1em;
 }
+input[type='text'].ui-autocomplete-loading {
+    background-image: url('data:image/svg+xml,<svg viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg"><style> @keyframes spin { to { transform: rotate(360deg); } } .spin { transform-origin: center; animation: spin 2s linear infinite; }</style><circle class="spin" cx="400" cy="400" fill="none" r="200" stroke-width="60" stroke="%23604B8D" stroke-dasharray="925 1400" stroke-linecap="round" /></svg>');
+	background-repeat: no-repeat;
+	background-position: right;
+}
