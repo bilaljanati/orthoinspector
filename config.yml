@@ -354,6 +354,9 @@ warehouse:
             - PVC group
             - Terrabacteria group
             - Other Bacteria
+      Viruses:
+        dbname: OrthoInspector_Viruses_2023
+        host: derrick
   hosts:
     derrick:
       port: 5432
