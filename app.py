@@ -216,7 +216,7 @@ def profile_search_res(taskid):
     res = check_task(config['worker_pool']['host'], taskid)
     return jsonify(res)
 
-@bp.route("/data")
+@bp.route("/downloads")
 def data():
     return render_template('data.html', dblist=wh.get_dblist(), base_url=config['warehouse']['data_server_url'])
 
@@ -235,7 +235,6 @@ def db_details(database, release):
     db = wh.get_db(database, release)
     if not db:
         abort(404)
-    species = db.get_species_list()
     return render_template("database.html",
                             db=db.get_info(),
                             stats=db.get_stats(),
@@ -246,6 +245,10 @@ def db_details(database, release):
 @bp.route("/databases")
 def db_list():
     return render_template('dblist.html', dblist=wh.get_dblist(), dbstats=wh.gather_stats())
+
+@bp.route("/api")
+def page_api():
+    return redirect("https://lbgi.fr/api/index.rvt?api=orthoinspector")
 
 @bp.route("/<page>")
 def default(page):
