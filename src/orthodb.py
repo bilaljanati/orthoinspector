@@ -23,28 +23,7 @@ class OrthoDb(DbService):
         self.has_clades = False
         self.has_transverse = has_transverse
         self._analyze_db()
-        self.cladeh = CladeHandler(self.get_species_list(), self.clades)
-
-    def _deprecate_connect(self, ci):
-        return psycopg2.connect(
-            dbname=self.dbname,
-            host=ci['host'],
-            port=ci['port'],
-            user=ci['user'],
-            password=ci['password']
-        )
-
-    @cache
-    def _deprecate_get_sql(self, _query):
-        with open(f"sql/{_query}.sql") as f:
-            sql = f.read()
-        return sql
-
-    def _deprecate_query(self, sql, parameters=None):
-        with self.conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cursor:
-            cursor.execute(sql, parameters)
-            res = cursor.fetchall()
-        return res
+        self.cladeh = CladeHandler(self.get_species_list(sort_by_id=True), self.clades, model_species=self._get_model_species_list())
 
     # Determine what the db can do
     def _analyze_db(self):
@@ -60,7 +39,7 @@ class OrthoDb(DbService):
                  FROM protein
                  LIMIT 1"""
         try:
-            res = self._query(sql)
+            self._query(sql)
             has_names = True
         except Exception:
             has_names = False
@@ -71,7 +50,7 @@ class OrthoDb(DbService):
                  FROM species
                  LIMIT 1"""
         try:
-            res = self._query(sql)
+            self._query(sql)
             has_models = True
         except Exception:
             has_models = False
@@ -82,7 +61,7 @@ class OrthoDb(DbService):
                  FROM protein
                  LIMIT 1"""
         try:
-            res = self._query(sql)
+            self._query(sql)
             has_prof = True
         except Exception:
             has_prof = False
@@ -93,7 +72,7 @@ class OrthoDb(DbService):
                  FROM distance
                  LIMIT 1"""
         try:
-            res = self._query(sql)
+            self._query(sql)
             has_dist = True
         except Exception:
             has_dist = False
@@ -144,12 +123,16 @@ class OrthoDb(DbService):
         return res[0]['access']
 
     @cache
-    def get_species_list(self):
+    def get_species_list(self, sort_by_id=False):
         if self.has_models:
             sql = "SELECT taxid, name, lineage, model"
         else:
             sql = "SELECT taxid, name, lineage"
-        sql += " FROM species ORDER BY name ASC"
+        sql += " FROM species"
+        if sort_by_id:
+            sql += " ORDER BY pk_species ASC"
+        else:
+            sql += " ORDER BY name ASC"
         species = []
         for row in self._query(sql):
             sp = {
@@ -161,6 +144,12 @@ class OrthoDb(DbService):
                 sp['model'] = row['model']
             species.append(sp)
         return species
+
+    def _get_model_species_list(self):
+        if not self.has_models:
+            return None
+        species = self.get_species_list(sort_by_id=True)
+        return [s for s in species if s['model']]
 
     # Species list with only taxid and name
     def get_simple_species_list(self):
@@ -191,19 +180,12 @@ class OrthoDb(DbService):
             sql = '\n'.join(line for line in sql.splitlines() if 'profile' not in line)
         return self._query(sql, {'access_list': tuple(access_list)})
 
-    # test if species is in a reference clade
-    def _species_in_clade(self, species, clades):
-        clades_ids = set([c['taxid'] for c in clades])
-        ancestors = set([a['taxid'] for a in species['lineage']])
-        match = list(clades_ids & ancestors)
-        if len(match) == 0:
+    def build_distribution(self, prot, clades=None, model_only=False):
+        if not self.has_clades or 'profile' not in prot:
             return None
-        return match[0]
-
-    def build_distribution(self, prot, clades=None):
-        if not self.has_clades or not 'profile' in prot:
+        if model_only and not self.has_models:
             return None
-        return self.cladeh.build_distribution(prot['profile'])
+        return self.cladeh.build_distribution(prot['profile'], model_only=model_only)
 
     def get_orthologs(self, access, model=False):
         res = self._fetch_orthologs(access, model)
@@ -253,7 +235,6 @@ class OrthoDb(DbService):
             if isinstance(c, str):
                 fc.append(c)
             elif "name" in c and "clades" in c:
-                print(c["name"])
                 fc.append(c["name"])
                 fc.extend([child for child in c["clades"]])
         return set(fc)
@@ -271,7 +252,6 @@ class OrthoDb(DbService):
         return self._query(sql)
 
     def _get_lineages(self):
-        exclude = []
         lineages = self._fetch_lineages()
         res = []
         for r in lineages:
@@ -358,15 +338,8 @@ class OrthoDb(DbService):
     def _format_fasta_seq(self, seq, width=60):
         return '\n'.join([seq[i:i+width] for i in range(0, len(seq), width)])
 
-    @cache
-    def _fetch_profile_species(self):
-        sql = """SELECT taxid
-                FROM species
-                ORDER BY pk_species ASC"""
-        return self._query(sql)
-
     def _list_to_profile(self, taxid_list, exclude=-1):
-        species = [int(r['taxid']) for r in self._fetch_profile_species()]
+        species = [int(r['taxid']) for r in self.get_species_list(sort_by_id=True)]
         taxid_list = set([int(t) for t in taxid_list])
         taxid_list.discard(int(exclude))
         p = []
@@ -383,7 +356,6 @@ class OrthoDb(DbService):
                 FROM protein AS p
                 INNER JOIN species AS s ON s.pk_species = p.pk_species
                 WHERE s.taxid = %(taxid)s"""
-        zeroes = '0' * self.get_stats()['species']
         if len(present) > 0:
             pp = self._list_to_profile(present, taxid)
             sql += f"\nAND p.profile & B'{pp}' = B'{pp}'"

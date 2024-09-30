@@ -1,7 +1,8 @@
 class CladeHandler:
-    def __init__(self, species, ref_clades):
+    def __init__(self, species, ref_clades, model_species=None):
         self.species = species
         self.clades = ref_clades
+        self.model_mask = self._create_model_mask(model_species)
         self._pre_compute(species, ref_clades)
 
     def _init_membership(self, species):
@@ -52,6 +53,16 @@ class CladeHandler:
             if found:
                 self.membership[sp['taxid']].add("Other " + found)
 
+    def _create_model_mask(self, model_species):
+        if not model_species:
+            return None
+        mask = []
+        models = set([s['taxid'] for s in model_species])
+        for s in self.species:
+            is_model = '1' if s['taxid'] in models else '0'
+            mask.append(is_model)
+        return ''.join(mask)
+
     def get_clade(self, taxid, clades):
         parent_clades = self.membership[int(taxid)]
         inter = parent_clades & set(clades)
@@ -59,7 +70,9 @@ class CladeHandler:
             return None
         return inter.pop()
 
-    def build_distribution(self, profile, clades=None):
+    def build_distribution(self, profile, clades=None, model_only=False):
+        if model_only and not self.model_mask:
+            return None
         if self.clades is None:
             return None
         if clades is None:
@@ -76,6 +89,8 @@ class CladeHandler:
             dist[c] = {'name': c, 'total': 0, 'present': 0}
         # walk through profile
         for i, species in enumerate(self.species):
+            if model_only and self.model_mask[i] == '0':
+                continue
             taxid = species['taxid']
             clade = self.get_clade(taxid, parent_clades)
             if clade is None:

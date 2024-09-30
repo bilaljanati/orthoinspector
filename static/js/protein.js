@@ -421,7 +421,7 @@ $(function() {
 			}
 			$.ajax({
 				type:"GET",
-				url: prefix+'/'+database+'/'+release+'/distribution/'+access,
+				url: prefix+'/'+database+'/'+release+'/distribution/'+access+(!model?'/full':''),
 				success: function(res, st) {
 					displayDistribution($('.tax-summary'), res);
 					storeClades(res);
