@@ -51,7 +51,6 @@ def add_distributions(db, prots):
     return prots
 
 def profile_search(database, release, query, present, absent):
-    import json
     taxid = query['taxid']
     present = [p['taxid'] for p in present]
     absent = [p['taxid'] for p in absent]

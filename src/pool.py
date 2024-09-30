@@ -1,5 +1,4 @@
-from concurrent.futures import ProcessPoolExecutor, as_completed
-import sys
+from concurrent.futures import ProcessPoolExecutor
 import string
 import random
 import src.tasks as tasks
