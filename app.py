@@ -98,7 +98,8 @@ def protein(database, release, access):
     prot = db.get_protein(access)
     if not prot:
         abort(404)
-    return render_template('protein.html', dblist=wh.get_dblist(), db=db.get_info(), protein=prot, model=model_only)
+    primarydb = wh.get_primary_database(release, prot)
+    return render_template('protein.html', dblist=wh.get_dblist(), db=db.get_info(), protein=prot, model=model_only, primarydb=primarydb)
 
 @bp.route("/<dbname>/<int:release>/orthologs/<access>")
 @bp.route("/<dbname>/<int:release>/orthologs/<access>/full")

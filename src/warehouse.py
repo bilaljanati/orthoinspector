@@ -58,3 +58,13 @@ class Warehouse():
             for name in dbs.keys():
                 stats[release][name] = self.get_db(name, release).get_stats()
         return stats
+
+    # Identify domain of protein
+    def get_primary_database(self, release, prot):
+        avdbs = set(self.get_dblist()[release])
+        pdb = []
+        for taxon in prot["lineage"]:
+            if taxon["name"] in avdbs:
+                pdb = taxon["name"]
+                break
+        return pdb

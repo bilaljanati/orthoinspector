@@ -194,7 +194,11 @@
 			</div>
 			<div id="collapseOrthologs" class="panel-collapse collapse in">
 				<div class="panel-body"> 
+					{% if db.name == "Transverse" %}
+					{% set ns = namespace(domain=primarydb) %}
+					{% else %}
 					{% set ns = namespace(domain=db.name) %}
+					{% endif %}
                     {% if db.name == "Transverse" or db.has_models %}
 					{% if db.name == "Transverse" %}
 						{% set domains = ["Archeaea", "Bacteria", "Eukaryota"] %}
