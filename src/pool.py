@@ -4,10 +4,10 @@ import random
 import src.tasks as tasks
 
 
-class WorkerPool():
-    DONE    = 0
+class WorkerPool:
+    DONE = 0
     RUNNING = 1
-    FAILED  = 2
+    FAILED = 2
     UNKNOWN = 3
 
     def __init__(self, nworkers=8):
@@ -19,7 +19,7 @@ class WorkerPool():
         characters = string.ascii_letters + string.digits
         random_id = False
         while not random_id or random_id in self.futures:
-            random_id = ''.join(random.choices(characters, k=length))
+            random_id = "".join(random.choices(characters, k=length))
         return random_id
 
     def submit(self, job_type, val):

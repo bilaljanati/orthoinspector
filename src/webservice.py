@@ -1,8 +1,7 @@
 import requests
 
 
-class WebService():
-
+class WebService:
     def _fetch(self, url):
         response = requests.get(url)
         if response.status_code != 200:

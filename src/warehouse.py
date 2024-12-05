@@ -2,27 +2,27 @@ from orthodb import OrthoDb
 from functools import cache
 
 
-class Warehouse():
+class Warehouse:
     def __init__(self, config):
-        self.dbcatalog = config['databases']
-        self.conninfo = config['hosts']
-        self.data_url = config['data_server_url']
+        self.dbcatalog = config["databases"]
+        self.conninfo = config["hosts"]
+        self.data_url = config["data_server_url"]
         self.databases = {}
 
     def _get_conn_info(self, hostname):
         info = self.conninfo[hostname]
-        info['host'] = hostname
+        info["host"] = hostname
         return info
 
     def get_versions(self):
         return self.dbcatalog.keys()
 
     def get_dbinfo(self, name):
-         return {
-             'name': name,
-             'description': self.dblist[name].get('description', ""),
-             'active': self.dblist[name].get('active', True),
-         }
+        return {
+            "name": name,
+            "description": self.dblist[name].get("description", ""),
+            "active": self.dblist[name].get("active", True),
+        }
 
     def get_dblist(self):
         res = {}
@@ -32,14 +32,24 @@ class Warehouse():
 
     def get_db(self, name, release):
         import traceback
+
         try:
             release = int(release)
             dbinfo = self.dbcatalog[release][name]
-            dbname = dbinfo['dbname']
+            dbname = dbinfo["dbname"]
             if dbname not in self.databases:
-                hostname = dbinfo['host']
-                desc = dbinfo.get('description', "")
-                self.databases[dbname] = OrthoDb(name, release, dbname, conninfo=self._get_conn_info(hostname), description=desc, data_url=self.data_url, has_transverse=self.has_transverse(name, release), clades=dbinfo.get('clades', None))
+                hostname = dbinfo["host"]
+                desc = dbinfo.get("description", "")
+                self.databases[dbname] = OrthoDb(
+                    name,
+                    release,
+                    dbname,
+                    conninfo=self._get_conn_info(hostname),
+                    description=desc,
+                    data_url=self.data_url,
+                    has_transverse=self.has_transverse(name, release),
+                    clades=dbinfo.get("clades", None),
+                )
             db = self.databases[dbname]
         except KeyError:
             traceback.print_exc()
@@ -47,8 +57,9 @@ class Warehouse():
         return db
 
     def has_transverse(self, name, release):
-        return (name == 'Transverse' or
-            (release in self.dbcatalog and 'Transverse' in self.dbcatalog[release]))
+        return name == "Transverse" or (
+            release in self.dbcatalog and "Transverse" in self.dbcatalog[release]
+        )
 
     @cache
     def gather_stats(self):

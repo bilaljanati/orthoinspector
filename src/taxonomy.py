@@ -3,7 +3,7 @@ from functools import cache
 
 
 class Taxonomy(WebService):
-    url_lineage = 'https://lbgi.fr/api/taxonomy/lineage/%s'
+    url_lineage = "https://lbgi.fr/api/taxonomy/lineage/%s"
 
     @cache
     def get_lineage(self, taxid):
@@ -11,6 +11,6 @@ class Taxonomy(WebService):
         return self._format_lineage(data)
 
     def _format_lineage(self, d):
-        if d['meta']['status'] != 'success':
+        if d["meta"]["status"] != "success":
             return None
-        return [{'id': sp['id'], 'name': sp['name']} for sp in d['data']]
+        return [{"id": sp["id"], "name": sp["name"]} for sp in d["data"]]
