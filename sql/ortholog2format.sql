@@ -21,7 +21,7 @@ WITH mtmlist1 AS (
     WHERE sn.taxid IN (%(species1)s, %(species2)s)
     AND sr.taxid IN (%(species1)s, %(species2)s)
 )
-SELECT type, inparalogs, orthologs, length, taxid1, species1, species2, lineage1, lineage2 FROM
+SELECT type, inparalogs, orthologs, length, taxid2, taxid1, species1, species2, lineage1, lineage2 FROM
 (
     SELECT 'One-to-One' AS type,
 			pr.access || ',' || pr.name AS inparalogs,

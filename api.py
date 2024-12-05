@@ -91,18 +91,6 @@ def orthologs(database, release, access):
     return jsonify(api_response(db.get_orthologs_api(access)))
 
 
-# Doesn't work
-@bp.route("/<database>/<int:release>/protein/<access>/orthologs/{taxid}")
-def orthologs_species(database, access, taxid):
-    pass
-
-
-# Doesn't work
-#@bp.route("/<database>/<int:release>/species/<taxid1>/orthologs/<taxid2>")
-#def orthologs_two_species(database, taxid1, taxid2):
-#    pass
-
-
 ##############################################"
 
 # Added API:
@@ -113,6 +101,43 @@ def orthologs_species(database, access, taxid):
 def get_clades_rough(database, release):
     db = wh.get_db(database, release)
     return jsonify(db.clades)
+
+
+# get tree in Newick format
+@bp.route("/<database>/<int:release>/clades/Newick")
+def get_newick(database, release):
+    db = wh.get_db(database, release)
+    tree = db.get_sun_tree()
+    # Creates a dictionnary, with parent nodes as key and a list of children nodes as value.
+    # thanks to the way the sun tree is formated, the nodes are given in hierachical order, which
+    # is practical for later
+    node = {"": []}
+    for level in tree:
+        if level["id"] not in node:
+            node[level["id"]] = []
+        node[level["parent"]].append(level["id"])
+    node.pop("")
+
+    # Newick_l contains the list of elements of the Newick being built.
+    # We search the parent in the Newick_l list, and add all its children to its left in the following format:
+    # ["(", "children1", ",", "children2", ")"]
+    Newick_l = [next(iter(node)), ";"]
+    for parent in node:
+        if (
+            parent in Newick_l and node[parent] != []
+        ):  # so that we don't get empty nodes
+            subtree = ["("]
+            for children in node[parent]:
+                subtree.append(children)
+                subtree.append(",")
+            del subtree[-1]  # removes the last "," before closing the parenthesis
+            subtree.append(")")
+            where = Newick_l.index(parent)
+            Newick_l[where:where] = subtree
+    Newick = ""
+    for element in Newick_l:
+        Newick = Newick + str(element)
+    return jsonify(Newick)
 
 
 # get all clades present in the sun tree, more detailed
@@ -141,7 +166,9 @@ def get_all_profiles(database, release, taxid):
         profiles[prot["access"]] = prot[
             "profile"
         ]  # for later: include the model_only argument as used by the profiles function
-    return jsonify(profiles) # each bit is organized in the order of the species in the database from whence they came
+    return jsonify(
+        profiles
+    )  # each bit is organized in the order of the species in the database from whence they came
 
 
 # get list of databases
@@ -167,75 +194,23 @@ def get_clade_species(database, release, clade):
         species_list.append({"taxid": species["taxid"], "name": species["name"]})
     return jsonify(species_list)
 
+
 # orthologs btw 2 species
 @bp.route("/<database>/<int:release>/species/<taxid1>/orthologs/<taxid2>")
 def orthologs_two_species(database, release, taxid1, taxid2):
     db = wh.get_db(database, release)
-    ortholog_list = []
-    sql = db._get_sql("orthologie2finale")
-    orthologs = db._query(
-        sql, {"species1": taxid1, "species2": taxid2}
-    )
+    sql = db._get_sql("ortholog2format")
+    orthologs = db._query(sql, {"species1": taxid1, "species2": taxid2})
     return jsonify(orthologs)
 
+
+# orthologs of a protein in a specified species
+@bp.route("/<database>/<int:release>/protein/<access>/orthologs/<taxid>")
+def orthologs_species(database, release, access, taxid):
+    db = wh.get_db(database, release)
+    sql = db._get_sql("orthologswspecies")
+    orthologs = db._query(sql, {"qsp": taxid, "access": access})
+    return jsonify(orthologs)
+
+
 #######################################
-
-
-# works http://localhost:5000/oi/api/Eukaryota/2023/protein/Q6KAQ7
-@bp.route("/<dbname>/<int:release>/proximal/<access>")
-def proximal(dbname, release, access):
-    db = wh.get_db(dbname, release)
-    if not db or not db.has_distances:
-        abort(404)
-    return jsonify(db.get_proximal_proteins(access))
-
-
-# works after importing request http://localhost:5000/oi/api/Eukaryota/2023/distribution/Q6KAQ7
-# Get a list of species instead of clade
-@bp.route("/<dbname>/<int:release>/distribution/<access>")
-@bp.route("/<dbname>/<int:release>/distribution/<access>/full")
-def distribution(dbname, release, access):
-    db = wh.get_db(dbname, release)
-    if not db or not db.has_distances:
-        abort(404)
-    if not db.has_profiles or not db.has_clades:
-        abort(404)
-    model_only = not request.base_url.endswith("full")
-    prot = db.get_protein(access)
-    dist = db.build_distribution(prot, model_only=model_only)
-    return jsonify(dist)
-
-
-# works http://localhost:5000/oi/api/Archaea/2023/tree/profile
-@bp.route("/<database>/<int:release>/tree/profile")
-def species_tree_profile(database, release):
-    db = wh.get_db(database, release)
-    if not db:
-        abort(404)
-    tree = db.get_profile_tree()
-    return jsonify(tree)
-
-
-# works http://localhost:5000/oi/api/annotations/go/Q6KAQ7
-@bp.route("/annotations/go/<access>")
-def go_annotations(access):
-    return jsonify(go.get_annotations(access))
-
-
-# works http://localhost:5000/oi/api/annotations/interpro/C4LID5
-@bp.route("/annotations/interpro/<access>")
-def interpro_annotations(access):
-    annots = interpro.get_domains(access)
-    if not annots:
-        abort(404)
-    return jsonify(annots)
-
-
-# works http://localhost:5000/oi/api/Eukaryota/2023/search/protein?term=MTH
-@bp.route("/<database>/<int:release>/search/protein")
-def search_protein(database, release):
-    db = wh.get_db(database, release)
-    if not db:
-        abort(404)
-    pattern = request.args.get("term")
-    return jsonify(db.search_protein(pattern))
