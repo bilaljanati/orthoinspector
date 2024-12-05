@@ -103,6 +103,19 @@ def get_clades_rough(database, release):
     return jsonify(db.clades)
 
 
+# get all clades present in the sun tree, more detailed
+@bp.route("/<database>/<int:release>/clades/detailed")
+def get_clades_detailed(database, release):
+    db = wh.get_db(database, release)
+    tree = db.get_sun_tree()
+    clade_list = []
+    for clade in tree:
+        # Use a dictionary to store clade information
+        infos = {"id": clade["id"], "name": clade["name"]}
+        clade_list.append(infos)
+    return jsonify(clade_list)
+
+
 # get tree in Newick format
 @bp.route("/<database>/<int:release>/clades/Newick")
 def get_newick(database, release):
@@ -138,19 +151,6 @@ def get_newick(database, release):
     for element in Newick_l:
         Newick = Newick + str(element)
     return jsonify(Newick)
-
-
-# get all clades present in the sun tree, more detailed
-@bp.route("/<database>/<int:release>/clades/detailed")
-def get_clades_detailed(database, release):
-    db = wh.get_db(database, release)
-    tree = db.get_sun_tree()
-    clade_list = []
-    for clade in tree:
-        # Use a dictionary to store clade information
-        infos = {"id": clade["id"], "name": clade["name"]}
-        clade_list.append(infos)
-    return jsonify(clade_list)
 
 
 # profiles of all the proteins in a species
