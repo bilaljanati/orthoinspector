@@ -129,9 +129,9 @@ def get_newick(database, release):
             subnwk = []
             for child in children:
                 subnwk.append(recur(child, newick))
-            newick = f"({','.join(subnwk)}){arbre['title']}"
+            newick = f"({','.join(subnwk)})'{arbre['title']}'"
         else:
-            newick = arbre["title"]
+            newick = "'" + arbre["title"] + "'"
         return newick
     result = recur(tree, new)
     return jsonify(result)
@@ -174,7 +174,7 @@ def get_clade_species(database, release, clade):
     species_list = []
     sql = db._get_sql("get_clade_species")
     result = db._query(
-        sql, {"clade": clade}
+        sql, {"clade": "%" + clade + "%"}
     )  # uses the text contained in the get_clade_species.sql file as template for the query
     for species in result:
         species_list.append({"taxid": species["taxid"], "name": species["name"]})

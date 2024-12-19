@@ -1,2 +1,3 @@
 SELECT * FROM species
-WHERE lineage LIKE '%%clade%%'
+WHERE lineage LIKE %(clade)s
+
