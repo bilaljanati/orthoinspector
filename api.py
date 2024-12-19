@@ -33,7 +33,8 @@ def api_response(data, nb=-1):
 def page_not_found(e):
     return jsonify({"meta": {"status": "error", "msg": e.description}}), 404
 
-# 
+
+#
 @bp.route("/<database>")
 def api_index(database):
     db = wh.get_db(database)
@@ -42,7 +43,7 @@ def api_index(database):
     return render_template("apiui.html", db=database, prefix=config["prefix"])
 
 
-# 
+#
 @bp.route("/desc/<database>.yml")
 def api_desc(database):
     db = wh.get_db(database)
@@ -93,15 +94,15 @@ def orthologs(database, release, access):
 
 # Added API:
 
+
 # get info species ****added yml****
 @bp.route("/<database>/<int:release>/species/<taxid>")
 def get_species_info(database, release, taxid):
     db = wh.get_db(database, release)
     sql = db._get_sql("speciesinfo")
-    result = db._query(
-        sql, {"taxid": taxid}
-    )
+    result = db._query(sql, {"taxid": taxid})
     return jsonify(result)
+
 
 # get all clades present in the sun tree, more detailed ****added yml****
 @bp.route("/<database>/<int:release>/clades")
@@ -115,7 +116,8 @@ def get_clades_detailed(database, release):
         clade_list.append(infos)
     return jsonify(clade_list)
 
-#Newick depuis n'importe quel clade ****added yml****
+
+# Newick depuis n'importe quel clade ****added yml****
 # get tree in Newick format -- ajouter option pour avoir les noms au lieu de taxid
 # option pour obtenir avec taxid ou nom de clade
 @bp.route("/<database>/<int:release>/clades/newick")
@@ -123,6 +125,7 @@ def get_newick(database, release):
     db = wh.get_db(database, release)
     tree = db.get_profile_tree()
     new = []
+
     def recur(arbre, newick):
         children = arbre["children"]
         if arbre["folder"] == True:
@@ -133,9 +136,9 @@ def get_newick(database, release):
         else:
             newick = "'" + arbre["title"] + "'"
         return newick
+
     result = recur(tree, new)
     return jsonify(result)
-
 
 
 # profiles of all the proteins in a species ****added yml****
@@ -197,6 +200,7 @@ def orthologs_species(database, release, access, taxid):
     sql = db._get_sql("orthologswspecies")
     orthologs = db._query(sql, {"qsp": taxid, "access": access})
     return jsonify(orthologs)
+
 
 # profile of a protein ****added yml****
 @bp.route("/<database>/<int:release>/protein/<access>/profile")
