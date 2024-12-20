@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "Orthoinspector"
+authors = [
+    {name = "Bilal JANATI IDRISSI", email = "bilal.janati-idrissi@etu.unistra.fr"}
+]
+description = "Interact with the Orthoinspector database and recover orthology relationships"
+readme = "README.rst"
+version = "0.1.0"
+requires-python = ">=3.1"
+keywords = [
+    "bioinformatics",
+    "phylogenetics",
+    "orthologs",
+    "taxonomy",
+    "protein-orthology",
+    "orthoinspector",
+    "comparative-genomics",
+]
+license = {text = "LGPL-3.0"}
+
+dependencies = [
+    'Flask==3.1.0',
+    'PyYAML==6.0.2',
+    'urllib3==2.2.3',
+]
+
+
+[tool.ruff]
+lint.select = ["All"]
